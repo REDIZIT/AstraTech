@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="ResourceBase" Name="AstraBlueprint">
+		<defName>astra_blueprint</defName>
+		<label>Astra blueprint</label>
+		<description>Desc</description>
+		<category>Item</category>
+
+ 		<stackLimit>1</stackLimit>
+		<statBases>
+			<MarketValue>6900</MarketValue>
+			<Mass>1.42</Mass>
+			<Flammability>1</Flammability>
+		</statBases>
+
+		<comps>
+			<li Class="AstraTech.CompProperties_AstraBlueprint">
+            </li>
+		</comps>
+
+    </ThingDef>
+</Defs>

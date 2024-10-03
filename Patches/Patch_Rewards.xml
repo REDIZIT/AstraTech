@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/ThingSetMakerDef[defName="Reward_ItemsStandard"]/root/options</xpath>
+		<value>
+			<li>
+				<thingSetMaker Class="AstraTech.ThingSetMaker_Astra">
+				</thingSetMaker>
+			</li>
+		</value>
+	</Operation>
+</Patch>

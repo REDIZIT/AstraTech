@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<JobDef>
+		<defName>astra_set_blueprint</defName>
+		<driverClass>AstraTech.JobDriver_SetBlueprintToHolder</driverClass>
+		<reportString>using item on holder.</reportString>
+	</JobDef>
+</Defs>

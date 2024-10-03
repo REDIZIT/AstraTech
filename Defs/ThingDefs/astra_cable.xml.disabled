@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="BuildingBase" Name="astra_cable">
+		<defName>astra_cable</defName>
+		<label>Astra cable</label>
+		<description>A cable that connects buildings and transfers information between them.</description>
+		<thingClass>AstraTech.Building_AstraCable</thingClass>
+		<category>Building</category>
+		<altitudeLayer>Building</altitudeLayer>
+		<graphicData>
+			<texPath>temp3</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<size>1,1</size>
+		<placingDraggableDimensions>1</placingDraggableDimensions>
+		<selectable>true</selectable>
+    	<neverMultiSelect>true</neverMultiSelect>
+    	<designationCategory>Temperature</designationCategory>
+    	<passability>Standable</passability>
+	</ThingDef>
+</Defs>
