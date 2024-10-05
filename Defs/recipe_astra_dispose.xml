@@ -7,9 +7,10 @@
 		<jobString>Creating organic cube</jobString>
 		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
 		<requiredGiverWorkType>Cooking</requiredGiverWorkType>
+		<workAmount>400</workAmount>
 		<skillRequirements>
 			<Cooking>5</Cooking>
-			<Crafting>7</Crafting>
+			<Crafting>5</Crafting>
 		</skillRequirements>
 		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_CookMeal</soundWorking>
@@ -58,8 +59,9 @@
 		<jobString>Creating non-organic cube</jobString>
 		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
 		<requiredGiverWorkType>Crafting</requiredGiverWorkType>
+		<workAmount>400</workAmount>
 		<skillRequirements>
-			<Cooking>15</Cooking>
+			<Crafting>10</Crafting>
 		</skillRequirements>
 		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_Machining</soundWorking>
@@ -114,8 +116,9 @@
 		<jobString>Creating Astra-cube</jobString>
 		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
 		<requiredGiverWorkType>Crafting</requiredGiverWorkType>
+		<workAmount>500</workAmount>
 		<skillRequirements>
-			<Crafting>18</Crafting>
+			<Crafting>10</Crafting>
 		</skillRequirements>
 		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_Machining</soundWorking>

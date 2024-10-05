@@ -34,7 +34,7 @@
 		<drawerType>RealtimeOnly</drawerType>
 		<statBases>
 			<MaxHitPoints>200</MaxHitPoints>
-			<WorkToBuild>600</WorkToBuild>
+			<WorkToBuild>0</WorkToBuild>
 			<Flammability>0</Flammability>
 		</statBases>
 		<selectable>true</selectable>
