@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="ResourceBase" Name="AstraMatter" Abstract="True">
+		<category>Item</category>
+		<thingCategories>
+			<li>Manufactured</li>
+		</thingCategories>
+
+		<drawerType>MapMeshOnly</drawerType>
+		<graphicData>
+			<texPath>matter_cube</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+
+		<stackLimit>64</stackLimit>
+		<statBases>
+			<MarketValue>2.8</MarketValue>
+			<Mass>4</Mass>
+		</statBases>
+	</ThingDef>
+
+	<ThingDef ParentName="AstraMatter">
+		<defName>astra_matter_organic</defName>
+		<label>Cube of organic matter</label>
+		<description>Desc 1</description>
+
+		<graphicData>
+			<color>(0.85, 0.6, 0.1)</color>
+		</graphicData>
+
+		<statBases>
+			<Flammability>1</Flammability>
+		</statBases>
+	</ThingDef>
+
+	<ThingDef ParentName="AstraMatter">
+		<defName>astra_matter_non_organic</defName>
+		<label>Cube of non-organic matter</label>
+		<description>Desc 2</description>
+
+		<graphicData>
+			<color>(0.8, 0.8, 0.9)</color>
+		</graphicData>
+
+		<statBases>
+			<Flammability>0</Flammability>
+		</statBases>
+	</ThingDef>
+
+	<ThingDef ParentName="AstraMatter">
+		<defName>astra_matter_merged</defName>
+		<label>Astra cube</label>
+		<description>Desc 3</description>
+
+		<graphicData>
+			<color>(1, 0.2, 0.3)</color>
+		</graphicData>
+
+		<statBases>
+			<Flammability>0.5</Flammability>
+		</statBases>
+	</ThingDef>
+</Defs>

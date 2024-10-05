@@ -53,19 +53,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AstraDefOf.cs" />
-    <Compile Include="Building_AstraBlueprintHolder.cs" />
-    <Compile Include="Building_AstraCable.cs" />
-    <Compile Include="Building_AstraCore.cs" />
-    <Compile Include="Command_ExtendedAction.cs" />
-    <Compile Include="CopyUtils.cs" />
-    <Compile Include="GenBlueprints.cs" />
-    <Compile Include="JobDriver_SetBlueprintToHolder.cs" />
-    <Compile Include="MapComp_AstraNetManager.cs" />
+    <Compile Include="Scripts\AstraDefOf.cs" />
+    <Compile Include="Scripts\Building_AstraBlueprintHolder.cs" />
+    <Compile Include="Scripts\Building_AstraCable.cs" />
+    <Compile Include="Scripts\Building_AstraCore.cs" />
+    <Compile Include="Scripts\IngredientValueGetter_ForMatterCombined.cs" />
+    <Compile Include="Scripts\Command_ExtendedAction.cs" />
+    <Compile Include="Scripts\CopyUtils.cs" />
+    <Compile Include="Scripts\GenBlueprints.cs" />
+    <Compile Include="Scripts\JobDriver_SetBlueprintToHolder.cs" />
+    <Compile Include="Scripts\MapComp_AstraNetManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StockGenerator_AstraBlueprints.cs" />
-    <Compile Include="ThingComp_AstraBlueprint.cs" />
-    <Compile Include="ThingSetMaker_Astra.cs" />
+    <Compile Include="Scripts\StockGenerator_AstraBlueprints.cs" />
+    <Compile Include="Scripts\ThingComp_AstraBlueprint.cs" />
+    <Compile Include="Scripts\ThingSetMaker_Astra.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RimWorld;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using Verse;
@@ -26,6 +27,24 @@ namespace AstraTech
             Scribe_Defs.Look(ref prefab, nameof(prefab));
             Scribe_Defs.Look(ref prefabStuff, nameof(prefabStuff));
             //Scribe_Deep.Look(ref blueprint, nameof(blueprint));
+        }
+
+        protected override void DrawAt(Vector3 drawLoc, bool flip = false)
+        {
+            base.DrawAt(drawLoc, flip);
+
+            if (prefab != null)
+            {
+                Graphic materialGraphic = prefab.graphic;
+
+                Vector3 drawPos = drawLoc;
+                drawPos.y += 0.046875f;
+
+                drawPos.z += Mathf.Sin(Find.TickManager.TicksSinceSettle / 100f) * 0.1f;
+                Rot4 rotation = Rot4.FromAngleFlat(Mathf.Sin(Find.TickManager.TicksSinceSettle / 20f));
+
+                materialGraphic.Draw(drawPos, rotation, this);
+            }
         }
 
         public void CloneAndPlace(IntVec3 pos)

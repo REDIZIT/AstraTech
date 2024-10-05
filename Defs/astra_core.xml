@@ -10,22 +10,38 @@
 		<graphicData>
 			<texPath>temp</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
-			<drawSize>(5,5)</drawSize>
+			<drawSize>(9,9)</drawSize>
 			<drawRotated>false</drawRotated>
 			<allowFlip>false</allowFlip>
-			<shadowData>
-				<volume>(0.9,0.3,0.9)</volume>
-			</shadowData>
+			<shaderType>Transparent</shaderType>
 			<damageData>
 				<rect>(0.2,0,0.6,0.1)</rect>
 			</damageData>
 		</graphicData>
 		<rotatable>false</rotatable>
 		<stealable>false</stealable>
-    	<size>(5,5)</size>
+		<size>(5,5)</size>
 		<altitudeLayer>Building</altitudeLayer>
 
 		<passability>PassThroughOnly</passability>
+		<pathCost>1000</pathCost>
+
+		<comps>
+			<!--<li Class="CompProperties_Glower">
+				<glowRadius>10</glowRadius>
+				<glowColor>(100,150,255,0)</glowColor>
+			</li>-->
+			<li Class="CompProperties_Refuelable">
+				<fuelConsumptionRate>1</fuelConsumptionRate>
+				<fuelCapacity>64</fuelCapacity>
+				<fuelFilter>
+					<thingDefs>
+						<li>astra_matter_merged</li>
+					</thingDefs>
+				</fuelFilter>
+				<showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle>
+     		</li>
+		</comps>
 
 		<constructEffect>ConstructDirt</constructEffect>
 		<tickerType>Normal</tickerType>

@@ -6,7 +6,13 @@
 		<description>Desc</description>
 		<category>Item</category>
 
- 		<stackLimit>1</stackLimit>
+		<graphicData>
+			<texPath>blueprint</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+
+		<stackLimit>1</stackLimit>
 		<statBases>
 			<MarketValue>6900</MarketValue>
 			<Mass>1.42</Mass>
@@ -15,8 +21,8 @@
 
 		<comps>
 			<li Class="AstraTech.CompProperties_AstraBlueprint">
-            </li>
+			</li>
 		</comps>
 
-    </ThingDef>
+	</ThingDef>
 </Defs>

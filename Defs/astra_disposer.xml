@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="BuildingBase">
+		<defName>astra_disposer</defName>
+		<label>Matter disposer</label>
+		<description>Desc</description>
+		<thingClass>Building_WorkTable</thingClass>
+		<graphicData>
+			<texPath>temp3</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(1,1)</drawSize>
+		</graphicData>
+		<size>(1,1)</size>
+		<altitudeLayer>Building</altitudeLayer>
+		<designationCategory>Temperature</designationCategory>
+		<useHitPoints>true</useHitPoints>
+		<hasInteractionCell>True</hasInteractionCell>
+		<interactionCellOffset>(0,0,-1)</interactionCellOffset>
+		<passability>PassThroughOnly</passability>
+		<statBases>
+			<WorkToBuild>0</WorkToBuild>
+		</statBases>
+
+		<inspectorTabs>
+			<li>ITab_Bills</li>
+		</inspectorTabs>
+		<building>
+			<spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
+			<paintable>false</paintable>
+		</building>
+		<recipes>
+			<li>astra_create_organic_cube</li>
+			<li>astra_create_non_organic_cube</li>
+			<li>astra_merge_cubes</li>
+		</recipes>
+
+	</ThingDef>
+</Defs>

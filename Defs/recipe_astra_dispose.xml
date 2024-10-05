@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<RecipeDef>
+		<defName>astra_create_organic_cube</defName>
+		<label>Create organic cube</label>
+		<description>desc</description>
+		<jobString>Creating organic cube</jobString>
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<requiredGiverWorkType>Cooking</requiredGiverWorkType>
+		<skillRequirements>
+			<Cooking>5</Cooking>
+			<Crafting>7</Crafting>
+		</skillRequirements>
+		<effectWorking>Cook</effectWorking>
+		<soundWorking>Recipe_CookMeal</soundWorking>
+		<allowMixingIngredients>true</allowMixingIngredients>
+		<ingredientValueGetterClass>IngredientValueGetter_Nutrition</ingredientValueGetterClass>
+		<ingredients>
+			<li>
+				<filter>
+					<categories>
+						<li>Foods</li>
+						<li>Corpses</li>
+					</categories>
+					<disallowedThingDefs>
+						<li>astra_matter_organic</li>
+						<li>astra_matter_non_organic</li>
+						<li>astra_matter_merged</li>
+					</disallowedThingDefs>
+				</filter>
+				<count>10</count>
+			</li>
+		</ingredients>
+		<products>
+			<astra_matter_organic>1</astra_matter_organic>
+		</products>
+		<workSkill>Cooking</workSkill>
+		<displayPriority>1</displayPriority>
+
+		<fixedIngredientFilter>
+			<categories>
+				<li>Foods</li>
+				<li>Corpses</li>
+			</categories>
+			<disallowedThingDefs>
+				<li>astra_matter_organic</li>
+				<li>astra_matter_non_organic</li>
+				<li>astra_matter_merged</li>
+			</disallowedThingDefs>
+		</fixedIngredientFilter>
+
+	</RecipeDef>
+
+	<RecipeDef>
+		<defName>astra_create_non_organic_cube</defName>
+		<label>Create non-organic cube</label>
+		<description>desc</description>
+		<jobString>Creating non-organic cube</jobString>
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<requiredGiverWorkType>Crafting</requiredGiverWorkType>
+		<skillRequirements>
+			<Cooking>15</Cooking>
+		</skillRequirements>
+		<effectWorking>Cook</effectWorking>
+		<soundWorking>Recipe_Machining</soundWorking>
+		<allowMixingIngredients>true</allowMixingIngredients>
+		<ingredients>
+			<li>
+				<filter>
+					<categories>
+						<li>Root</li>
+					</categories>
+					<disallowedCategories>
+						<li>Foods</li>
+						<li>Corpses</li>
+					</disallowedCategories>
+					<disallowedThingDefs>
+						<li>astra_matter_organic</li>
+						<li>astra_matter_non_organic</li>
+						<li>astra_matter_merged</li>
+					</disallowedThingDefs>
+				</filter>
+				<count>10</count>
+			</li>
+		</ingredients>
+		<products>
+			<astra_matter_non_organic>1</astra_matter_non_organic>
+		</products>
+		<workSkill>Cooking</workSkill>
+		<displayPriority>2</displayPriority>
+
+		<fixedIngredientFilter>
+			<categories>
+				<li>Root</li>
+			</categories>
+			<disallowedCategories>
+				<li>Foods</li>
+				<li>Corpses</li>
+			</disallowedCategories>
+			<disallowedThingDefs>
+				<li>astra_matter_organic</li>
+				<li>astra_matter_non_organic</li>
+				<li>astra_matter_merged</li>
+			</disallowedThingDefs>
+		</fixedIngredientFilter>
+
+	</RecipeDef>
+
+
+	<RecipeDef>
+		<defName>astra_merge_cubes</defName>
+		<label>Create Astra-cube</label>
+		<description>desc</description>
+		<jobString>Creating Astra-cube</jobString>
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<requiredGiverWorkType>Crafting</requiredGiverWorkType>
+		<skillRequirements>
+			<Crafting>18</Crafting>
+		</skillRequirements>
+		<effectWorking>Cook</effectWorking>
+		<soundWorking>Recipe_Machining</soundWorking>
+		<allowMixingIngredients>true</allowMixingIngredients>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>astra_matter_organic</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>astra_matter_non_organic</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<products>
+			<astra_matter_merged>1</astra_matter_merged>
+		</products>
+		<workSkill>Crafting</workSkill>
+		<displayPriority>3</displayPriority>
+
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>astra_matter_organic</li>
+				<li>astra_matter_non_organic</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+
+	</RecipeDef>
+
+</Defs>

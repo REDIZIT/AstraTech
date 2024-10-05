@@ -125,5 +125,4 @@ namespace AstraTech
             this.compClass = typeof(ThingComp_AstraBlueprint);
         }
     }
-
 }
