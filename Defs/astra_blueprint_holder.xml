@@ -28,6 +28,7 @@
 		<passability>PassThroughOnly</passability>
 	    <fillPercent>0.9</fillPercent>
 	    <pathCost>50</pathCost>
+	    <canOverlapZones>false</canOverlapZones>
 
 		<constructEffect>ConstructDirt</constructEffect>
 		<tickerType>Normal</tickerType>

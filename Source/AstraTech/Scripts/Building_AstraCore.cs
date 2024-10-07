@@ -18,8 +18,12 @@ namespace AstraTech
         private StringBuilder b = new StringBuilder();
         private CompRefuelable compRefuelable;
 
-        private const float MATTER_TO_HOURS = 10;
-        private const float MATTER_COST_COEF = 1 / 100f;
+        private const float MATTER_COST_TO_HOURS = 10;
+
+        /// <summary>
+        /// Multiply factor for calculating printing matter cost (lower coef -> lower print cost and time)
+        /// </summary>
+        private const float MATTER_COST_COEF = 1 / 200f;
 
         public enum DisposeMode
         {
@@ -40,6 +44,8 @@ namespace AstraTech
             base.ExposeData();
 
             Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft));
+            Scribe_Values.Look(ref isCreationEnabled, nameof(isCreationEnabled));
+            Scribe_Values.Look(ref isPrintning, nameof(isPrintning));
             Scribe_References.Look(ref holder, nameof(holder));
         }
 
@@ -54,7 +60,7 @@ namespace AstraTech
             else if (isPrintning && holder != null && holder.prefab != null)
             {
                 isPrintning = false;
-                holder.CloneAndPlace(Position);
+                holder.CloneAndPlace(Position - new IntVec3(0, RotatedSize.z / 2 + 1, 0));
 
                 if (isCreationEnabled)
                 {
@@ -163,7 +169,7 @@ namespace AstraTech
             }
             else
             {
-                ticksLeft = (int)(GenDate.TicksPerHour * matterCost * MATTER_TO_HOURS);
+                ticksLeft = (int)(GenDate.TicksPerHour * matterCost * MATTER_COST_TO_HOURS);
                 compRefuelable.ConsumeFuel(matterCost);
 
                 isPrintning = true;

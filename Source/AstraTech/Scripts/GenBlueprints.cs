@@ -9,6 +9,14 @@ namespace AstraTech
         private static List<ThingDef> staticAvailableDefs = new List<ThingDef>();
         private static List<ThingDef> dynamicAvailableDefs = new List<ThingDef>();
 
+        private static HashSet<ThingDef> bannedDefs = new HashSet<ThingDef>()
+        {
+            AstraDefOf.astra_blueprint,
+            AstraDefOf.astra_matter_merged,
+            AstraDefOf.astra_matter_non_organic,
+            AstraDefOf.astra_matter_organic,
+        };
+
         public static Thing Generate(FloatRange? prefabMarketValueRange)
         {
             if (staticAvailableDefs.Count == 0)
@@ -16,7 +24,7 @@ namespace AstraTech
                 foreach (ThingDef def in DefDatabase<ThingDef>.AllDefs)
                 {
                     if (def.category != ThingCategory.Item) continue;
-                    if (def == AstraDefOf.astra_blueprint) continue;
+                    if (bannedDefs.Contains(def)) continue;
 
                     if (def.IsCorpse || def.Minifiable || def.thingClass == typeof(MinifiedThing)) continue;
 

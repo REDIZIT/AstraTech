@@ -16,7 +16,9 @@
 		<useHitPoints>true</useHitPoints>
 		<hasInteractionCell>True</hasInteractionCell>
 		<interactionCellOffset>(0,0,-1)</interactionCellOffset>
+
 		<passability>PassThroughOnly</passability>
+		<canOverlapZones>false</canOverlapZones>
 		<statBases>
 			<WorkToBuild>0</WorkToBuild>
 		</statBases>
