@@ -81,17 +81,6 @@ namespace AstraTech
             }
         }
 
-        public override void PostSpawnSetup(bool respawningAfterLoad)
-        {
-            base.PostSpawnSetup(respawningAfterLoad);
-
-            // If placed by Dev mode
-            if (prefab == null)
-            {
-                prefab = DefDatabase<ThingDef>.GetNamed("MedicineIndustrial");
-            }
-        }
-
         public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
         {
             foreach (var item in base.CompFloatMenuOptions(selPawn))
@@ -99,7 +88,14 @@ namespace AstraTech
                 yield return item;
             }
 
-            yield return new FloatMenuOption("Assign to a holder", () => BeginCarryJob(selPawn));
+            if (prefab != null)
+            {
+                yield return new FloatMenuOption("Assign to a holder", () => BeginCarryJob(selPawn));
+            }
+            else
+            {
+                yield return new FloatMenuOption("Encode item", () => BeginEncodeJob(selPawn));
+            }
         }
 
         private void BeginCarryJob(Pawn pawn)
@@ -117,9 +113,28 @@ namespace AstraTech
             {
                 if (targetInfo.Thing is Building_AstraBlueprintHolder b)
                 {
-                    Job job = new Job(AstraDefOf.astra_set_blueprint, parent, b);
+                    Job job = new Job(AstraDefOf.job_astra_blueprint_assign, parent, b);
                     pawn.jobs.TryTakeOrderedJob(job);
                 }
+            }, null, null);
+        }
+
+        private void BeginEncodeJob(Pawn pawn)
+        {
+            TargetingParameters targetingParams = new TargetingParameters
+            {
+                canTargetPawns = false,
+                canTargetBuildings = false,
+                mapObjectTargetsMustBeAutoAttackable = false,
+
+                validator = (i) => GenBlueprints.StaticAvailableDefs.Contains(i.Thing.def)
+            };
+
+            Find.Targeter.BeginTargeting(targetingParams, delegate (LocalTargetInfo targetInfo)
+            {
+                Job job = new Job(AstraDefOf.job_astra_blueprint_assign, parent, targetInfo);
+                pawn.jobs.TryTakeOrderedJob(job);
+
             }, null, null);
         }
 

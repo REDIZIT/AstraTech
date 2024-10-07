@@ -6,8 +6,30 @@ namespace AstraTech
 {
     public static class GenBlueprints
     {
-        private static List<ThingDef> staticAvailableDefs = new List<ThingDef>();
+        public static List<ThingDef> StaticAvailableDefs
+        {
+            get
+            {
+                if (_staticAvailableDefs == null)
+                {
+                    _staticAvailableDefs = new List<ThingDef>(32);
+                    foreach (ThingDef def in DefDatabase<ThingDef>.AllDefs)
+                    {
+                        if (def.category != ThingCategory.Item) continue;
+                        if (bannedDefs.Contains(def)) continue;
+
+                        if (def.IsCorpse || def.Minifiable || def.thingClass == typeof(MinifiedThing)) continue;
+
+                        _staticAvailableDefs.Add(def);
+                    }
+                }
+                return _staticAvailableDefs;
+            }
+        }
+
         private static List<ThingDef> dynamicAvailableDefs = new List<ThingDef>();
+
+        private static List<ThingDef> _staticAvailableDefs;
 
         private static HashSet<ThingDef> bannedDefs = new HashSet<ThingDef>()
         {
@@ -19,22 +41,8 @@ namespace AstraTech
 
         public static Thing Generate(FloatRange? prefabMarketValueRange)
         {
-            if (staticAvailableDefs.Count == 0)
-            {
-                foreach (ThingDef def in DefDatabase<ThingDef>.AllDefs)
-                {
-                    if (def.category != ThingCategory.Item) continue;
-                    if (bannedDefs.Contains(def)) continue;
-
-                    if (def.IsCorpse || def.Minifiable || def.thingClass == typeof(MinifiedThing)) continue;
-
-                    staticAvailableDefs.Add(def);
-                }
-            }
-
-
             dynamicAvailableDefs.Clear();
-            foreach (ThingDef def in staticAvailableDefs)
+            foreach (ThingDef def in StaticAvailableDefs)
             {
                 if (prefabMarketValueRange.HasValue && prefabMarketValueRange.Value.Includes(def.BaseMarketValue) == false) continue;
 

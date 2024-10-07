@@ -7,11 +7,6 @@ namespace AstraTech
 {
     public class StockGenerator_AstraBlueprints : StockGenerator
     {
-        public StockGenerator_AstraBlueprints()
-        {
-            
-        }
-
         public override IEnumerable<Thing> GenerateThings(int forTile, Faction faction = null)
         {
             int count = Random.Range(8, 12);
