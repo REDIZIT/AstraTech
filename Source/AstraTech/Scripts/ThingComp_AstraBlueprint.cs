@@ -49,11 +49,17 @@ namespace AstraTech
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
         {
-            yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", prefab.ToStringSafe(), "", -1);
+            yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", prefab.label, "Item that is ready to be printed by Astra code using this blueprint: " + prefab.label, -1, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
+            {
+                new Dialog_InfoCard.Hyperlink(prefab)
+            });
 
             if (prefabStuff != null)
             {
-                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint item made of", prefabStuff.ToStringSafe(), "", 0);
+                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint item made of", prefabStuff.label, "Printed item will be made from material: " + prefabStuff.label, 0, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
+                {
+                    new Dialog_InfoCard.Hyperlink(prefabStuff)
+                });
             }
         }
 
@@ -115,6 +121,11 @@ namespace AstraTech
                     pawn.jobs.TryTakeOrderedJob(job);
                 }
             }, null, null);
+        }
+
+        public override string GetDescriptionPart()
+        {
+            return $"Blueprinted item: {prefab.label} - {prefab.description}";
         }
     }
 

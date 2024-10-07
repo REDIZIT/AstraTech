@@ -32,7 +32,7 @@
 				<glowColor>(100,150,255,0)</glowColor>
 			</li>-->
 			<li Class="CompProperties_Refuelable">
-				<fuelConsumptionRate>1</fuelConsumptionRate>
+				<fuelConsumptionRate>0</fuelConsumptionRate>
 				<fuelCapacity>64</fuelCapacity>
 				<fuelFilter>
 					<thingDefs>

@@ -5,6 +5,9 @@
 		<label>Astra blueprint</label>
 		<description>Desc</description>
 		<category>Item</category>
+		<thingCategories>
+			<li>Artifacts</li>
+		</thingCategories>
 
 		<graphicData>
 			<texPath>blueprint</texPath>

@@ -4,23 +4,23 @@
 		<defName>astra_create_cube</defName>
 		<giverClass>WorkGiver_DoBill</giverClass>
 		<workType>Cooking</workType>
-		<priorityInType>10</priorityInType>
+		<priorityInType>96</priorityInType> <!-- We want to make meals before cube, to make crafting more effecient. DoBillsCook: 100, DoBillsCookCampfire: 97, DoBillsButcherFlesh: 90 -->
 		<fixedBillGiverDefs>
 			<li>astra_disposer</li>
 		</fixedBillGiverDefs>
-		<verb>do the do</verb>
-		<gerund>doing the do</gerund>
+		<verb>create cube</verb>
+		<gerund>creating cube</gerund>
 	</WorkGiverDef>
 
 	<WorkGiverDef>
 		<defName>astra_create_cube_2</defName>
 		<giverClass>WorkGiver_DoBill</giverClass>
 		<workType>Crafting</workType>
-		<priorityInType>10</priorityInType>
+		<priorityInType>200</priorityInType>
 		<fixedBillGiverDefs>
 			<li>astra_disposer</li>
 		</fixedBillGiverDefs>
-		<verb>do the do</verb>
-		<gerund>doing the do</gerund>
+		<verb>create cube</verb>
+		<gerund>creating cube</gerund>
 	</WorkGiverDef>
 </Defs>

@@ -13,7 +13,7 @@ namespace AstraTech
 
         public Building_AstraBlueprintHolder holder;
 
-        public bool isCreationEnabled;
+        public bool isCreationEnabled, isPrintning;
 
         private StringBuilder b = new StringBuilder();
         private CompRefuelable compRefuelable;
@@ -51,10 +51,15 @@ namespace AstraTech
             {
                 ticksLeft--;
             }
-            else if (isCreationEnabled && holder != null && holder.prefab != null)
+            else if (isPrintning && holder != null && holder.prefab != null)
             {
+                isPrintning = false;
                 holder.CloneAndPlace(Position);
-                TryStartPrinting();
+
+                if (isCreationEnabled)
+                {
+                    TryStartPrinting();
+                }
             }
         }
 
@@ -63,11 +68,16 @@ namespace AstraTech
             b.Clear();
 
             b.Append("Status: ");
-            if (isCreationEnabled)
+            if (isPrintning)
             {
                 b.Append("Printing (");
                 b.Append(GenDate.ToStringTicksToPeriod(ticksLeft));
                 b.Append(" left)");
+
+                if (isCreationEnabled == false)
+                {
+                    b.AppendLine("[ Stop scheduled ]");
+                }
             }
             else
             {
@@ -82,10 +92,11 @@ namespace AstraTech
             b.Append(" / ");
             b.Append(AstraDefOf.astra_matter_merged.stackLimit);
 
-            if (matter > 0)
+            float consumption = this.GetComp<CompRefuelable>().Props.fuelConsumptionRate;
+            if (matter > 0 && consumption > 0)
             {
                 b.Append(" (consumption: x");
-                b.Append(this.GetComp<CompRefuelable>().Props.fuelConsumptionRate);
+                b.Append(consumption);
                 b.Append(" per day)");
             }
 
@@ -95,7 +106,7 @@ namespace AstraTech
 
                 b.AppendLine();
                 b.Append("Print matter cost: ");
-                b.Append(matterCost >= 10 ? matterCost.ToString("F0") : matterCost.ToString("0.0"));
+                b.Append(matterCost >= 10 ? (Mathf.Ceil(matterCost * 10) / 10f).ToString("F0") : matterCost.ToString("0.0"));
                 
                 if (matterCost > matter)
                 {
@@ -148,14 +159,14 @@ namespace AstraTech
 
             if (matterCost > matter)
             {
-                isCreationEnabled = false;
+                isPrintning = false;
             }
             else
             {
                 ticksLeft = (int)(GenDate.TicksPerHour * matterCost * MATTER_TO_HOURS);
                 compRefuelable.ConsumeFuel(matterCost);
 
-                isCreationEnabled = true;
+                isPrintning = true;
             }
         }
 
@@ -201,6 +212,7 @@ namespace AstraTech
 
             // Stop creation and reset parameters
             isCreationEnabled = false;
+            isPrintning = false;
             ticksLeft = 0;
         }
 

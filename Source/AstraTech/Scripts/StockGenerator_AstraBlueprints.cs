@@ -14,7 +14,7 @@ namespace AstraTech
 
         public override IEnumerable<Thing> GenerateThings(int forTile, Faction faction = null)
         {
-            int count = 10;
+            int count = Random.Range(8, 12);
 
             for (int i = 0; i < count; i++)
             {

@@ -29,6 +29,25 @@ namespace AstraTech
             //Scribe_Deep.Look(ref blueprint, nameof(blueprint));
         }
 
+        public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
+        {
+            // TODO: Replace ThingDefs prefab and prefabStuff with Thing.
+            // That will fix wealth bug and will allow remove this code duplication section.
+
+            yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", prefab.label, "Item that is ready to be printed by Astra code using this blueprint: " + prefab.label, -1, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
+            {
+                new Dialog_InfoCard.Hyperlink(prefab)
+            });
+
+            if (prefabStuff != null)
+            {
+                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint item made of", prefabStuff.label, "Printed item will be made from material: " + prefabStuff.label, 0, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
+                {
+                    new Dialog_InfoCard.Hyperlink(prefabStuff)
+                });
+            }
+        }
+
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             base.DrawAt(drawLoc, flip);
