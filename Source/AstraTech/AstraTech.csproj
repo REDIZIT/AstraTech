@@ -62,7 +62,7 @@
     <Compile Include="Scripts\CopyUtils.cs" />
     <Compile Include="Scripts\GenBlueprints.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintEncode.cs" />
-    <Compile Include="Scripts\JobDriver_SetBlueprintToHolder.cs" />
+    <Compile Include="Scripts\JobDriver_BlueprintCarryToHolder.cs" />
     <Compile Include="Scripts\MapComp_AstraNetManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\StockGenerator_AstraBlueprints.cs" />

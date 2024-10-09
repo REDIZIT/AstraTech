@@ -4,7 +4,7 @@ using Verse.AI;
 
 namespace AstraTech
 {
-    public class JobDriver_SetBlueprintToHolder : JobDriver
+    public class JobDriver_BlueprintCarryToHolder : JobDriver
     {
         private Thing item => TargetA.Thing;
         private Building_AstraBlueprintHolder building => TargetB.Thing as Building_AstraBlueprintHolder;
@@ -20,7 +20,7 @@ namespace AstraTech
             Toil goToItem = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch);
             yield return goToItem;
 
-            //job.count = 1; // Without this throwing warning about -1 default count. May be this is due to reservation -1 stackCount??
+            job.count = 1; // Without this throwing warning about -1 default count. May be this is due to reservation -1 stackCount??
             yield return Toils_Haul.StartCarryThing(TargetIndex.A);
 
             Toil goToBuilding = Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.Touch);

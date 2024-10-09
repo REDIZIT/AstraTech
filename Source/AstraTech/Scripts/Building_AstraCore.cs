@@ -60,7 +60,7 @@ namespace AstraTech
             else if (isPrintning && holder != null && holder.prefab != null)
             {
                 isPrintning = false;
-                holder.CloneAndPlace(Position - new IntVec3(0, RotatedSize.z / 2 + 1, 0));
+                holder.CloneAndPlace(Position - new IntVec3(0, 0, 5));
 
                 if (isCreationEnabled)
                 {

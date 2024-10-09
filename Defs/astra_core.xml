@@ -25,7 +25,7 @@
 
 		<passability>PassThroughOnly</passability>
 		<pathCost>1000</pathCost>
-		<canOverlapZones>false</canOverlapZones>
+		<!--<canOverlapZones>false</canOverlapZones></li>-->
 
 		<comps>
 			<!--<li Class="CompProperties_Glower">

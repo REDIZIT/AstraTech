@@ -20,6 +20,7 @@ namespace AstraTech
             Toil gotoBlueprint = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch);
             yield return gotoBlueprint;
 
+            job.count = 1; // Without this throwing warning about -1 default count. May be this is due to reservation -1 stackCount??
             yield return Toils_Haul.StartCarryThing(TargetIndex.A);
 
             Toil gotoTarget = Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.ClosestTouch);
@@ -28,10 +29,10 @@ namespace AstraTech
 
             Toil useItem = new Toil
             {
+                initAction = EncodeAction,
                 defaultCompleteMode = ToilCompleteMode.Delay,
                 defaultDuration = GenTicks.SecondsToTicks(20),
             };
-            useItem.AddFinishAction(EncodeAction);
             yield return useItem;
         }
 

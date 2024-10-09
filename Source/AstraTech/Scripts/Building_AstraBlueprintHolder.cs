@@ -10,6 +10,7 @@ namespace AstraTech
     {
         public ThingDef prefab;
         public ThingDef prefabStuff;
+        //public Thing encodedItem;
 
         public Building_AstraCore core;
 
@@ -26,6 +27,7 @@ namespace AstraTech
             base.ExposeData();
             Scribe_Defs.Look(ref prefab, nameof(prefab));
             Scribe_Defs.Look(ref prefabStuff, nameof(prefabStuff));
+            //Scribe_Defs.
             //Scribe_Deep.Look(ref blueprint, nameof(blueprint));
         }
 
@@ -70,8 +72,22 @@ namespace AstraTech
         {
             if (prefab.category == ThingCategory.Item)
             {
+                Log.Message("CloneAndPlace");
+
+                Log.Message(pos);
+                Log.Message(pos.IsValid);
+                Log.Message(prefab.ToStringSafe());
+                Log.Message(prefab.defName.ToStringSafe());
+                Log.Message(prefab.thingClass.ToStringSafe());
+
+                Log.Message(prefabStuff.ToStringSafe());
+
                 Thing item = ThingMaker.MakeThing(prefab, prefabStuff);
-                GenPlace.TryPlaceThing(item, pos, Map, ThingPlaceMode.Near);
+
+                Log.Message(item.ToStringSafe());
+                Log.Message(item.def.ToStringSafe());
+                
+                GenPlace.TryPlaceThing(item, pos, Map, ThingPlaceMode.Direct);
             }
         }
 

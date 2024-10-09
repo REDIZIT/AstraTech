@@ -1,5 +1,77 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
+
+	<!--==================== Astra blueprint ====================-->
+
+	<RecipeDef>
+		<defName>astra_create_blueprint</defName>
+		<label>Create astra blueprint</label>
+		<description>desc</description>
+		<jobString>Creating blueprint</jobString>
+		<displayPriority>1</displayPriority>
+
+		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+		<requiredGiverWorkType>Crafting</requiredGiverWorkType>
+		<workSkill>Crafting</workSkill>
+		<workAmount>5000</workAmount>
+		<skillRequirements>
+			<Crafting>12</Crafting>
+		</skillRequirements>
+		<effectWorking>Craft</effectWorking>
+		<soundWorking>Recipe_Machining</soundWorking>
+
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>ComponentSpacer</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>ComponentIndustrial</li>
+					</thingDefs>
+				</filter>
+				<count>10</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Plasteel</li>
+					</thingDefs>
+				</filter>
+				<count>40</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Cloth</li>
+					</thingDefs>
+				</filter>
+				<count>20</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>RawRice</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<products>
+			<astra_blueprint>1</astra_blueprint>
+		</products>
+
+	</RecipeDef>
+
+
+
+	<!-- ==================== Astra cubes (organic, non-organic, merged) ==================== -->
+
 	<RecipeDef>
 		<defName>astra_create_organic_cube</defName>
 		<label>Create organic cube</label>
@@ -107,7 +179,6 @@
 		</fixedIngredientFilter>
 
 	</RecipeDef>
-
 
 	<RecipeDef>
 		<defName>astra_merge_cubes</defName>

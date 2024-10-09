@@ -13,6 +13,8 @@ namespace AstraTech
 
         public CompProperties_AstraBlueprint Props => (CompProperties_AstraBlueprint)props;
 
+        private const float EMPTY_BLUEPRINT_MARKET_VALUE_OFFSET = 4000;
+
         public override bool AllowStackWith(Thing other)
         {
             if (other.TryGetComp(out ThingComp_AstraBlueprint comp))
@@ -31,51 +33,82 @@ namespace AstraTech
 
         public override string CompInspectStringExtra()
         {
-            if (prefabStuff != null)
+            if (prefab == null)
             {
-                return $"Contains: {prefab.label} ({prefabStuff.label})";
+                return "Contains: nothing";
             }
-            return $"Contains: {prefab.label}";
+            else
+            {
+                if (prefabStuff != null)
+                {
+                    return $"Contains: {prefab.label} ({prefabStuff.label})";
+                }
+                return $"Contains: {prefab.label}";
+            }
         }
 
         public override string TransformLabel(string label)
         {
-            if (prefabStuff != null)
+            if (prefab == null)
             {
-                return $"{base.TransformLabel(label)} ({prefab.label} ({prefabStuff.label}))";
+                return $"{base.TransformLabel(label)} (empty)";
             }
-            return $"{base.TransformLabel(label)} ({prefab.label})";
+            else 
+            {
+                if (prefabStuff != null)
+                {
+                    return $"{base.TransformLabel(label)} ({prefab.label} ({prefabStuff.label}))";
+                }
+                return $"{base.TransformLabel(label)} ({prefab.label})";
+            }
         }
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
         {
-            yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", prefab.label, "Item that is ready to be printed by Astra code using this blueprint: " + prefab.label, -1, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
+            if (prefab == null)
             {
-                new Dialog_InfoCard.Hyperlink(prefab)
-            });
-
-            if (prefabStuff != null)
-            {
-                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint item made of", prefabStuff.label, "Printed item will be made from material: " + prefabStuff.label, 0, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
-                {
-                    new Dialog_InfoCard.Hyperlink(prefabStuff)
-                });
+                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", prefab.label, "Empty.\n\nThis blueprint is not encoded yet. You can encode, almost, any item into this blueprint.", -1);
             }
+            else
+            {
+                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", prefab.label, "Item that is ready to be printed by Astra code using this blueprint: " + prefab.label, -1, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
+                {
+                    new Dialog_InfoCard.Hyperlink(prefab)
+                });
+
+                if (prefabStuff != null)
+                {
+                    yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint item made of", prefabStuff.label, "Printed item will be made from material: " + prefabStuff.label, 0, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
+                    {
+                    new Dialog_InfoCard.Hyperlink(prefabStuff)
+                    });
+                }
+            }
+            
         }
 
         public override float GetStatOffset(StatDef stat)
         {
-            if (stat == StatDefOf.MarketValue)
+            if (prefab == null)
+            {
+                return EMPTY_BLUEPRINT_MARKET_VALUE_OFFSET;
+            }
+            else if (stat == StatDefOf.MarketValue)
             {
                 return prefab.BaseMarketValue * 5;
             }
+
             return base.GetStatOffset(stat);
         }
         public override void GetStatsExplanation(StatDef stat, StringBuilder sb)
         {
             base.GetStatsExplanation(stat, sb);
 
-            if (stat == StatDefOf.MarketValue)
+            if (prefab == null)
+            {
+                sb.Append($"Blueprint is empty = +" + EMPTY_BLUEPRINT_MARKET_VALUE_OFFSET);
+            }
+            else if (stat == StatDefOf.MarketValue)
             {
                 sb.Append($"Blueprinted item market value ({prefab.BaseMarketValue}) * 5 = +{prefab.BaseMarketValue * 5}");
             }
@@ -125,14 +158,20 @@ namespace AstraTech
             {
                 canTargetPawns = false,
                 canTargetBuildings = false,
+                canTargetItems = true,
+                canTargetSelf = false,
                 mapObjectTargetsMustBeAutoAttackable = false,
 
-                validator = (i) => GenBlueprints.StaticAvailableDefs.Contains(i.Thing.def)
+                validator = (i) =>
+                {
+                    if (i.Thing == null) return false;
+                    return GenBlueprints.StaticAvailableDefs.Contains(i.Thing.def);
+                }
             };
 
             Find.Targeter.BeginTargeting(targetingParams, delegate (LocalTargetInfo targetInfo)
             {
-                Job job = new Job(AstraDefOf.job_astra_blueprint_assign, parent, targetInfo);
+                Job job = new Job(AstraDefOf.job_astra_blueprint_encode, parent, targetInfo);
                 pawn.jobs.TryTakeOrderedJob(job);
 
             }, null, null);
