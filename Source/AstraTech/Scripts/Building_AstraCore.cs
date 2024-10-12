@@ -18,7 +18,7 @@ namespace AstraTech
         private StringBuilder b = new StringBuilder();
         private CompRefuelable compRefuelable;
 
-        private const float MATTER_COST_TO_HOURS = 10;
+        private const float MATTER_COST_TO_HOURS = 20;
 
         /// <summary>
         /// Multiply factor for calculating printing matter cost (lower coef -> lower print cost and time)
@@ -56,11 +56,15 @@ namespace AstraTech
             if (ticksLeft > 0)
             {
                 ticksLeft--;
+                if (holder == null || holder.BlueprintItem == null)
+                {
+                    isPrintning = false;
+                }
             }
-            else if (isPrintning && holder != null && holder.prefab != null)
+            else if (isPrintning && holder != null && holder.BlueprintItem != null)
             {
                 isPrintning = false;
-                holder.CloneAndPlace(Position - new IntVec3(0, 0, 5));
+                holder.CloneAndPlace(Position - new IntVec3(0, 0, 3));
 
                 if (isCreationEnabled)
                 {
@@ -76,19 +80,21 @@ namespace AstraTech
             b.Append("Status: ");
             if (isPrintning)
             {
-                b.Append("Printing (");
+                b.Append("Printing ");
+                b.Append(holder.blueprint.prefab.label);
+                b.Append(" (");
                 b.Append(GenDate.ToStringTicksToPeriod(ticksLeft));
                 b.Append(" left)");
 
                 if (isCreationEnabled == false)
                 {
-                    b.AppendLine("[ Stop scheduled ]");
+                    b.Append("[ Stop scheduled ]");
                 }
             }
             else
             {
                 if (holder == null) b.Append("Not ready (holder is not assigned)");
-                else if (holder.prefab == null) b.Append("Not ready (holder has no blueprint)");
+                else if (holder.BlueprintItem == null) b.Append("Not ready (holder has no blueprint)");
                 else b.Append("Ready, waiting activation");
             }
 
@@ -106,9 +112,9 @@ namespace AstraTech
                 b.Append(" per day)");
             }
 
-            if (holder != null && holder.prefab != null)
+            if (holder != null && holder.BlueprintItem != null)
             {
-                float matterCost = GetMatterCost(holder.prefab, holder.prefabStuff);
+                float matterCost = GetMatterCost(holder);
 
                 b.AppendLine();
                 b.Append("Print matter cost: ");
@@ -138,7 +144,7 @@ namespace AstraTech
                 action = BeginAssigningHolder,
             };
 
-            if (holder != null && holder.prefab != null)
+            if (holder != null && holder.BlueprintItem != null)
             {
                 yield return new Command_Action
                 {
@@ -161,7 +167,7 @@ namespace AstraTech
 
         private void TryStartPrinting()
         {
-            float matterCost = GetMatterCost(holder.prefab, holder.prefabStuff);
+            float matterCost = GetMatterCost(holder);
 
             if (matterCost > matter)
             {
@@ -223,6 +229,10 @@ namespace AstraTech
         }
 
 
+        private float GetMatterCost(Building_AstraBlueprintHolder holder)
+        {
+            return GetMatterCost(holder.blueprint.prefab, holder.blueprint.prefabStuff);
+        }
         private float GetMatterCost(ThingDef def, ThingDef stuff = null)
         {
             if (def.category == ThingCategory.Item)

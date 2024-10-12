@@ -31,7 +31,7 @@ namespace AstraTech
             {
                 initAction = EncodeAction,
                 defaultCompleteMode = ToilCompleteMode.Delay,
-                defaultDuration = GenTicks.SecondsToTicks(20),
+                defaultDuration = GenTicks.SecondsToTicks(5),
             };
             yield return useItem;
         }

@@ -17,7 +17,7 @@
 		<skillRequirements>
 			<Crafting>12</Crafting>
 		</skillRequirements>
-		<effectWorking>Craft</effectWorking>
+		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_Machining</soundWorking>
 
 		<ingredients>

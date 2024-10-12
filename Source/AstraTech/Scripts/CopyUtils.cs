@@ -24,6 +24,14 @@ namespace AstraTech
             Thing clonedThing = ThingMaker.MakeThing(original.def, original.Stuff);
             clonedThing.stackCount = original.stackCount;
 
+            if (original.HasComp<ThingComp_AstraBlueprint>())
+            {
+                var s = original.TryGetComp<ThingComp_AstraBlueprint>();
+                var t = clonedThing.TryGetComp<ThingComp_AstraBlueprint>();
+                t.prefab = s.prefab;
+                t.prefabStuff = s.prefabStuff;
+            }
+
             return clonedThing;
         }
         private static Pawn CopyPawn(Pawn original)

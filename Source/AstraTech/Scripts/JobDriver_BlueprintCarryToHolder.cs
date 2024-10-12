@@ -29,18 +29,17 @@ namespace AstraTech
 
             Toil useItem = new Toil
             {
-                initAction = SetBlueprintToHolder,
+                initAction = null,
                 defaultCompleteMode = ToilCompleteMode.Instant,
-                defaultDuration = GenTicks.SecondsToTicks(5)
+                defaultDuration = GenTicks.SecondsToTicks(5),
             };
+            useItem.AddFinishAction(SetBlueprintToHolder);
             yield return useItem;
         }
 
         private void SetBlueprintToHolder()
         {
-            var i = item.TryGetComp<ThingComp_AstraBlueprint>();
-            building.prefab = i.prefab;
-            building.prefabStuff = i.prefabStuff;
+            building.SetBlueprint(item);
             item.Destroy();
         }
     }

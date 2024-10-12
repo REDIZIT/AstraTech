@@ -67,7 +67,7 @@ namespace AstraTech
         {
             if (prefab == null)
             {
-                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", prefab.label, "Empty.\n\nThis blueprint is not encoded yet. You can encode, almost, any item into this blueprint.", -1);
+                yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint of", "nothing", "Empty.\n\nThis blueprint is not encoded yet. You can encode, almost, any item into this blueprint.", -1);
             }
             else
             {
