@@ -20,6 +20,7 @@
 			<MarketValue>4900</MarketValue>
 			<Mass>1.42</Mass>
 			<Flammability>1</Flammability>
+			<Beauty>2</Beauty>
 		</statBases>
 
 		<comps>

@@ -24,7 +24,7 @@
 		<rotatable>false</rotatable>
 		<stealable>false</stealable>
     	<size>(3,3)</size>
-    	<uiIconScale>0.5</uiIconScale>
+    	<uiIconScale>0.35</uiIconScale>
 
 		<altitudeLayer>PawnUnused</altitudeLayer>
 		<passability>Impassable</passability>

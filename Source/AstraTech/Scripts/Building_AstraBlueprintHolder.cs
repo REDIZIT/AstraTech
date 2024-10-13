@@ -17,6 +17,7 @@ namespace AstraTech
         private Thing blueprintItem;
         private bool isPrinting;
         private int ticksLeft, ticksTotal;
+        private bool isLoopEnabled;
 
         private CompRefuelable compRefuelable;
         private StringBuilder b = new StringBuilder();
@@ -56,19 +57,25 @@ namespace AstraTech
                 }
                 else
                 {
-                    isPrinting = false;
+                    CloneAndPlace(Position - new IntVec3(0, 0, 2));
                     Messages.Message("Printing completed: " + blueprint.prefab.label.Translate(), new LookTargets(this), MessageTypeDefOf.PositiveEvent);
 
-                    CloneAndPlace(Position - new IntVec3(0, 0, 2));
+                    if (isLoopEnabled)
+                    {
+                        TryStartPrinting();
+                    }
                 }
             }
         }
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats()
         {
-            foreach (var e in blueprint.SpecialDisplayStats())
+            if (HasBlueprint)
             {
-                yield return e;
+                foreach (var e in blueprint.SpecialDisplayStats())
+                {
+                    yield return e;
+                }
             }
         }
 
@@ -201,13 +208,16 @@ namespace AstraTech
             if (blueprintItem != null) GenPlace.TryPlaceThing(blueprintItem, Position - new IntVec3(0, 0, 2), Map, ThingPlaceMode.Near);
             blueprintItem = null;
         }
-        public void StartPrinting()
+        public void TryStartPrinting()
         {
             float requiredFuel = GetMatterCost();
-            isPrinting = true;
-            ticksTotal = (int)(requiredFuel * MATTER_COST_TO_HOURS * GenDate.TicksPerHour);
-            ticksLeft = ticksTotal;
-            compRefuelable.ConsumeFuel(requiredFuel);
+            if (Fuel >= requiredFuel)
+            {
+                isPrinting = true;
+                ticksTotal = (int)(requiredFuel * MATTER_COST_TO_HOURS * GenDate.TicksPerHour);
+                ticksLeft = ticksTotal;
+                compRefuelable.ConsumeFuel(requiredFuel);
+            }
         }
 
         public override string GetInspectString()
@@ -263,6 +273,16 @@ namespace AstraTech
             {
                 yield return gizmo;
             }
+
+            yield return new Command_Action
+            {
+                defaultLabel = isLoopEnabled ? "Disable loop" : "Enable loop",
+                icon = ContentFinder<Texture2D>.Get("temp3"),
+                action = () =>
+                {
+                    isLoopEnabled = !isLoopEnabled;
+                }
+            };
 
             if (DebugSettings.godMode && isPrinting)
             {

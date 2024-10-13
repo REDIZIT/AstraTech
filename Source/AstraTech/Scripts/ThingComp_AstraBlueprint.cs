@@ -32,8 +32,6 @@ namespace AstraTech
             Scribe_Defs.Look(ref prefab, nameof(prefab));
             Scribe_Defs.Look(ref prefabStuff, nameof(prefabStuff));
             Scribe_Values.Look(ref prefabColor, nameof(prefabColor));
-
-            Log.Message("Expose color = " + prefabColor);
         }
 
         public override string CompInspectStringExtra()
@@ -85,7 +83,7 @@ namespace AstraTech
                 {
                     yield return new StatDrawEntry(StatCategoryDefOf.Basics, "Blueprint item made of", prefabStuff.label, "Printed item will be made from material: " + prefabStuff.label, 0, hyperlinks: new Dialog_InfoCard.Hyperlink[1]
                     {
-                    new Dialog_InfoCard.Hyperlink(prefabStuff)
+                        new Dialog_InfoCard.Hyperlink(prefabStuff)
                     });
                 }
             }            
@@ -93,13 +91,16 @@ namespace AstraTech
 
         public override float GetStatOffset(StatDef stat)
         {
-            if (prefab == null)
+            if (stat == StatDefOf.MarketValue)
             {
-                return EMPTY_BLUEPRINT_MARKET_VALUE_OFFSET;
-            }
-            else if (stat == StatDefOf.MarketValue)
-            {
-                return prefab.BaseMarketValue * 5;
+                if (prefab == null)
+                {
+                    return EMPTY_BLUEPRINT_MARKET_VALUE_OFFSET;
+                }
+                else
+                {
+                    return prefab.BaseMarketValue * 5;
+                }
             }
 
             return base.GetStatOffset(stat);
@@ -108,13 +109,16 @@ namespace AstraTech
         {
             base.GetStatsExplanation(stat, sb);
 
-            if (prefab == null)
+            if (stat == StatDefOf.MarketValue)
             {
-                sb.Append($"Blueprint is empty = +" + EMPTY_BLUEPRINT_MARKET_VALUE_OFFSET);
-            }
-            else if (stat == StatDefOf.MarketValue)
-            {
-                sb.Append($"Blueprinted item market value ({prefab.BaseMarketValue}) * 5 = +{prefab.BaseMarketValue * 5}");
+                if (prefab == null)
+                {
+                    sb.Append($"Blueprint is empty = +" + EMPTY_BLUEPRINT_MARKET_VALUE_OFFSET);
+                }
+                else
+                {
+                    sb.Append($"Blueprinted item market value ({prefab.BaseMarketValue}) * 5 = +{prefab.BaseMarketValue * 5}");
+                }
             }
         }
 
@@ -183,7 +187,8 @@ namespace AstraTech
 
         public override string GetDescriptionPart()
         {
-            return $"Blueprinted item: {prefab.label} - {prefab.description}";
+            if (prefab == null) return "Blueprinted item: nothing";
+            else return $"Blueprinted item: {prefab.label} - {prefab.description}";
         }
     }
 

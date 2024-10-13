@@ -25,7 +25,7 @@ namespace AstraTech
             };
             extract.WithProgressBarToilDelay(TargetIndex.A).AddFinishAction(() =>
             {
-                holder.StartPrinting();
+                holder.TryStartPrinting();
             });
             yield return extract;
         }
