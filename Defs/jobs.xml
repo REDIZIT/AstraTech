@@ -11,4 +11,16 @@
 		<driverClass>AstraTech.JobDriver_BlueprintEncode</driverClass>
 		<reportString>encoding item into the blueprint</reportString>
 	</JobDef>
+
+	<JobDef>
+		<defName>job_astra_blueprint_extract</defName>
+		<driverClass>AstraTech.JobDriver_ExtractBlueprint</driverClass>
+		<reportString>extracting blueprint</reportString>
+	</JobDef>
+
+	<JobDef>
+		<defName>job_astra_start_printing</defName>
+		<driverClass>AstraTech.JobDriver_StartPrinting</driverClass>
+		<reportString>starting printing process</reportString>
+	</JobDef>
 </Defs>

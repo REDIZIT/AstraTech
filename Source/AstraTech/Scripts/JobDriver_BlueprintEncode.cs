@@ -29,10 +29,10 @@ namespace AstraTech
 
             Toil useItem = new Toil
             {
-                initAction = EncodeAction,
                 defaultCompleteMode = ToilCompleteMode.Delay,
                 defaultDuration = GenTicks.SecondsToTicks(5),
             };
+            useItem.WithProgressBarToilDelay(TargetIndex.B).AddFinishAction(EncodeAction);
             yield return useItem;
         }
 
@@ -41,6 +41,7 @@ namespace AstraTech
             var i = blueprintItem.TryGetComp<ThingComp_AstraBlueprint>();
             i.prefab = targetItem.def;
             i.prefabStuff = targetItem.Stuff;
+            i.prefabColor = targetItem.DrawColor;
         }
     }
 

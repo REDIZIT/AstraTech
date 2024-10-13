@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
@@ -10,6 +11,7 @@ namespace AstraTech
     {
         public ThingDef prefab;
         public ThingDef prefabStuff;
+        public Color prefabColor;
 
         public CompProperties_AstraBlueprint Props => (CompProperties_AstraBlueprint)props;
 
@@ -29,6 +31,9 @@ namespace AstraTech
             base.PostExposeData();
             Scribe_Defs.Look(ref prefab, nameof(prefab));
             Scribe_Defs.Look(ref prefabStuff, nameof(prefabStuff));
+            Scribe_Values.Look(ref prefabColor, nameof(prefabColor));
+
+            Log.Message("Expose color = " + prefabColor);
         }
 
         public override string CompInspectStringExtra()
@@ -83,8 +88,7 @@ namespace AstraTech
                     new Dialog_InfoCard.Hyperlink(prefabStuff)
                     });
                 }
-            }
-            
+            }            
         }
 
         public override float GetStatOffset(StatDef stat)

@@ -32,6 +32,9 @@
 	    <pathCost>50</pathCost>
 	    <canOverlapZones>false</canOverlapZones>
 
+	    <hasInteractionCell>True</hasInteractionCell>
+    	<interactionCellOffset>(0,0,-2)</interactionCellOffset>
+
 	    <comps>
 			<!--<li Class="CompProperties_Glower">
 				<glowRadius>10</glowRadius>

@@ -23,17 +23,17 @@ namespace AstraTech
             job.count = 1; // Without this throwing warning about -1 default count. May be this is due to reservation -1 stackCount??
             yield return Toils_Haul.StartCarryThing(TargetIndex.A);
 
-            Toil goToBuilding = Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.Touch);
+            Toil goToBuilding = Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.InteractionCell);
             yield return goToBuilding;
 
 
             Toil useItem = new Toil
             {
                 initAction = null,
-                defaultCompleteMode = ToilCompleteMode.Instant,
+                defaultCompleteMode = ToilCompleteMode.Delay,
                 defaultDuration = GenTicks.SecondsToTicks(5),
             };
-            useItem.AddFinishAction(SetBlueprintToHolder);
+            useItem.WithProgressBarToilDelay(TargetIndex.B).AddFinishAction(SetBlueprintToHolder);
             yield return useItem;
         }
 

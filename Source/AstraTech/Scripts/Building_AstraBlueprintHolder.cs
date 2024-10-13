@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 
 namespace AstraTech
 {
     public class Building_AstraBlueprintHolder : Building
     {
         public Thing BlueprintItem => blueprintItem;
-
-        private Thing blueprintItem;
         public ThingComp_AstraBlueprint blueprint => blueprintItem.TryGetComp<ThingComp_AstraBlueprint>();
         public bool HasBlueprint => blueprintItem != null && blueprint.prefab != null;
-
         public float Fuel => compRefuelable.Fuel;
 
+        private Thing blueprintItem;
         private bool isPrinting;
         private int ticksLeft, ticksTotal;
 
@@ -40,6 +39,9 @@ namespace AstraTech
         {
             base.ExposeData();
             Scribe_Deep.Look(ref blueprintItem, nameof(blueprintItem));
+            Scribe_Values.Look(ref isPrinting, nameof(isPrinting));
+            Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft));
+            Scribe_Values.Look(ref ticksTotal, nameof(ticksTotal));
         }
 
         public override void Tick()
@@ -70,6 +72,56 @@ namespace AstraTech
             }
         }
 
+        public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
+        {
+            foreach (var o in base.GetFloatMenuOptions(selPawn))
+            {
+                yield return o;
+            }
+
+            if (selPawn.IsColonistPlayerControlled == false) yield break;
+
+            
+            if (isPrinting == false)
+            {
+                var startPrinting = new FloatMenuOption("Start printing", () =>
+                {
+                    Job job = new Job(AstraDefOf.job_astra_start_printing, this);
+                    selPawn.jobs.TryTakeOrderedJob(job);
+                });
+                if (HasBlueprint == false)
+                {
+                    startPrinting.Disabled = true;
+                    startPrinting.Label = "Cannot start printing: Has no blueprint";
+                }
+                else
+                {
+                    float requiredFuel = GetMatterCost();
+                    if (Fuel < requiredFuel)
+                    {
+                        startPrinting.Disabled = true;
+                        startPrinting.Label = "Cannot start printing: Not enough matter";
+                    }
+                }
+                yield return startPrinting;
+            }
+
+            if (HasBlueprint)
+            {
+                var extractBlueprint = new FloatMenuOption("Extract blueprint", () =>
+                {
+                    Job job = new Job(AstraDefOf.job_astra_blueprint_extract, this);
+                    selPawn.jobs.TryTakeOrderedJob(job);
+                });
+                if (isPrinting)
+                {
+                    extractBlueprint.Disabled = true;
+                    extractBlueprint.Label = "Cannot extract blueprint: Printing";
+                }
+                yield return extractBlueprint;
+            }
+        }
+
         protected override void DrawAt(Vector3 drawLoc, bool flip = false)
         {
             base.DrawAt(drawLoc, flip);
@@ -78,17 +130,10 @@ namespace AstraTech
 
             if (HasBlueprint)
             {
-                Mesh mesh = MeshPool.GridPlane(Vector2.one * 0.7f);
+                Graphic g = blueprint.prefab.graphic.GetColoredVersion(blueprint.prefab.graphic.Shader, blueprint.prefabColor, Color.white);
 
-                Material mat = blueprint.prefab.graphic.MatSingle;
-
-                // TODO: Replace no-stuff color from Color.white to something else (game is coloring not to white)
-                Color stuffColor = blueprint.prefabStuff != null ? blueprint.prefab.GetColorForStuff(blueprint.prefabStuff) : Color.white;
-
-                MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
-                propertyBlock.SetColor("_Color", stuffColor);
-
-                Graphics.DrawMesh(mesh, itemDrawPos, Quaternion.identity, mat, 0, null, 0, propertyBlock);
+                g.drawSize = Vector2.one * 0.7f;
+                g.Draw(itemDrawPos, Rot4.North, this);
             }
 
 
@@ -115,10 +160,9 @@ namespace AstraTech
                     fuelColor = defaultColor;
                 }
             }
-            
 
             Mesh fuelIndicatorMesh = MeshPool.GridPlane(Vector2.one * 0.45f);
-            Material fuelIndicatorMat = MaterialPool.MatFrom("indicator_fuel", ShaderDatabase.Cutout);
+            Material fuelIndicatorMat = MaterialPool.MatFrom("indicator_fuel", ShaderDatabase.Transparent);
             MaterialPropertyBlock fuelPropertyBlock = new MaterialPropertyBlock();
             fuelPropertyBlock.SetColor("_Color", fuelColor);
             Graphics.DrawMesh(fuelIndicatorMesh, itemDrawPos - new Vector3(0.725f, 0, 0), Quaternion.identity, fuelIndicatorMat, 0, null, 0, fuelPropertyBlock);
@@ -149,11 +193,21 @@ namespace AstraTech
 
         public void SetBlueprint(Thing item)
         {
+            if (blueprintItem != null) ExtractBlueprint();
             blueprintItem = CopyUtils.Copy(item);
         }
-
-        public void OnBlueprintExtracted()
+        public void ExtractBlueprint()
         {
+            if (blueprintItem != null) GenPlace.TryPlaceThing(blueprintItem, Position - new IntVec3(0, 0, 2), Map, ThingPlaceMode.Near);
+            blueprintItem = null;
+        }
+        public void StartPrinting()
+        {
+            float requiredFuel = GetMatterCost();
+            isPrinting = true;
+            ticksTotal = (int)(requiredFuel * MATTER_COST_TO_HOURS * GenDate.TicksPerHour);
+            ticksLeft = ticksTotal;
+            compRefuelable.ConsumeFuel(requiredFuel);
         }
 
         public override string GetInspectString()
@@ -208,37 +262,6 @@ namespace AstraTech
             foreach (var gizmo in base.GetGizmos())
             {
                 yield return gizmo;
-            }
-
-            if (blueprintItem != null)
-            {
-                yield return new Command_Action
-                {
-                    defaultLabel = "Extract blueprint",
-                    icon = ContentFinder<Texture2D>.Get("temp3"),
-                    action = () =>
-                    {
-                        GenPlace.TryPlaceThing(blueprintItem, Position - new IntVec3(0, 0, 2), Map, ThingPlaceMode.Near);
-                        blueprintItem = null;
-                    }
-                };
-
-                float requiredFuel = GetMatterCost();
-                if (Fuel >= requiredFuel)
-                {
-                    yield return new Command_Action
-                    {
-                        defaultLabel = "Start printing",
-                        icon = ContentFinder<Texture2D>.Get("temp3"),
-                        action = () =>
-                        {
-                            isPrinting = true;
-                            ticksTotal = (int)(requiredFuel * MATTER_COST_TO_HOURS * GenDate.TicksPerHour);
-                            ticksLeft = ticksTotal;
-                            compRefuelable.ConsumeFuel(requiredFuel);
-                        }
-                    };
-                }
             }
 
             if (DebugSettings.godMode && isPrinting)

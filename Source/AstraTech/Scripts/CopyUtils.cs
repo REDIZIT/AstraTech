@@ -30,6 +30,7 @@ namespace AstraTech
                 var t = clonedThing.TryGetComp<ThingComp_AstraBlueprint>();
                 t.prefab = s.prefab;
                 t.prefabStuff = s.prefabStuff;
+                t.prefabColor = s.prefabColor;
             }
 
             return clonedThing;
