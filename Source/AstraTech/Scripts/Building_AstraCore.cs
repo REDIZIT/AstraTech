@@ -208,24 +208,25 @@ namespace AstraTech
 
         public void AssignHolder(Building_AstraBlueprintHolder holder)
         {
-            // Remove backlink to core of disabled holder
-            if (this.holder != null)
-            {
-                this.holder.core = null;
-            }
+            throw new System.NotImplementedException();
+            //// Remove backlink to core of disabled holder
+            //if (this.holder != null)
+            //{
+            //    this.holder.core = null;
+            //}
 
-            this.holder = holder;
+            //this.holder = holder;
 
-            // If not reset, set backlink
-            if (this.holder != null)
-            {
-                this.holder.core = this;
-            }
+            //// If not reset, set backlink
+            //if (this.holder != null)
+            //{
+            //    this.holder.core = this;
+            //}
 
-            // Stop creation and reset parameters
-            isCreationEnabled = false;
-            isPrintning = false;
-            ticksLeft = 0;
+            //// Stop creation and reset parameters
+            //isCreationEnabled = false;
+            //isPrintning = false;
+            //ticksLeft = 0;
         }
 
 

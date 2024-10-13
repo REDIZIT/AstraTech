@@ -10,8 +10,9 @@
 		<graphicData>
 			<texPath>temp2</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
-			<drawSize>(2,2)</drawSize>
+			<drawSize>(7,7)</drawSize>
 			<drawRotated>false</drawRotated>
+			<drawOffset>(0,0,2.25)</drawOffset>
 			<allowFlip>false</allowFlip>
 			<shadowData>
 				<volume>(0.9,0.3,0.9)</volume>
@@ -22,13 +23,31 @@
 		</graphicData>
 		<rotatable>false</rotatable>
 		<stealable>false</stealable>
-    	<size>(2,2)</size>
+    	<size>(3,3)</size>
+    	<uiIconScale>0.5</uiIconScale>
 
-		<altitudeLayer>Building</altitudeLayer>
-		<passability>PassThroughOnly</passability>
-	    <fillPercent>0.9</fillPercent>
+		<altitudeLayer>PawnUnused</altitudeLayer>
+		<passability>Impassable</passability>
+	    <fillPercent>1</fillPercent>
 	    <pathCost>50</pathCost>
 	    <canOverlapZones>false</canOverlapZones>
+
+	    <comps>
+			<!--<li Class="CompProperties_Glower">
+				<glowRadius>10</glowRadius>
+				<glowColor>(100,150,255,0)</glowColor>
+			</li>-->
+			<li Class="CompProperties_Refuelable">
+				<fuelConsumptionRate>0</fuelConsumptionRate>
+				<fuelCapacity>64</fuelCapacity>
+				<fuelFilter>
+					<thingDefs>
+						<li>astra_matter_merged</li>
+					</thingDefs>
+				</fuelFilter>
+				<showAllowAutoRefuelToggle>true</showAllowAutoRefuelToggle>
+     		</li>
+		</comps>
 
 		<constructEffect>ConstructDirt</constructEffect>
 		<tickerType>Normal</tickerType>

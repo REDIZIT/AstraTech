@@ -68,6 +68,7 @@
     <Compile Include="Scripts\StockGenerator_AstraBlueprints.cs" />
     <Compile Include="Scripts\ThingComp_AstraBlueprint.cs" />
     <Compile Include="Scripts\ThingSetMaker_Astra.cs" />
+    <Compile Include="Scripts\ToStringUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
