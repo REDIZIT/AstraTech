@@ -57,6 +57,8 @@ namespace AstraTech
                 }
                 else
                 {
+                    isPrinting = false;
+
                     CloneAndPlace(Position - new IntVec3(0, 0, 2));
                     Messages.Message("Printing completed: " + blueprint.prefab.label.Translate(), new LookTargets(this), MessageTypeDefOf.PositiveEvent);
 
@@ -145,8 +147,8 @@ namespace AstraTech
 
 
             float fuel = Fuel;
-            Color defaultColor = new Color(190 / 255f, 190 / 255f, 190 / 255f);
-            float failureT = (Mathf.Sin(GenTicks.TicksGame / 20f) + 1) / 2f;
+            Color defaultColor = new ColorInt(190, 190, 190).ToColor;
+            float failureT = (Mathf.Sin(GenTicks.TicksGame / 60f) + 1) / 2f;
             Color failureColor = Color.Lerp(defaultColor, new Color(1, 0.2f, 0.3f), Mathf.Lerp(0.5f, 1, failureT));
             Color fuelColor;
 
@@ -160,7 +162,7 @@ namespace AstraTech
                 {
                     float requiredFuel = GetMatterCost();
                     if (fuel < requiredFuel) fuelColor = failureColor;
-                    else fuelColor = new Color(120 / 255f, 190 / 255f, 160 / 255f);
+                    else fuelColor = new ColorInt(120, 190, 160).ToColor;
                 }
                 else
                 {
@@ -181,12 +183,10 @@ namespace AstraTech
                 rotation = Rot4.FromAngleFlat(-90),
                 size = new Vector2(0.75f, 0.25f),
                 fillPercent = isPrinting ? 1 - (ticksLeft / (float)ticksTotal) : 0,
-                filledMat = SolidColorMaterials.SimpleSolidColorMaterial(new Color(255 / 255f, 180 / 255f, 51 / 255f)),
-                unfilledMat = SolidColorMaterials.SimpleSolidColorMaterial(new Color(51 / 255f, 51 / 255f, 60 / 255f)),
+                filledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(255, 180, 51).ToColor),
+                unfilledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(51, 51, 60).ToColor),
                 margin = 0.05f
             });
-
-            return;
         }
 
         public void CloneAndPlace(IntVec3 pos)
@@ -252,14 +252,14 @@ namespace AstraTech
 
             b.AppendLine();
             b.Append("Matter: ");
-            b.Append(Fuel.ToPrettyString());
+            b.Append(Fuel.ToPrettyString(ToStringUtils.RoundType.Floor));
             b.Append(" / ");
             b.Append(compRefuelable.Props.fuelCapacity.ToPrettyString());
 
             if (HasBlueprint)
             {
                 b.Append(" (");
-                b.Append(GetMatterCost().ToPrettyString());
+                b.Append(GetMatterCost().ToPrettyString(ToStringUtils.RoundType.Ceil));
                 b.Append(" per print)");
             }
             

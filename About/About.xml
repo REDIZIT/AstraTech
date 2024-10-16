@@ -6,5 +6,8 @@
 	<supportedVersions>
 		<li>1.5</li>
 	</supportedVersions>
-	<description>Yep, this is a description</description>
+	<description>
+# Compatibility
+- Not compatible with **Sense Of Depth For Tall Buildings** (visual bugs)
+	</description>
 </ModMetaData>

@@ -8,7 +8,7 @@
 		<thingClass>AstraTech.Building_AstraBlueprintHolder</thingClass>
 
 		<graphicData>
-			<texPath>temp2</texPath>
+			<texPath>astra_holder</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 			<drawSize>(7,7)</drawSize>
 			<drawRotated>false</drawRotated>
