@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<ThingDef ParentName="ResourceBase" Name="AstraBlueprint">
+	<ThingDef ParentName="ResourceBase">
 		<defName>astra_blueprint</defName>
-		<label>Astra blueprint</label>
+		<label>Astra schematics</label>
 		<description>Data source for Astra core</description>
 		<category>Item</category>
 		<thingCategories>
@@ -17,7 +17,7 @@
 
 		<stackLimit>1</stackLimit>
 		<statBases>
-			<MarketValue>4900</MarketValue>
+			<MarketValue>3900</MarketValue>
 			<Mass>1.42</Mass>
 			<Flammability>1</Flammability>
 			<Beauty>2</Beauty>
@@ -27,6 +27,35 @@
 			<li Class="AstraTech.CompProperties_AstraBlueprint">
 			</li>
 		</comps>
-
 	</ThingDef>
+
+	<ThingDef ParentName="ResourceBase">
+		<defName>astra_blueprint_empty</defName>
+		<label>Astra schematics (empty)</label>
+		<description>Data source for Astra core</description>
+		<category>Item</category>
+		<thingCategories>
+			<li>Artifacts</li>
+		</thingCategories>
+
+		<graphicData>
+			<texPath>blueprint</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+
+		<stackLimit>1</stackLimit>
+		<statBases>
+			<MarketValue>8000</MarketValue>
+			<Mass>1.42</Mass>
+			<Flammability>1</Flammability>
+			<Beauty>2</Beauty>
+		</statBases>
+
+		<comps>
+			<li Class="AstraTech.CompProperties_AstraBlueprintEmpty">
+			</li>
+		</comps>
+	</ThingDef>
+
 </Defs>

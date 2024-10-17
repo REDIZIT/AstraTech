@@ -17,7 +17,7 @@ namespace AstraTech
             {
                 if (type == RoundType.Round) value = Mathf.Ceil(value * 10) / 10f;
                 else if (type == RoundType.Floor) value = Mathf.Floor(value * 10) / 10f;
-                else value = value = Mathf.Ceil(value * 10) / 10f;
+                else value = Mathf.Ceil(value * 10) / 10f;
 
                 return value.ToString("F0");
             }

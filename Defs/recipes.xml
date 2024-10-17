@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-	<!--==================== Astra blueprint ====================-->
+	<!--==================== Astra blueprint reset ====================-->
 
 	<RecipeDef>
-		<defName>astra_create_blueprint</defName>
-		<label>Create astra blueprint</label>
-		<description>desc</description>
-		<jobString>Creating blueprint</jobString>
+		<defName>astra_reset_blueprint</defName>
+		<label>Reset Astra schematics</label>
+		<description>Clear the containing data from Astra schematics to make it empty.</description>
+		<jobString>Resetting schematics</jobString>
 		<displayPriority>1</displayPriority>
 
 		<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
@@ -15,7 +15,7 @@
 		<workSkill>Crafting</workSkill>
 		<workAmount>5000</workAmount>
 		<skillRequirements>
-			<Crafting>12</Crafting>
+			<Crafting>10</Crafting>
 		</skillRequirements>
 		<effectWorking>Cook</effectWorking>
 		<soundWorking>Recipe_Machining</soundWorking>
@@ -24,7 +24,7 @@
 			<li>
 				<filter>
 					<thingDefs>
-						<li>ComponentSpacer</li>
+						<li>astra_blueprint</li>
 					</thingDefs>
 				</filter>
 				<count>1</count>
@@ -32,26 +32,18 @@
 			<li>
 				<filter>
 					<thingDefs>
-						<li>ComponentIndustrial</li>
-					</thingDefs>
-				</filter>
-				<count>10</count>
-			</li>
-			<li>
-				<filter>
-					<thingDefs>
-						<li>Plasteel</li>
-					</thingDefs>
-				</filter>
-				<count>40</count>
-			</li>
-			<li>
-				<filter>
-					<thingDefs>
-						<li>Cloth</li>
+						<li>Neutroamine</li>
 					</thingDefs>
 				</filter>
 				<count>20</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Chemfuel</li>
+					</thingDefs>
+				</filter>
+				<count>150</count>
 			</li>
 			<li>
 				<filter>
@@ -63,11 +55,10 @@
 			</li>
 		</ingredients>
 		<products>
-			<astra_blueprint>1</astra_blueprint>
+			<astra_blueprint_empty>1</astra_blueprint_empty>
 		</products>
 
 	</RecipeDef>
-
 
 
 	<!-- ==================== Astra cubes (organic, non-organic, merged) ==================== -->

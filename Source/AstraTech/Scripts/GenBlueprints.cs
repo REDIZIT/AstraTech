@@ -41,10 +41,13 @@ namespace AstraTech
 
         public static Thing Generate(FloatRange? prefabMarketValueRange)
         {
+            float blueprintPrice = AstraDefOf.astra_blueprint.BaseMarketValue;
+
             dynamicAvailableDefs.Clear();
             foreach (ThingDef def in StaticAvailableDefs)
             {
-                if (prefabMarketValueRange.HasValue && prefabMarketValueRange.Value.Includes(def.BaseMarketValue) == false) continue;
+                float blueprintWithDefPrice = blueprintPrice + def.BaseMarketValue * 5;
+                if (prefabMarketValueRange.HasValue && prefabMarketValueRange.Value.Includes(blueprintWithDefPrice) == false) continue;
 
                 dynamicAvailableDefs.Add(def);
             }

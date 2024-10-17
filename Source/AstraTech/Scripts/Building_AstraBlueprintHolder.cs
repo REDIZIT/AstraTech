@@ -21,7 +21,7 @@ namespace AstraTech
 
         private CompRefuelable compRefuelable;
         private StringBuilder b = new StringBuilder();
-
+        private Graphic prefabGraphics;
         
         /// <summary>
         /// Multiply factor for calculating printing matter cost (lower coef -> lower print cost and time)
@@ -34,6 +34,7 @@ namespace AstraTech
         {
             base.SpawnSetup(map, respawningAfterLoad);
             compRefuelable = GetComp<CompRefuelable>();
+            RefreshGraphics();
         }
 
         public override void ExposeData()
@@ -43,6 +44,7 @@ namespace AstraTech
             Scribe_Values.Look(ref isPrinting, nameof(isPrinting));
             Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft));
             Scribe_Values.Look(ref ticksTotal, nameof(ticksTotal));
+            Scribe_Values.Look(ref isLoopEnabled, nameof(isLoopEnabled));
         }
 
         public override void Tick()
@@ -139,10 +141,7 @@ namespace AstraTech
 
             if (HasBlueprint)
             {
-                Graphic g = blueprint.prefab.graphic.GetColoredVersion(blueprint.prefab.graphic.Shader, blueprint.prefabColor, Color.white);
-
-                g.drawSize = Vector2.one * 0.7f;
-                g.Draw(itemDrawPos, Rot4.North, this);
+                prefabGraphics.Draw(itemDrawPos, Rot4.North, this);
             }
 
 
@@ -202,6 +201,7 @@ namespace AstraTech
         {
             if (blueprintItem != null) ExtractBlueprint();
             blueprintItem = CopyUtils.Copy(item);
+            RefreshGraphics();
         }
         public void ExtractBlueprint()
         {
@@ -313,6 +313,19 @@ namespace AstraTech
             }
 
             throw new System.Exception("Failed to get silver matter cost for unknown ThingDef - " + def.ToStringSafe());
+        }
+
+        private void RefreshGraphics()
+        {
+            if (HasBlueprint)
+            {
+                Graphic g = blueprint.prefab.graphic.GetColoredVersion(blueprint.prefab.graphic.Shader, blueprint.prefabColor, Color.white);
+                prefabGraphics = g.GetCopy(Vector2.one * 0.7f, null);
+            }
+            else
+            {
+                prefabGraphics = null;
+            }
         }
     }
 }

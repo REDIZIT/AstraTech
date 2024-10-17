@@ -6,12 +6,12 @@ namespace AstraTech
 {
     public class JobDriver_BlueprintEncode : JobDriver
     {
-        private Thing blueprintItem => TargetA.Thing;
+        private Thing emptyBlueprintItem => TargetA.Thing;
         private Thing targetItem => TargetB.Thing;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            return pawn.Reserve(blueprintItem, job, 1, 1, null, errorOnFailed) &&
+            return pawn.Reserve(emptyBlueprintItem, job, 1, 1, null, errorOnFailed) &&
                    pawn.Reserve(targetItem, job, 1, 1, null, errorOnFailed);
         }
 
@@ -38,10 +38,16 @@ namespace AstraTech
 
         private void EncodeAction()
         {
+            Thing blueprintItem = ThingMaker.MakeThing(AstraDefOf.astra_blueprint);
+
             var i = blueprintItem.TryGetComp<ThingComp_AstraBlueprint>();
             i.prefab = targetItem.def;
             i.prefabStuff = targetItem.Stuff;
             i.prefabColor = targetItem.DrawColor;
+
+            GenPlace.TryPlaceThing(blueprintItem, pawn.Position, Map, ThingPlaceMode.Near);
+
+            emptyBlueprintItem.Destroy();
         }
     }
 

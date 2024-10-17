@@ -34,7 +34,7 @@
 			<li>astra_create_organic_cube</li>
 			<li>astra_create_non_organic_cube</li>
 			<li>astra_merge_cubes</li>
-			<li>astra_create_blueprint</li>
+			<li>astra_reset_blueprint</li>
 		</recipes>
 
 	</ThingDef>
