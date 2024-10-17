@@ -8,7 +8,7 @@ using Verse.AI;
 namespace AstraTech
 {
 
-    public class Building_AstraBlueprintHolder : Building_WorkTable
+    public class Building_AstraBlueprintHolder : Building
     {
         public Thing BlueprintItem => blueprintItem;
         public ThingComp_AstraBlueprint blueprint => blueprintItem.TryGetComp<ThingComp_AstraBlueprint>();
@@ -147,6 +147,13 @@ namespace AstraTech
         {
             base.DrawAt(drawLoc, flip);
 
+            //// Render top part of building
+            //Mesh topMesh = this.Graphic.MeshAt(Rot4.North);
+            //Material topMaterial = MaterialPool.MatFrom("astra_holder_top", ShaderDatabase.Cutout);
+            //Vector3 topDrawLoc = new Vector3(drawLoc.x + 0.25f, AltitudeLayer.Pawn.AltitudeFor(), drawLoc.z);
+            //Graphics.DrawMesh(topMesh, topDrawLoc + Graphic.data.drawOffset, Quaternion.identity, topMaterial, 0);
+
+
             Vector3 itemDrawPos = drawLoc + new Vector3(0, 0.01f, -0.42f);
 
             if (HasBlueprint)
@@ -186,16 +193,16 @@ namespace AstraTech
             Graphics.DrawMesh(fuelIndicatorMesh, itemDrawPos - new Vector3(0.725f, 0, 0), Quaternion.identity, fuelIndicatorMat, 0, null, 0, fuelPropertyBlock);
 
 
-            GenDraw.DrawFillableBar(new GenDraw.FillableBarRequest()
-            {
-                center = itemDrawPos + new Vector3(0.725f, 0, 0),
-                rotation = Rot4.FromAngleFlat(-90),
-                size = new Vector2(0.75f, 0.25f),
-                fillPercent = isPrinting ? 1 - (ticksLeft / (float)ticksTotal) : 0,
-                filledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(255, 180, 51).ToColor),
-                unfilledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(51, 51, 60).ToColor),
-                margin = 0.05f
-            });
+            //GenDraw.DrawFillableBar(new GenDraw.FillableBarRequest()
+            //{
+            //    center = itemDrawPos + new Vector3(0.725f, 0, 0),
+            //    rotation = Rot4.FromAngleFlat(-90),
+            //    size = new Vector2(0.75f, 0.25f),
+            //    fillPercent = isPrinting ? 1 - (ticksLeft / (float)ticksTotal) : 0,
+            //    filledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(255, 180, 51).ToColor),
+            //    unfilledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(51, 51, 60).ToColor),
+            //    margin = 0.05f
+            //});
         }
 
         public void CloneAndPlace(IntVec3 pos)
