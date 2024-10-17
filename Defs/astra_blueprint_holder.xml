@@ -24,7 +24,7 @@
 		<rotatable>false</rotatable>
 		<stealable>false</stealable>
     	<size>(3,3)</size>
-    	<uiIconScale>0.35</uiIconScale>
+    	<uiIconScale>0.375</uiIconScale>
 
 		<altitudeLayer>PawnUnused</altitudeLayer>
 		<passability>Impassable</passability>
@@ -63,10 +63,25 @@
 		<selectable>true</selectable>
 		<building>
 			<destroySound>BuildingDestroyed_Metal_Small</destroySound>
+			<spawnedConceptLearnOpportunity>BillsTab</spawnedConceptLearnOpportunity>
+			<unpoweredWorkTableWorkSpeedFactor>1</unpoweredWorkTableWorkSpeedFactor>
+			<paintable>false</paintable>
 		</building>
 		<soundImpactDefault>BulletImpact_Ground</soundImpactDefault>
 		<leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
 		<resourcesFractionWhenDeconstructed>0</resourcesFractionWhenDeconstructed>
 		<designationCategory>Temperature</designationCategory>
+
+
+		<inspectorTabs>
+			<li>ITab_Bills</li>
+		</inspectorTabs>
+		<recipes>
+			<li>astra_create_organic_cube</li>
+			<li>astra_create_non_organic_cube</li>
+			<li>astra_merge_cubes</li>
+			<li>astra_reset_blueprint</li>
+		</recipes>
+
 	</ThingDef>
 </Defs>

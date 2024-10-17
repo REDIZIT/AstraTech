@@ -6,7 +6,7 @@
 		<workType>Cooking</workType>
 		<priorityInType>96</priorityInType> <!-- We want to make meals before cube, to make crafting more effecient. DoBillsCook: 100, DoBillsCookCampfire: 97, DoBillsButcherFlesh: 90 -->
 		<fixedBillGiverDefs>
-			<li>astra_disposer</li>
+			<li>astra_blueprint_holder</li>
 		</fixedBillGiverDefs>
 		<verb>create cube</verb>
 		<gerund>creating cube</gerund>
@@ -18,7 +18,7 @@
 		<workType>Crafting</workType>
 		<priorityInType>200</priorityInType>
 		<fixedBillGiverDefs>
-			<li>astra_disposer</li>
+			<li>astra_blueprint_holder</li>
 		</fixedBillGiverDefs>
 		<verb>create cube</verb>
 		<gerund>creating cube</gerund>

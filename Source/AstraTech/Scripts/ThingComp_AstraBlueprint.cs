@@ -22,6 +22,21 @@ namespace AstraTech
 
         public CompProperties_AstraBlueprint Props => (CompProperties_AstraBlueprint)props;
 
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+
+            // If spawned by Dev mode.
+            if (prefab == null)
+            {
+                prefab = GenBlueprints.StaticAvailableDefs.RandomElement();
+                if (prefab.MadeFromStuff)
+                {
+                    prefabStuff = GenStuff.RandomStuffFor(prefab);
+                }
+            }
+        }
+
         public override bool AllowStackWith(Thing other)
         {
             if (other.TryGetComp(out ThingComp_AstraBlueprint comp))

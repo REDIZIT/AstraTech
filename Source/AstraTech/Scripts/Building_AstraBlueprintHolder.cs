@@ -7,7 +7,8 @@ using Verse.AI;
 
 namespace AstraTech
 {
-    public class Building_AstraBlueprintHolder : Building
+
+    public class Building_AstraBlueprintHolder : Building_WorkTable
     {
         public Thing BlueprintItem => blueprintItem;
         public ThingComp_AstraBlueprint blueprint => blueprintItem.TryGetComp<ThingComp_AstraBlueprint>();
@@ -29,7 +30,6 @@ namespace AstraTech
         private const float MATTER_COST_COEF = 1 / 200f;
         private const float MATTER_COST_TO_HOURS = 20;
 
-
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
@@ -50,6 +50,16 @@ namespace AstraTech
         public override void Tick()
         {
             base.Tick();
+
+            // Keep refuelable component always with non-zero fuel amount
+            // Why?
+            // Building_WorkTable does not give jobs if it have refuelable component and has no fuel.
+            // I don't know who to change this behaviour, that's why I just keep fuel level always above zero.
+            // float.Epsilon is the lowest posible value to make it not affecting gameplay
+            if (compRefuelable.HasFuel == false)
+            {
+                compRefuelable.Refuel(float.Epsilon);
+            }
 
             if (isPrinting)
             {
@@ -82,7 +92,7 @@ namespace AstraTech
                 }
             }
         }
-
+        
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
         {
             foreach (var o in base.GetFloatMenuOptions(selPawn))
