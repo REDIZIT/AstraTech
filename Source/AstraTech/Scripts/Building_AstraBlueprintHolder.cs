@@ -8,7 +8,7 @@ using Verse.AI;
 namespace AstraTech
 {
 
-    public class Building_AstraBlueprintHolder : Building
+    public class Building_AstraBlueprintHolder : Building_WorkTable
     {
         public Thing BlueprintItem => blueprintItem;
         public ThingComp_AstraBlueprint blueprint => blueprintItem.TryGetComp<ThingComp_AstraBlueprint>();
