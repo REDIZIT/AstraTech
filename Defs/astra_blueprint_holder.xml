@@ -10,18 +10,24 @@
 		<graphicData>
 			<texPath>astra_holder</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
-			<drawRotated>false</drawRotated>
 			<drawSize>(7,7)</drawSize>
+			<drawRotated>false</drawRotated>
 			<drawOffset>(0,0,2.25)</drawOffset>
 			<allowFlip>false</allowFlip>
+			<shadowData>
+				<volume>(0.9,0.3,0.9)</volume>
+			</shadowData>
+			<damageData>
+				<rect>(0.2,0,0.6,0.1)</rect>
+			</damageData>
 		</graphicData>
 		<rotatable>false</rotatable>
 		<stealable>false</stealable>
     	<size>(3,3)</size>
     	<uiIconScale>0.375</uiIconScale>
 
-		<altitudeLayer>Building</altitudeLayer>
-		<passability>PassThroughOnly</passability>
+		<altitudeLayer>PawnUnused</altitudeLayer>
+		<passability>Impassable</passability>
 	    <fillPercent>1</fillPercent>
 	    <pathCost>50</pathCost>
 	    <canOverlapZones>false</canOverlapZones>
@@ -48,6 +54,7 @@
 
 		<constructEffect>ConstructDirt</constructEffect>
 		<tickerType>Normal</tickerType>
+		<drawerType>RealtimeOnly</drawerType>
 		<statBases>
 			<MaxHitPoints>200</MaxHitPoints>
 			<WorkToBuild>0</WorkToBuild>
@@ -75,12 +82,6 @@
 			<li>astra_merge_cubes</li>
 			<li>astra_reset_blueprint</li>
 		</recipes>
-
-		<modExtensions>
-		    <li Class="SenseOfDepthForTallBuilding.AddBackSideLayer">
-					<apply>True</apply>
-				</li>
-		  </modExtensions>
 
 	</ThingDef>
 </Defs>

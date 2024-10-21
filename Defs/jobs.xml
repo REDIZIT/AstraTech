@@ -23,4 +23,10 @@
 		<driverClass>AstraTech.JobDriver_StartPrinting</driverClass>
 		<reportString>starting printing process</reportString>
 	</JobDef>
+
+	<JobDef>
+		<defName>job_astra_slime_begin_transform</defName>
+		<driverClass>AstraTech.JobDriver_SlimeBeginTransform</driverClass>
+		<reportString>activating the slime</reportString>
+	</JobDef>
 </Defs>

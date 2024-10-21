@@ -59,6 +59,7 @@
     <Compile Include="Scripts\Command_ExtendedAction.cs" />
     <Compile Include="Scripts\CopyUtils.cs" />
     <Compile Include="Scripts\GenBlueprints.cs" />
+    <Compile Include="Scripts\JobDriver_SlimeBeginTransform.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintEncode.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintCarryToHolder.cs" />
     <Compile Include="Scripts\JobDriver_StartPrinting.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="Scripts\StockGenerator_AstraBlueprints.cs" />
     <Compile Include="Scripts\ThingComp_AstraBlueprint.cs" />
     <Compile Include="Scripts\ThingComp_AstraBlueprintEmpty.cs" />
+    <Compile Include="Scripts\ThingComp_AstraSlime.cs" />
+    <Compile Include="Scripts\ThingComp_AstraSlimeInactive.cs" />
     <Compile Include="Scripts\ThingSetMaker_Astra.cs" />
     <Compile Include="Scripts\ToStringUtils.cs" />
   </ItemGroup>

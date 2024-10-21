@@ -47,6 +47,8 @@ namespace AstraTech
             foreach (ThingDef def in StaticAvailableDefs)
             {
                 float blueprintWithDefPrice = blueprintPrice + def.BaseMarketValue * 5;
+                blueprintWithDefPrice *= 0.5f;
+
                 if (prefabMarketValueRange.HasValue && prefabMarketValueRange.Value.Includes(blueprintWithDefPrice) == false) continue;
 
                 dynamicAvailableDefs.Add(def);

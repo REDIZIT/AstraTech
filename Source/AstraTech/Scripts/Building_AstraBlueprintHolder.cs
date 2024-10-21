@@ -28,7 +28,7 @@ namespace AstraTech
         /// Multiply factor for calculating printing matter cost (lower coef -> lower print cost and time)
         /// </summary>
         private const float MATTER_COST_COEF = 1 / 200f;
-        private const float MATTER_COST_TO_HOURS = 20;
+        public const float MATTER_COST_TO_HOURS = 20;
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
@@ -92,7 +92,7 @@ namespace AstraTech
                 }
             }
         }
-        
+
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
         {
             foreach (var o in base.GetFloatMenuOptions(selPawn))
@@ -113,7 +113,7 @@ namespace AstraTech
                 if (HasBlueprint == false)
                 {
                     startPrinting.Disabled = true;
-                    startPrinting.Label = "Cannot start printing: Has no blueprint";
+                    startPrinting.Label = "Cannot start printing: Has no schematics";
                 }
                 else
                 {
@@ -129,7 +129,7 @@ namespace AstraTech
 
             if (HasBlueprint)
             {
-                var extractBlueprint = new FloatMenuOption("Extract blueprint", () =>
+                var extractBlueprint = new FloatMenuOption("Extract schematics", () =>
                 {
                     Job job = new Job(AstraDefOf.job_astra_blueprint_extract, this);
                     selPawn.jobs.TryTakeOrderedJob(job);
@@ -137,7 +137,7 @@ namespace AstraTech
                 if (isPrinting)
                 {
                     extractBlueprint.Disabled = true;
-                    extractBlueprint.Label = "Cannot extract blueprint: Printing";
+                    extractBlueprint.Label = "Cannot extract schematics: Printing";
                 }
                 yield return extractBlueprint;
             }
@@ -147,17 +147,11 @@ namespace AstraTech
         {
             base.DrawAt(drawLoc, flip);
 
-            //// Render top part of building
-            //Mesh topMesh = this.Graphic.MeshAt(Rot4.North);
-            //Material topMaterial = MaterialPool.MatFrom("astra_holder_top", ShaderDatabase.Cutout);
-            //Vector3 topDrawLoc = new Vector3(drawLoc.x + 0.25f, AltitudeLayer.Pawn.AltitudeFor(), drawLoc.z);
-            //Graphics.DrawMesh(topMesh, topDrawLoc + Graphic.data.drawOffset, Quaternion.identity, topMaterial, 0);
-
-
             Vector3 itemDrawPos = drawLoc + new Vector3(0, 0.01f, -0.42f);
 
             if (HasBlueprint)
             {
+                if (prefabGraphics == null) RefreshGraphics();
                 prefabGraphics.Draw(itemDrawPos, Rot4.North, this);
             }
 
@@ -193,16 +187,16 @@ namespace AstraTech
             Graphics.DrawMesh(fuelIndicatorMesh, itemDrawPos - new Vector3(0.725f, 0, 0), Quaternion.identity, fuelIndicatorMat, 0, null, 0, fuelPropertyBlock);
 
 
-            //GenDraw.DrawFillableBar(new GenDraw.FillableBarRequest()
-            //{
-            //    center = itemDrawPos + new Vector3(0.725f, 0, 0),
-            //    rotation = Rot4.FromAngleFlat(-90),
-            //    size = new Vector2(0.75f, 0.25f),
-            //    fillPercent = isPrinting ? 1 - (ticksLeft / (float)ticksTotal) : 0,
-            //    filledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(255, 180, 51).ToColor),
-            //    unfilledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(51, 51, 60).ToColor),
-            //    margin = 0.05f
-            //});
+            GenDraw.DrawFillableBar(new GenDraw.FillableBarRequest()
+            {
+                center = itemDrawPos + new Vector3(0.725f, 0, 0),
+                rotation = Rot4.FromAngleFlat(-90),
+                size = new Vector2(0.75f, 0.25f),
+                fillPercent = isPrinting ? 1 - (ticksLeft / (float)ticksTotal) : 0,
+                filledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(255, 180, 51).ToColor),
+                unfilledMat = SolidColorMaterials.SimpleSolidColorMaterial(new ColorInt(51, 51, 60).ToColor),
+                margin = 0.05f
+            });
         }
 
         public void CloneAndPlace(IntVec3 pos)
@@ -250,7 +244,7 @@ namespace AstraTech
             }
             else if (blueprintItem == null || blueprint.prefab == null)
             {
-                b.Append("No blueprint");
+                b.Append("No schematics");
             }
             else if (Fuel < GetMatterCost())
             {
@@ -319,7 +313,7 @@ namespace AstraTech
         {
             return GetMatterCost(blueprint.prefab, blueprint.prefabStuff);
         }
-        private float GetMatterCost(ThingDef def, ThingDef stuff = null)
+        public static float GetMatterCost(ThingDef def, ThingDef stuff = null)
         {
             if (def.category == ThingCategory.Item)
             {
