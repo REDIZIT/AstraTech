@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RimWorld;
+using System.Collections.Generic;
 using Verse;
 using Verse.AI;
 
@@ -8,6 +9,8 @@ namespace AstraTech
     {
         private Thing inactiveSlime => TargetA.Thing;
         private Thing targetItem => TargetB.Thing;
+
+        
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
@@ -20,8 +23,16 @@ namespace AstraTech
             Toil gotoBlueprint = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch);
             yield return gotoBlueprint;
 
+
             job.count = 1; // Without this throwing warning about -1 default count. May be this is due to reservation -1 stackCount??
-            yield return Toils_Haul.StartCarryThing(TargetIndex.A);
+            var carryToil = Toils_Haul.StartCarryThing(TargetIndex.A);
+            carryToil.AddFinishAction(() =>
+            {
+                HistoryEvent historyEvent = new HistoryEvent(AstraDefOf.astra_touched_slime, pawn.Named(HistoryEventArgsNames.Doer));
+                Find.HistoryEventsManager.RecordEvent(historyEvent);
+            });
+            yield return carryToil;
+
 
             Toil gotoTarget = Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.ClosestTouch);
             yield return gotoTarget;
@@ -36,22 +47,10 @@ namespace AstraTech
             yield return useItem;
         }
 
-        //private void EncodeAction()
-        //{
-        //    Thing activeSlime = ThingMaker.MakeThing(AstraDefOf.astra_slime);
-
-        //    var i = activeSlime.TryGetComp<ThingComp_AstraSlime>();
-        //    i.StartTransforming(targetItem);
-
-        //    GenPlace.TryPlaceThing(activeSlime, pawn.Position, Map, ThingPlaceMode.Near);
-
-        //    inactiveSlime.Destroy();
-        //}
         private void EncodeAction()
         {
             var i = inactiveSlime.TryGetComp<ThingComp_AstraSlime>();
             i.StartTransforming(targetItem);
         }
     }
-
 }

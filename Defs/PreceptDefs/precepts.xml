@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+	<IssueDef>
+		<defName>astra_slime_issue</defName>
+		<label>Slime issue</label>
+		<iconPath MayRequire="Ludeon.RimWorld.Ideology">UI/Issues/Corpses</iconPath>
+	</IssueDef>
+
+	<!-- Precepts -->
+
+	<PreceptDef>
+		<defName>astra_slime_digust</defName>
+		<issue>astra_slime_issue</issue>
+		<label>disgusting</label>
+		<description>Slime is horrible.</description>
+		<impact>Low</impact>
+		<classic>true</classic>
+		<displayOrderInIssue>10</displayOrderInIssue>
+		<defaultSelectionWeight>1</defaultSelectionWeight>
+		<comps>
+		<li Class="PreceptComp_SelfTookMemoryThought">
+			<eventDef>astra_touched_slime</eventDef>
+			<thought>astra_held_slime_disgust</thought>
+		</li>
+		</comps>
+	</PreceptDef>
+
+	<PreceptDef>
+		<defName>astra_slime_adore</defName>
+		<issue>astra_slime_issue</issue>
+		<label>adorable</label>
+		<description>Slime is adorable.</description>
+		<impact>Low</impact>
+		<classic>true</classic>
+		<displayOrderInIssue>10</displayOrderInIssue>
+		<defaultSelectionWeight>1</defaultSelectionWeight>
+		<comps>
+		<li Class="PreceptComp_SelfTookMemoryThought">
+			<eventDef>astra_touched_slime</eventDef>
+			<thought>astra_held_slime_adore</thought>
+		</li>
+		</comps>
+	</PreceptDef>
+
+</Defs>
