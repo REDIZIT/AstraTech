@@ -26,7 +26,7 @@
     	<size>(3,3)</size>
     	<uiIconScale>0.375</uiIconScale>
 
-		<altitudeLayer>PawnUnused</altitudeLayer>
+		<altitudeLayer>Building</altitudeLayer>
 		<passability>Impassable</passability>
 	    <fillPercent>1</fillPercent>
 	    <pathCost>50</pathCost>

@@ -7,7 +7,6 @@ using Verse.AI;
 
 namespace AstraTech
 {
-
     public class Building_AstraBlueprintHolder : Building_WorkTable
     {
         public Thing BlueprintItem => blueprintItem;
