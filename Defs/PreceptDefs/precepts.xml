@@ -3,8 +3,8 @@
 	
 	<IssueDef>
 		<defName>astra_slime_issue</defName>
-		<label>Slime issue</label>
-		<iconPath MayRequire="Ludeon.RimWorld.Ideology">UI/Issues/Corpses</iconPath>
+		<label>Slimes</label>
+		<iconPath>astra_slime_ideo</iconPath>
 	</IssueDef>
 
 	<!-- Precepts -->
@@ -13,7 +13,7 @@
 		<defName>astra_slime_digust</defName>
 		<issue>astra_slime_issue</issue>
 		<label>disgusting</label>
-		<description>Slime is horrible.</description>
+		<description>Slime is disgusting</description>
 		<impact>Low</impact>
 		<classic>true</classic>
 		<displayOrderInIssue>10</displayOrderInIssue>
@@ -27,10 +27,21 @@
 	</PreceptDef>
 
 	<PreceptDef>
+		<defName>astra_slime_indifferent</defName>
+		<issue>astra_slime_issue</issue>
+		<label>indifferent</label>
+		<description>Slime is indifferent</description>
+		<impact>Low</impact>
+		<classic>true</classic>
+		<displayOrderInIssue>10</displayOrderInIssue>
+		<defaultSelectionWeight>1</defaultSelectionWeight>
+	</PreceptDef>
+
+	<PreceptDef>
 		<defName>astra_slime_adore</defName>
 		<issue>astra_slime_issue</issue>
 		<label>adorable</label>
-		<description>Slime is adorable.</description>
+		<description>Slime is adorable</description>
 		<impact>Low</impact>
 		<classic>true</classic>
 		<displayOrderInIssue>10</displayOrderInIssue>

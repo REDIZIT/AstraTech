@@ -3,29 +3,29 @@
 	
 	<ThoughtDef>
 		<defName>astra_held_slime_disgust</defName>
-		<durationDays>4</durationDays>
+		<durationDays>1</durationDays>
 		<stackLimit>1</stackLimit>
 		<label>Slime disgusting</label>
 		<description>1234</description>
 		<stages>
 			<li>
-				<label>очень счастлив</label>
-				<description>123</description>
+				<label>I held slime in my hands</label>
+				<description>It's all so slimy and disgusting. Ugh!</description>
 				<baseMoodEffect>-10</baseMoodEffect>
 			</li>
 		</stages>
 	</ThoughtDef>
-
+	
 	<ThoughtDef>
 		<defName>astra_held_slime_adore</defName>
-		<durationDays>4</durationDays>
+		<durationDays>1</durationDays>
 		<stackLimit>1</stackLimit>
 		<label>Slime adorable</label>
 		<description>12345</description>
 		<stages>
 			<li>
-				<label>очень счастлив</label>
-				<description>123</description>
+				<label>I held slime in my hands</label>
+				<description>It's so soft and bouncy!</description>
 				<baseMoodEffect>10</baseMoodEffect>
 			</li>
 		</stages>
