@@ -6,3 +6,4 @@ C:\Users\REDIZIT\Documents\GitHub\AstraTech\Assemblies\AstraTech.dll
 C:\Users\REDIZIT\Documents\GitHub\AstraTech\Source\AstraTech\obj\Debug\AstraTech.csproj.AssemblyReference.cache
 C:\Users\REDIZIT\Documents\GitHub\AstraTech\Source\AstraTech\obj\Debug\AstraTech.csproj.CoreCompileInputs.cache
 C:\Users\REDIZIT\Documents\GitHub\AstraTech\Source\AstraTech\obj\Debug\AstraTech.dll
+C:\Users\REDIZIT\Documents\GitHub\AstraTech\Source\AstraTech\obj\Debug\AstraTech.csproj.CopyComplete

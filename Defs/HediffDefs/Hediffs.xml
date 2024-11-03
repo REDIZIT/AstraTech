@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<HediffDef>
+		<defName>astra_brain_socket</defName>
+		<label>Astra Brain Socket</label>
+		<description>Desc</description>
+
+		<hediffClass>AstraTech.Hediff_AstraBrainSocket</hediffClass>
+
+		<stages>
+			<li>
+				<label>empty</label>
+				<minSeverity>0</minSeverity>
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.01</setMax>
+					</li>
+				</capMods>
+				<statOffsets>
+					<GlobalLearningFactor>-1</GlobalLearningFactor>
+				</statOffsets>
+			</li>
+			<li>
+				<label>brain installed</label>
+				<minSeverity>1</minSeverity>
+				<statOffsets>
+					<GlobalLearningFactor>-1</GlobalLearningFactor>
+				</statOffsets>
+			</li>
+		</stages>
+
+	</HediffDef>
+	
+</Defs>

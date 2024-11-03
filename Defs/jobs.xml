@@ -29,4 +29,11 @@
 		<driverClass>AstraTech.JobDriver_SlimeBeginTransform</driverClass>
 		<reportString>activating the slime</reportString>
 	</JobDef>
+
+	<JobDef>
+		<defName>job_astra_brain_extract</defName>
+		<driverClass>AstraTech.JobDriver_ApproachAndWait</driverClass>
+		<reportString>подходит к цели...</reportString>
+	</JobDef>
+
 </Defs>

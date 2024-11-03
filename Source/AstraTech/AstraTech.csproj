@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\2009463077\1.4\Assemblies\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
@@ -51,14 +54,27 @@
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Scripts\AstraBrain.cs" />
     <Compile Include="Scripts\AstraDefOf.cs" />
     <Compile Include="Scripts\Building_AstraBlueprintHolder.cs" />
+    <Compile Include="Scripts\Building_AstraPawnMachine.cs" />
+    <Compile Include="Scripts\FloatMenuOptionInjector.cs" />
+    <Compile Include="Scripts\Hediff_AstraBrainSocket.cs" />
     <Compile Include="Scripts\IngredientValueGetter_ForMatterCombined.cs" />
     <Compile Include="Scripts\Command_ExtendedAction.cs" />
     <Compile Include="Scripts\CopyUtils.cs" />
     <Compile Include="Scripts\GenBlueprints.cs" />
+    <Compile Include="Scripts\ITab_Brain_Character.cs" />
+    <Compile Include="Scripts\ITab_Brain_Skill_Installation.cs" />
+    <Compile Include="Scripts\JobDriver_ApproachAndWait.cs" />
     <Compile Include="Scripts\JobDriver_SlimeBeginTransform.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintEncode.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintCarryToHolder.cs" />
@@ -69,9 +85,11 @@
     <Compile Include="Scripts\StockGenerator_AstraBlueprints.cs" />
     <Compile Include="Scripts\ThingComp_AstraBlueprint.cs" />
     <Compile Include="Scripts\ThingComp_AstraBlueprintEmpty.cs" />
+    <Compile Include="Scripts\ThingComp_AstraSkillCard.cs" />
     <Compile Include="Scripts\ThingComp_AstraSlime.cs" />
     <Compile Include="Scripts\ThingComp_AstraSlimeInactive.cs" />
     <Compile Include="Scripts\ThingSetMaker_Astra.cs" />
+    <Compile Include="Scripts\ThingWithComps_AstraBrain.cs" />
     <Compile Include="Scripts\ThoughtWorker_Slime.cs" />
     <Compile Include="Scripts\ToStringUtils.cs" />
   </ItemGroup>

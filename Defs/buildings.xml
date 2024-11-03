@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<ThingDef ParentName="BuildingBase">
+		<defName>astra_pawn_machine</defName>
+		<label>Astra pawn machine</label>
+		<description>Desc</description>
+		<category>Building</category>
+		<thingClass>AstraTech.Building_AstraPawnMachine</thingClass>
+
+		<graphicData>
+			<texPath>temp</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(1,1)</drawSize>
+		</graphicData>
+		<rotatable>false</rotatable>
+		<stealable>false</stealable>
+    	<size>(1,1)</size>
+
+		<altitudeLayer>Building</altitudeLayer>
+	    <canOverlapZones>false</canOverlapZones>
+
+	    <hasInteractionCell>True</hasInteractionCell>
+    	<interactionCellOffset>(0,0,-1)</interactionCellOffset>
+
+		<constructEffect>ConstructDirt</constructEffect>
+		<tickerType>Normal</tickerType>
+		<drawerType>RealtimeOnly</drawerType>
+		<statBases>
+			<MaxHitPoints>200</MaxHitPoints>
+			<WorkToBuild>0</WorkToBuild>
+			<Flammability>0</Flammability>
+		</statBases>
+		<selectable>true</selectable>
+
+		<inspectorTabs>
+			<li>AstraTech.ITab_Brain_Character</li>
+			<li>AstraTech.ITab_Brain_Skill_Installation</li>
+		</inspectorTabs>
+
+		<soundImpactDefault>BulletImpact_Ground</soundImpactDefault>
+		<leaveResourcesWhenKilled>false</leaveResourcesWhenKilled>
+		<resourcesFractionWhenDeconstructed>0</resourcesFractionWhenDeconstructed>
+		<designationCategory>Temperature</designationCategory>
+
+	</ThingDef>
+</Defs>
