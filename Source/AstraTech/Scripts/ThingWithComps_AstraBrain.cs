@@ -16,7 +16,7 @@ namespace AstraTech
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
-            brain = AstraBrain.CopyBrain(Building_AstraPawnMachine.CreateBlank());
+            if (brain == null) brain = new AstraBrain(Building_AstraPawnMachine.CreateBlank());
         }
 
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)

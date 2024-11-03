@@ -65,6 +65,7 @@
     <Compile Include="Scripts\AstraBrain.cs" />
     <Compile Include="Scripts\AstraDefOf.cs" />
     <Compile Include="Scripts\Building_AstraBlueprintHolder.cs" />
+    <Compile Include="Scripts\Building_AstraCardsBank.cs" />
     <Compile Include="Scripts\Building_AstraPawnMachine.cs" />
     <Compile Include="Scripts\FloatMenuOptionInjector.cs" />
     <Compile Include="Scripts\Hediff_AstraBrainSocket.cs" />
@@ -73,8 +74,10 @@
     <Compile Include="Scripts\CopyUtils.cs" />
     <Compile Include="Scripts\GenBlueprints.cs" />
     <Compile Include="Scripts\ITab_Brain_Character.cs" />
+    <Compile Include="Scripts\ITab_Brain_Needs.cs" />
     <Compile Include="Scripts\ITab_Brain_Skill_Installation.cs" />
     <Compile Include="Scripts\JobDriver_ApproachAndWait.cs" />
+    <Compile Include="Scripts\JobDriver_CarryCardToBank.cs" />
     <Compile Include="Scripts\JobDriver_SlimeBeginTransform.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintEncode.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintCarryToHolder.cs" />

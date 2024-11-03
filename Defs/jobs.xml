@@ -36,4 +36,10 @@
 		<reportString>подходит к цели...</reportString>
 	</JobDef>
 
+	<JobDef>
+		<defName>job_astra_carry_card_to_bank</defName>
+		<driverClass>AstraTech.JobDriver_CarryCardToBank</driverClass>
+		<reportString>подходит к цели...</reportString>
+	</JobDef>
+
 </Defs>

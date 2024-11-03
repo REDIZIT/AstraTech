@@ -28,6 +28,7 @@
 
 		<inspectorTabs>
 			<li>AstraTech.ITab_Brain_Character</li>
+			<li>AstraTech.ITab_Brain_Needs</li>
 		</inspectorTabs>
 
 	</ThingDef>

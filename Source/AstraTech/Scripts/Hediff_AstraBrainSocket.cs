@@ -21,11 +21,13 @@ namespace AstraTech
         public void InsertBrain(AstraBrain brain)
         {
             this.brain = brain;
-            brain.ApplyToPawn(pawn);
+            brain.CopyInnerPawnToBlank(pawn);
             Severity = 1;
         }
         public void ExtractBrain()
         {
+            brain.CopyReplicantToInnerPawn(pawn);
+
             ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(DefDatabase<ThingDef>.GetNamed("astra_brain"));
             item.brain = brain;
             GenPlace.TryPlaceThing(item, pawn.Position - new IntVec3(1, 0, 0), pawn.MapHeld, ThingPlaceMode.Near);

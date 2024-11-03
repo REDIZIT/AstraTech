@@ -16,9 +16,7 @@ namespace AstraTech
                 yield return option;
             }
 
-            yield return new FloatMenuOption("123", null);
-
-            if (clickedPawn.health.hediffSet.HasHediff(HediffDef.Named("astra_brain_socket")))
+            if (clickedPawn.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain != null)
             {
                 yield return ExtractImplant(clickedPawn, selPawn);
             }
@@ -36,7 +34,7 @@ namespace AstraTech
             if (selPawn == targetPawn)
             {
                 customOption.Disabled = true;
-                customOption.Label = "Не может выключить сам себя";
+                customOption.Label = "Can not extract it's own brain";
             }
 
 
@@ -83,7 +81,7 @@ namespace AstraTech
             IntVec3 c = IntVec3.FromVector3(clickPos);
             Corpse corpse = c.GetFirstThing<Corpse>(pawn.Map);
 
-            if (corpse != null)
+            if (corpse != null && corpse.InnerPawn.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain != null)
             {
                 __result.Add(FloatMenuOptionInjector.ExtractImplant(corpse, pawn));
             }

@@ -1,29 +1,38 @@
 ﻿using RimWorld;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Verse;
 
 namespace AstraTech
 {
     public class AstraBrain : IExposable, IPawnContainer
     {
-        public Pawn pawn;
+        public Pawn innerPawn;
 
-        public static AstraBrain CopyBrain(Pawn p)
+        private static HashSet<NeedDef> brainRelatedNeeds = new HashSet<NeedDef>()
         {
-            AstraBrain b = new AstraBrain();
+            AstraDefOf.Mood,
+            //AstraDefOf.Rest,
+            //AstraDefOf.Food,
+            AstraDefOf.Joy,
+            AstraDefOf.Beauty,
+            AstraDefOf.Comfort,
+            AstraDefOf.Outdoors,
+            AstraDefOf.Indoors,
+            //AstraDefOf.DrugDesire,
+            AstraDefOf.RoomSize,
+        };
 
-            b.pawn = Building_AstraPawnMachine.CreateBlank();
+        //private static FieldInfo cachedThoughtsField = typeof(SituationalThoughtHandler).GetField("cachedThoughts", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            b.pawn.Name = p.Name;
+        public AstraBrain()
+        {
+        }
 
-            //b.skills = new List<SkillRecord>();
-            foreach (SkillRecord s in p.skills.skills)
-            {
-                SkillRecord pawnS = b.pawn.skills.GetSkill(s.def);
-                pawnS.Level = s.levelInt;
-                pawnS.passion = s.passion;
-            }
-
-            return b;
+        public AstraBrain(Pawn pawn)
+        {
+            this.innerPawn = pawn;
         }
 
         public static void ClearPawn(Pawn p)
@@ -35,28 +44,157 @@ namespace AstraTech
                 pawnSkill.Level = 0;
                 pawnSkill.passion = Passion.None;
             }
+
+            p.story.traits.allTraits.Clear();
+            p.story.AllBackstories.Clear();
+
+            p.relations.ClearAllRelations();
+
+
+            // Remove thoughts
+            p.needs.mood.thoughts.memories.Memories.Clear();
+
+            //((List<Thought_Situational>)cachedThoughtsField.GetValue(p.needs.mood.thoughts.situational)).Clear();
+
+
+            // Remove needs
+            p.needs.AllNeeds.RemoveAll(n => brainRelatedNeeds.Contains(n.def));
         }
 
-        public void ApplyToPawn(Pawn p)
+        public void CopyReplicantToInnerPawn(Pawn replicant)
         {
-            p.Name = pawn.Name;
+            // Copy brain thoughts
+            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
+            ThoughtHandler replicantThoughts = replicant.needs.mood.thoughts;
+            brainThoughts.memories.Memories.Clear();
+            brainThoughts.memories.Memories.AddRange(replicantThoughts.memories.Memories);
 
-            foreach (SkillRecord brainSkill in pawn.skills.skills)
+            //List<Thought_Situational> replicantSituationalThoughts = (List<Thought_Situational>)cachedThoughtsField.GetValue(replicantThoughts.situational);
+            //Log.Message(replicantSituationalThoughts.Count);
+            //cachedThoughtsField.SetValue(brainThoughts.situational, replicantSituationalThoughts.ListFullCopy()); // Be aware to not copy Ref to list, but elements of list
+
+
+            // Create brain needs
+            innerPawn.needs.AllNeeds.Clear();
+            foreach (NeedDef needDef in brainRelatedNeeds)
             {
-                SkillRecord pawnSkill = p.skills.GetSkill(brainSkill.def);
-                pawnSkill.Level = brainSkill.levelInt;
-                pawnSkill.passion = brainSkill.passion;
+                Need replicantNeed = replicant.needs.TryGetNeed(needDef);
+                if (replicantNeed != null)
+                {
+                    Need brainNeed = innerPawn.needs.TryGetNeed(needDef);
+                    if (brainNeed == null)
+                    {
+                        brainNeed = (Need)Activator.CreateInstance(needDef.needClass, innerPawn);
+                        brainNeed.def = needDef;
+                        innerPawn.needs.AllNeeds.Add(brainNeed);
+                    }
+
+                    brainNeed.CurLevel = replicantNeed.CurLevel;
+                }
             }
+        }
+
+        public void CopyInnerPawnToBlank(Pawn p)
+        {
+            p.Name = innerPawn.Name;
+            p.ageTracker.AgeChronologicalTicks = innerPawn.ageTracker.AgeChronologicalTicks;
+
+
+            // Copy story
+            Pawn_StoryTracker newStory = new Pawn_StoryTracker(p);
+            Pawn_StoryTracker oldStory = p.story;
+            Pawn_StoryTracker brainStory = innerPawn.story;
+
+            newStory.bodyType = oldStory.bodyType;
+            newStory.headType = oldStory.headType;
+            newStory.hairDef = oldStory.hairDef;
+            newStory.SkinColorBase = oldStory.SkinColorBase;
+
+            newStory.traits.allTraits.Clear();
+            newStory.traits.allTraits.AddRange(brainStory.traits.allTraits);
+
+            newStory.AllBackstories.Clear();
+            newStory.AllBackstories.AddRange(brainStory.AllBackstories);
+
+            p.story = newStory;
+
+
+            // Copy skills
+            foreach (SkillRecord s in p.skills.skills)
+            {
+                SkillRecord brainSkill = innerPawn.skills.GetSkill(s.def);
+                s.Level = brainSkill.levelInt;
+                s.passion = brainSkill.passion;
+            }
+
+            p.workSettings.Notify_DisabledWorkTypesChanged();
+            p.workSettings.Notify_UseWorkPrioritiesChanged();
+
+            p.Notify_DisabledWorkTypesChanged();
+
+
+            // Copy relations
+            p.relations.ClearAllRelations();
+            p.relations.DirectRelations.AddRange(innerPawn.relations.DirectRelations);
+            p.relations.VirtualRelations.AddRange(innerPawn.relations.VirtualRelations);
+
+
+            // Copy style
+            Pawn_StyleTracker newStyle = new Pawn_StyleTracker(p);
+            Pawn_StyleTracker oldStyle = p.style;
+            newStyle.beardDef = oldStyle.beardDef;
+            newStyle.BodyTattoo = oldStyle.BodyTattoo;
+            newStyle.FaceTattoo = oldStyle.FaceTattoo;
+
+            p.style = newStyle;
+
+
+            // Create brain needs
+            foreach (NeedDef needDef in brainRelatedNeeds)
+            {
+                Need brainNeed = innerPawn.needs.TryGetNeed(needDef);
+                if (brainNeed != null)
+                {
+                    Need blankNeed = p.needs.TryGetNeed(needDef);
+                    if (blankNeed == null)
+                    {
+                        blankNeed = (Need)Activator.CreateInstance(needDef.needClass, p);
+                        blankNeed.def = needDef;
+                        p.needs.AllNeeds.Add(blankNeed);
+                    }
+
+                    blankNeed.CurLevel = brainNeed.CurLevel;
+                }
+            }
+
+
+            // Copy brain thoughts
+            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
+            ThoughtHandler blankThoughts = p.needs.mood.thoughts;
+            blankThoughts.memories.Memories.Clear();
+            blankThoughts.memories.Memories.AddRange(brainThoughts.memories.Memories);
         }
 
         public void ExposeData()
         {
-            Scribe_Deep.Look(ref pawn, nameof(pawn));
+            Scribe_Deep.Look(ref innerPawn, nameof(innerPawn));
         }
 
         public Pawn GetPawn()
         {
-            return pawn;
+            return innerPawn;
+        }
+
+        private Need TryGetNeed(Pawn p, Type needType)
+        {
+            for (int i = 0; i < p.needs.AllNeeds.Count; i++)
+            {
+                if (p.needs.AllNeeds[i].GetType() == needType)
+                {
+                    return p.needs.AllNeeds[i];
+                }
+            }
+            return null;
         }
     }
 }

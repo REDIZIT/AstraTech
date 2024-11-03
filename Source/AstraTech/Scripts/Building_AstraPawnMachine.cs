@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Verse;
@@ -9,7 +10,8 @@ namespace AstraTech
     {
         public Pawn pawnInside;
         public AstraBrain brainInside;
-        public ThingComp_AstraSkillCard activeSkillCard;
+        public Thing activeSkillCard;
+        public SkillDef skillToExtract;
 
         public Task task;
         public int ticksLeft;
@@ -19,6 +21,15 @@ namespace AstraTech
             None,
             CreateBlank,
             SkillTraining,
+            SkillExtracting,
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Deep.Look(ref pawnInside, nameof(pawnInside));
+            Scribe_Deep.Look(ref brainInside, nameof(brainInside));
+            Scribe_References.Look(ref activeSkillCard, nameof(activeSkillCard));
         }
 
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
@@ -28,14 +39,28 @@ namespace AstraTech
                 yield return o;
             }
 
-            yield return new FloatMenuOption("Start task: Create blank", () =>
+            if (brainInside != null)
             {
-                StartTask_CreateBlank();               
-            });
+                yield return new FloatMenuOption("Extract brain", () =>
+                {
+                    task = Task.None;
+                    ticksLeft = 0;
 
-            if (brainInside == null)
+                    ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(AstraDefOf.astra_brain);
+                    item.brain = brainInside;
+                    GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
+                    brainInside = null;
+                });
+            }
+
+            if (task == Task.None)
             {
-                yield return new FloatMenuOption("Start task: Brain edit", () =>
+                yield return new FloatMenuOption("Start task: Blank creation", () =>
+                {
+                    StartTask_CreateBlank();
+                });
+
+                yield return new FloatMenuOption("Start task: Brain development", () =>
                 {
                     Find.Targeter.BeginTargeting(new TargetingParameters()
                     {
@@ -47,18 +72,33 @@ namespace AstraTech
                     {
                         brainInside = ((ThingWithComps_AstraBrain)i.Thing).brain;
                         i.Thing.Destroy();
+                    });
+                });
 
-
+                yield return new FloatMenuOption("Start task: Skill extraction", () =>
+                {
+                    Find.Targeter.BeginTargeting(new TargetingParameters()
+                    {
+                        canTargetPawns = true,
+                        mapObjectTargetsMustBeAutoAttackable = false,
+                        canTargetItems = false,
+                        onlyTargetControlledPawns = true,
+                    }, (i) =>
+                    {
+                        FloatMenuUtility.MakeMenu(EnumerateSkillsForExtraction((Pawn)i), (f) => f.Label, (f) => f.action);
+                        
                     });
                 });
             }
-            else
+            else if (task == Task.SkillTraining)
             {
-                yield return new FloatMenuOption("Extract brain", () =>
+                
+            }
+            else if (task == Task.SkillExtracting)
+            {
+                yield return new FloatMenuOption("Stop skill extraction", () =>
                 {
-                    ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(AstraDefOf.astra_brain);
-                    item.brain = brainInside;
-                    GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
+                    StopTask_SkillExtraction();
                 });
             }
         }
@@ -67,6 +107,16 @@ namespace AstraTech
         {
             StringBuilder b = new StringBuilder();
 
+            b.Append("Task: ");
+            b.Append(task.ToString());
+            if (task != Task.None)
+            {
+                b.Append(" (time left: ");
+                b.Append(GenDate.ToStringTicksToPeriod(ticksLeft));
+                b.Append(")");
+            }
+
+            b.AppendLine();
             b.Append("Contains: ");
             if (pawnInside != null)
             {
@@ -75,13 +125,15 @@ namespace AstraTech
             else if (brainInside != null)
             {
                 b.Append("Astra Brain (");
-                b.Append(brainInside.pawn.NameFullColored);
+                b.Append(brainInside.innerPawn.NameFullColored);
                 b.Append(")");
             }
             else
             {
                 b.Append("nothing");
             }
+
+            b.Append(GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.Count.ToString());
 
             return b.ToString();
         }
@@ -118,21 +170,50 @@ namespace AstraTech
             {
                 if (task == Task.CreateBlank)
                 {
-                    task = Task.None;
-
                     Pawn p = CreateBlankWithSocket();
                     GenSpawn.Spawn(p, Position, Map, WipeMode.Vanish);
                 }
                 else if (task == Task.SkillTraining)
                 {
-                    task = Task.None;
+                    ThingComp_AstraSkillCard skillCard = activeSkillCard.TryGetComp<ThingComp_AstraSkillCard>();
 
-                    SkillRecord record = brainInside.pawn.skills.GetSkill(activeSkillCard.skillDef);
-                    record.Level = activeSkillCard.level;
-                    record.passion = activeSkillCard.passion;
+                    SkillRecord record = brainInside.innerPawn.skills.GetSkill(skillCard.skillDef);
+                    record.Level = skillCard.level;
+                    record.passion = skillCard.passion;
 
                     activeSkillCard = null;
                 }
+                else if (task == Task.SkillExtracting)
+                {
+                    SkillRecord record = pawnInside.skills.GetSkill(skillToExtract);
+                    
+                    Thing item = ThingMaker.MakeThing(AstraDefOf.astra_skill_card);
+                    var comp = item.TryGetComp<ThingComp_AstraSkillCard>();
+                    comp.skillDef = record.def;
+                    comp.level = record.levelInt;
+                    comp.passion = record.passion;
+
+                    GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
+
+                    GenPlace.TryPlaceThing(pawnInside, Position, Map, ThingPlaceMode.Near);
+                    BodyPartRecord brain = pawnInside.health.hediffSet.GetBrain();
+                    pawnInside.health.AddHediff(HediffDefOf.MissingBodyPart, brain);
+                    pawnInside = null;
+                    skillToExtract = null;
+                }
+
+                task = Task.None;
+            }
+        }
+
+        private IEnumerable<FloatMenuOption> EnumerateSkillsForExtraction(Pawn pawn)
+        {
+            foreach (SkillRecord skill in pawn.skills.skills)
+            {
+                yield return new FloatMenuOption(skill.def.LabelCap + " - " + skill.levelInt, () =>
+                {
+                    StartTask_SkillExtraction(pawn, skill.def);
+                });
             }
         }
 
@@ -141,10 +222,11 @@ namespace AstraTech
             task = Task.CreateBlank;
             ticksLeft = GenDate.TicksPerHour * 3;
         }
-        public void StartTask_SkillTraining(ThingComp_AstraSkillCard card)
+
+        public void StartTask_SkillTraining(Thing card)
         {
             task = Task.SkillTraining;
-            ticksLeft = GenDate.TicksPerHour * card.level;
+            ticksLeft = GenDate.TicksPerHour * card.TryGetComp<ThingComp_AstraSkillCard>().level;
             activeSkillCard = card;
         }
         public void StopTask_SkillTraining()
@@ -154,7 +236,29 @@ namespace AstraTech
             activeSkillCard = null;
         }
 
-        public static Pawn CreateBlankWithSocket(bool debugBrain = false)
+        public void StartTask_SkillExtraction(Pawn victim, SkillDef skillToExtract)
+        {
+            task = Task.SkillExtracting;
+            ticksLeft = GenDate.TicksPerHour * 1;
+
+            this.pawnInside = victim;
+            victim.DeSpawn();
+
+            this.skillToExtract = skillToExtract;
+        }
+        public void StopTask_SkillExtraction()
+        {
+            task = Task.None;
+
+            GenPlace.TryPlaceThing(pawnInside, Position, Map, ThingPlaceMode.Near);
+            pawnInside = null;
+
+            skillToExtract = null;
+        }
+
+
+
+        public static Pawn CreateBlankWithSocket()
         {
             Pawn p = CreateBlank();
 
@@ -164,15 +268,6 @@ namespace AstraTech
 
             Hediff_AstraBrainSocket hediff = (Hediff_AstraBrainSocket)HediffMaker.MakeHediff(implantDef, p, partToReplace);
             p.health.AddHediff(hediff);
-
-            if (debugBrain)
-            {
-                // Insert brain into socket
-                p.skills.GetSkill(SkillDefOf.Shooting).Level = 8;
-
-                AstraBrain brain = AstraBrain.CopyBrain(p);
-                hediff.InsertBrain(brain);
-            }
 
             return p;
         }
@@ -185,7 +280,7 @@ namespace AstraTech
             ));
 
 
-            p.Name = new NameSingle("Replicant");
+            p.Name = new NameSingle("Blank");
             p.gender = Gender.None;
 
             p.ageTracker.AgeBiologicalTicks = GenDate.TicksPerYear * 20;
@@ -230,6 +325,8 @@ namespace AstraTech
             p.apparel.DestroyAll();
             p.equipment.DestroyAllEquipment();
 
+
+            AstraBrain.ClearPawn(p);
 
             return p;
         }

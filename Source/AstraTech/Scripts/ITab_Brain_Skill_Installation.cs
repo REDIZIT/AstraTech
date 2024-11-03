@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -12,8 +13,8 @@ namespace AstraTech
         public override bool IsVisible => Building.brainInside != null;
 
         private Vector2 scrollPos;
-        private ThingComp_AstraSkillCard activeSkillCard => Building.activeSkillCard;
-        private List<ThingComp_AstraSkillCard> skillCards;
+        private ThingComp_AstraSkillCard activeSkillCard => Building.activeSkillCard.TryGetComp<ThingComp_AstraSkillCard>();
+        private ThingComp_AstraSkillCard[] skillCards;
 
         private static Texture2D PassionMinorIcon, PassionMajorIcon, rightArrow;
 
@@ -27,27 +28,8 @@ namespace AstraTech
             PassionMajorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMajor");
             rightArrow = ContentFinder<Texture2D>.Get("arrow_right");
 
-            skillCards = new List<ThingComp_AstraSkillCard>()
-            {
-                new ThingComp_AstraSkillCard()
-                {
-                    skillDef = SkillDefOf.Construction,
-                    level = 19,
-                    passion = Passion.Minor,
-                },
-                new ThingComp_AstraSkillCard()
-                {
-                    skillDef = SkillDefOf.Melee,
-                    level = 3,
-                    passion = Passion.Major,
-                },
-                new ThingComp_AstraSkillCard()
-                {
-                    skillDef = SkillDefOf.Shooting,
-                    level = 5,
-                    passion = Passion.None,
-                },
-            };
+           
+            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.Select(t => ((Building_AstraCardsBank)t).SkillCardComp).Where(c => c != null).ToArray();
         }
 
         protected override void UpdateSize()
@@ -67,19 +49,25 @@ namespace AstraTech
             Widgets.Label(labelRect, "Available skill cards");
 
             Rect scrollView = new Rect(body.x, labelRect.yMax, body.width, body.height - labelRect.yMax);
-            DrawCards(scrollView, skillCards);
+            DrawCards(scrollView, skillCards.OrderBy(c => c == activeSkillCard).Select(c => c.parent));
         }
 
-        private void DrawCards(Rect body, IEnumerable<ThingComp_AstraSkillCard> cards)
+        private void DrawCards(Rect body, IEnumerable<Thing> items)
         {
             Rect scrollView = new Rect(body.x, body.y, body.width, body.height);
 
-            Widgets.BeginScrollView(scrollView, ref scrollPos, new Rect(0, 0, scrollView.width, skillCards.Count * (25 + 1)));
+            Widgets.BeginScrollView(scrollView, ref scrollPos, new Rect(0, 0, scrollView.width, skillCards.Length * (25 + 1)));
 
             float offset = 0;
-            foreach (ThingComp_AstraSkillCard card in cards)
+            foreach (Thing item in items)
             {
-                SkillRecord brainSkill = BrainPawn.skills.GetSkill(card.skillDef);
+                ThingComp_AstraSkillCard card = item.TryGetComp<ThingComp_AstraSkillCard>();
+
+                SkillRecord brainSkill = null;
+                if (Building.brainInside != null)
+                {
+                    brainSkill = BrainPawn.skills.GetSkill(card.skillDef);
+                }
 
 
                 float y = offset;
@@ -109,13 +97,16 @@ namespace AstraTech
 
                 Text.Anchor = TextAnchor.MiddleLeft;
                 float x = 140;
+
                 Rect passionIconRect = new Rect(x, y + 4, 19, 19);
-                Widgets.DrawTextureFitted(passionIconRect, PassionMajorIcon, 1);
                 Rect passionLabelRect = new Rect(passionIconRect.xMax + 2, lotRect.y, 24, lotRect.height);
-                Widgets.Label(passionLabelRect, brainSkill.levelInt.ToString());
-
-
+                if (brainSkill != null)
+                {
+                    Widgets.DrawTextureFitted(passionIconRect, GetPassionIcon(brainSkill.passion), 1);
+                    Widgets.Label(passionLabelRect, brainSkill.levelInt.ToString());
+                }
                 x = passionLabelRect.xMax;
+
 
                 Rect arrowRect = new Rect(x, y + 3, 19, 19);
                 Widgets.DrawTextureFitted(arrowRect, rightArrow, 1);
@@ -123,7 +114,7 @@ namespace AstraTech
                 x += arrowRect.width;
 
                 passionIconRect = new Rect(x, lotRect.y + 4, 19, 19);
-                Widgets.DrawTextureFitted(passionIconRect, PassionMinorIcon, 1);
+                Widgets.DrawTextureFitted(passionIconRect, GetPassionIcon(card.passion), 1);
                 passionLabelRect = new Rect(passionIconRect.xMax + 2, lotRect.y, 24, lotRect.height);
                 Widgets.Label(passionLabelRect, card.level.ToString());
 
@@ -144,7 +135,7 @@ namespace AstraTech
                 {
                     if (Widgets.ButtonText(actionRect, "Start training"))
                     {
-                        Building.StartTask_SkillTraining(card);
+                        Building.StartTask_SkillTraining(item);
                     }
                 }
 
@@ -154,6 +145,17 @@ namespace AstraTech
             Text.Anchor = TextAnchor.UpperLeft;
 
             Widgets.EndScrollView();
+        }
+
+        private Texture2D GetPassionIcon(Passion p)
+        {
+            switch (p)
+            {
+                case Passion.None: return BaseContent.ClearTex;
+                case Passion.Minor: return PassionMinorIcon;
+                case Passion.Major: return PassionMajorIcon;
+                default: throw new System.Exception("Unknown passion: " + p.ToString());
+            }
         }
     }
 }
