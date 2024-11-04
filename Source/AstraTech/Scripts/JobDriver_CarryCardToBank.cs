@@ -1,47 +1,22 @@
-﻿using System.Collections.Generic;
-using Verse;
-using Verse.AI;
+﻿using Verse;
 
 namespace AstraTech
 {
-    public class JobDriver_CarryCardToBank : JobDriver
+    public class JobDriver_CarryCardToBank : JobDriver_HaulAndDo
     {
-        private Thing Item => TargetA.Thing;
-        private Building_AstraCardsBank Buidling => TargetB.Thing as Building_AstraCardsBank;
+        protected override bool DropBeforeFinishAction => false;
 
-        public override bool TryMakePreToilReservations(bool errorOnFailed)
+        public override string GetReport()
         {
-            return pawn.Reserve(Item, job, 1, 1, null, errorOnFailed) &&
-                   pawn.Reserve(Buidling, job, 1, 1, null, errorOnFailed);
+            return "Carrying schematics to bank";
         }
 
-        protected override IEnumerable<Toil> MakeNewToils()
+        protected override void FinishAction()
         {
-            Toil goToItem = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch);
-            yield return goToItem;
+            var item = CastA<Thing>();
+            var bank = CastB<Building_AstraCardsBank>();
 
-            job.count = 1; // Without this throwing warning about -1 default count. May be this is due to reservation -1 stackCount??
-            yield return Toils_Haul.StartCarryThing(TargetIndex.A);
-
-            Toil goToBuilding = Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.InteractionCell);
-            yield return goToBuilding;
-
-
-            Toil useItem = new Toil
-            {
-                initAction = null,
-                defaultCompleteMode = ToilCompleteMode.Delay,
-                defaultDuration = GenTicks.SecondsToTicks(5),
-            };
-            useItem.WithProgressBarToilDelay(TargetIndex.B).AddFinishAction(SetCardToBank);
-            yield return useItem;
-        }
-
-        private void SetCardToBank()
-        {
-            Buidling.SetCard(Item);
-            Item.Destroy();
+            bank.InsertItem(item);
         }
     }
-
 }

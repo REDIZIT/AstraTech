@@ -13,7 +13,7 @@ namespace AstraTech
 
             for (int i = 0; i < count; i++)
             {
-                yield return GenBlueprints.Generate(null);
+                yield return GenBlueprints.TryGenerate(null);
             }
         }
 

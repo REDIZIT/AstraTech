@@ -8,6 +8,7 @@ namespace AstraTech
     {
         protected virtual float FinishActionDurationInSeconds => 3;
         protected abstract void FinishAction();
+        protected virtual bool DropBeforeFinishAction => true;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
@@ -43,7 +44,19 @@ namespace AstraTech
                 defaultCompleteMode = ToilCompleteMode.Delay,
                 defaultDuration = GenTicks.SecondsToTicks(FinishActionDurationInSeconds),
             };
-            finishToil.WithProgressBarToilDelay(TargetIndex.B).AddFinishAction(FinishAction);
+            finishToil.WithProgressBarToilDelay(TargetIndex.B);
+
+            if (DropBeforeFinishAction)
+            {
+                finishToil.AddFinishAction(() =>
+                {
+                    var dropToil = Toils_Haul.DropCarriedThing();
+                    dropToil.actor = pawn;
+                    dropToil.initAction();
+                });
+            }
+
+            finishToil.AddFinishAction(FinishAction);
 
             return finishToil;
         }

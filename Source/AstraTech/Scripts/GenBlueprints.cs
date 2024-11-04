@@ -39,7 +39,7 @@ namespace AstraTech
             AstraDefOf.astra_matter_organic,
         };
 
-        public static Thing Generate(FloatRange? prefabMarketValueRange)
+        public static Thing TryGenerate(FloatRange? prefabMarketValueRange)
         {
             float blueprintPrice = AstraDefOf.astra_blueprint.BaseMarketValue;
 
@@ -54,18 +54,22 @@ namespace AstraTech
                 dynamicAvailableDefs.Add(def);
             }
 
-
-            Thing item = ThingMaker.MakeThing(AstraDefOf.astra_blueprint);
-
-            var comp = item.TryGetComp<ThingComp_AstraBlueprint>();
-            comp.prefab = dynamicAvailableDefs.RandomElement();
-            
-            if (comp.prefab.MadeFromStuff)
+            if (dynamicAvailableDefs.Count > 0)
             {
-                comp.prefabStuff = GenStuff.RandomStuffFor(comp.prefab);
+                Thing item = ThingMaker.MakeThing(AstraDefOf.astra_blueprint);
+
+                var comp = item.TryGetComp<ThingComp_AstraBlueprint>();
+                comp.prefab = dynamicAvailableDefs.RandomElement();
+
+                if (comp.prefab.MadeFromStuff)
+                {
+                    comp.prefabStuff = GenStuff.RandomStuffFor(comp.prefab);
+                }
+
+                return item;
             }
 
-            return item;
+            return null;
         }
     }
 }

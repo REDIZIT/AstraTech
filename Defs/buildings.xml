@@ -60,13 +60,13 @@
         <thingClass>AstraTech.Building_AstraCardsBank</thingClass>
 
         <graphicData>
-            <texPath>temp3</texPath>
+            <texPath>genebank</texPath>
             <graphicClass>Graphic_Single</graphicClass>
-            <drawSize>(1,1)</drawSize>
+            <drawSize>(1,2)</drawSize>
         </graphicData>
-        <rotatable>false</rotatable>
+        <rotatable>true</rotatable>
         <stealable>false</stealable>
-        <size>(1,1)</size>
+        <size>(1,2)</size>
 
         <altitudeLayer>Building</altitudeLayer>
         <canOverlapZones>false</canOverlapZones>
@@ -82,7 +82,7 @@
         <selectable>true</selectable>
 
         <inspectorTabs>
-            
+            <li>AstraTech.ITab_ContentsCards</li>
         </inspectorTabs>
 
 		<comps>

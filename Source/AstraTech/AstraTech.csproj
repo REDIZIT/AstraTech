@@ -68,6 +68,7 @@
     <Compile Include="Scripts\Building_AstraBlueprintHolder.cs" />
     <Compile Include="Scripts\Building_AstraCardsBank.cs" />
     <Compile Include="Scripts\Building_AstraPawnMachine.cs" />
+    <Compile Include="Scripts\ITab_ContentsCards.cs" />
     <Compile Include="Scripts\JobDriver_CarryPawnToSkillExtraction.cs" />
     <Compile Include="Scripts\MessageHelper.cs" />
     <Compile Include="Scripts\Mod\Mod.cs" />

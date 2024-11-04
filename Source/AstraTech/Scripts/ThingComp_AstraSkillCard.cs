@@ -38,18 +38,27 @@ namespace AstraTech
                 yield return o;
             }
 
-            yield return new FloatMenuOption("Carry to a bank", () =>
+            ThingRequest req = ThingRequest.ForDef(AstraDefOf.astra_cards_bank);
+            TraverseParms traverse = TraverseParms.For(selPawn);
+
+            Thing bank = GenClosest.ClosestThingReachable(parent.Position, parent.MapHeld, req, PathEndMode.ClosestTouch, traverse, validator: (t) =>
             {
-                Job job = new Job(AstraDefOf.job_astra_carry_card_to_bank);
-                job.targetA = parent;
-
-                job.targetB = GenClosest.ClosestThingReachable(parent.Position, parent.MapHeld, new ThingRequest()
-                {
-                    singleDef = AstraDefOf.astra_cards_bank
-                }, PathEndMode.ClosestTouch, TraverseParms.For(selPawn), validator: (t) => t is Building_AstraCardsBank bank && bank.HasFreeSpace && selPawn.CanReserve(t));
-
-                selPawn.jobs.TryTakeOrderedJob(job);
+                return t is Building_AstraCardsBank b && b.HasFreeSpace && selPawn.CanReserve(t) && ReservationUtility.CanReserve(selPawn, b);
             });
+
+
+            FloatMenuOption carry = new FloatMenuOption("Carry to a bank", () =>
+            {
+                GenJob.TryGiveJob<JobDriver_CarryCardToBank>(selPawn, parent, bank);
+            });
+
+            if (bank == null)
+            {
+                carry.Disabled = true;
+                carry.Label = "No free bank found: " + carry.Label;
+            }
+            
+            yield return carry;
         }
 
         public override string CompInspectStringExtra()

@@ -28,8 +28,7 @@ namespace AstraTech
             PassionMajorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMajor");
             rightArrow = ContentFinder<Texture2D>.Get("arrow_right");
 
-           
-            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.Select(t => ((Building_AstraCardsBank)t).SkillCardComp).Where(c => c != null).ToArray();
+            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraCardsBank)t).GetDirectlyHeldThings()).Select(t => t.TryGetComp<ThingComp_AstraSkillCard>()).ToArray();
         }
 
         protected override void UpdateSize()

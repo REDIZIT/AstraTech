@@ -32,7 +32,7 @@ namespace AstraTech
             Scribe_Deep.Look(ref pawnInside, nameof(pawnInside));
             Scribe_Deep.Look(ref brainInside, nameof(brainInside));
             //Scribe_Deep.Look(ref secondBrainInside, nameof(secondBrainInside));
-            Scribe_References.Look(ref activeSkillCard, nameof(activeSkillCard));
+            Scribe_Deep.Look(ref activeSkillCard, nameof(activeSkillCard));
             Scribe_Defs.Look(ref skillToExtract, nameof(skillToExtract));
 
             Scribe_Values.Look(ref task, nameof(task));

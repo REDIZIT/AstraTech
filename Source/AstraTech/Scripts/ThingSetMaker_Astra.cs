@@ -13,7 +13,8 @@ namespace AstraTech
 
         protected override void Generate(ThingSetMakerParams parms, List<Thing> outThings)
         {
-            outThings.Add(GenBlueprints.Generate(parms.totalMarketValueRange));
+            Thing item = GenBlueprints.TryGenerate(parms.totalMarketValueRange);
+            if (item != null) outThings.Add(item);
         }
     }
 }

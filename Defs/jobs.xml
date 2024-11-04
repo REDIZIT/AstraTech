@@ -37,12 +37,6 @@
 	</JobDef>
 
 	<JobDef>
-		<defName>job_astra_carry_card_to_bank</defName>
-		<driverClass>AstraTech.JobDriver_CarryCardToBank</driverClass>
-		<reportString>carrying card...</reportString>
-	</JobDef>
-
-	<JobDef>
 		<defName>job_astra_haul_and_do</defName>
 		<driverClass>AstraTech.JobDriver_HaulAndDo</driverClass>
 		<reportString>Hauling and doing...</reportString>
