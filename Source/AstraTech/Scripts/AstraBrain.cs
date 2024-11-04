@@ -63,12 +63,6 @@ namespace AstraTech
 
         public void CopyReplicantToInnerPawn(Pawn replicant)
         {
-            // Copy brain thoughts
-            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
-            ThoughtHandler replicantThoughts = replicant.needs.mood.thoughts;
-            brainThoughts.memories.Memories.Clear();
-            brainThoughts.memories.Memories.AddRange(replicantThoughts.memories.Memories);
-
             //List<Thought_Situational> replicantSituationalThoughts = (List<Thought_Situational>)cachedThoughtsField.GetValue(replicantThoughts.situational);
             //Log.Message(replicantSituationalThoughts.Count);
             //cachedThoughtsField.SetValue(brainThoughts.situational, replicantSituationalThoughts.ListFullCopy()); // Be aware to not copy Ref to list, but elements of list
@@ -92,6 +86,14 @@ namespace AstraTech
                     brainNeed.CurLevel = replicantNeed.CurLevel;
                 }
             }
+            innerPawn.needs.BindDirectNeedFields();
+
+
+            // Copy brain thoughts
+            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
+            ThoughtHandler replicantThoughts = replicant.needs.mood.thoughts;
+            brainThoughts.memories.Memories.Clear();
+            brainThoughts.memories.Memories.AddRange(replicantThoughts.memories.Memories);
         }
 
         public void CopyInnerPawnToBlank(Pawn p)
@@ -117,7 +119,6 @@ namespace AstraTech
             newStory.AllBackstories.AddRange(brainStory.AllBackstories);
 
             p.story = newStory;
-
 
             // Copy skills
             foreach (SkillRecord s in p.skills.skills)
@@ -150,6 +151,9 @@ namespace AstraTech
 
 
             // Create brain needs
+            // Give a basic pawn Need set
+            p.needs.AddOrRemoveNeedsAsAppropriate(); 
+            innerPawn.needs.AddOrRemoveNeedsAsAppropriate();
             foreach (NeedDef needDef in brainRelatedNeeds)
             {
                 Need brainNeed = innerPawn.needs.TryGetNeed(needDef);
@@ -166,7 +170,8 @@ namespace AstraTech
                     blankNeed.CurLevel = brainNeed.CurLevel;
                 }
             }
-
+            p.needs.BindDirectNeedFields();
+            innerPawn.needs.BindDirectNeedFields();
 
             // Copy brain thoughts
             ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
@@ -183,18 +188,6 @@ namespace AstraTech
         public Pawn GetPawn()
         {
             return innerPawn;
-        }
-
-        private Need TryGetNeed(Pawn p, Type needType)
-        {
-            for (int i = 0; i < p.needs.AllNeeds.Count; i++)
-            {
-                if (p.needs.AllNeeds[i].GetType() == needType)
-                {
-                    return p.needs.AllNeeds[i];
-                }
-            }
-            return null;
         }
     }
 }

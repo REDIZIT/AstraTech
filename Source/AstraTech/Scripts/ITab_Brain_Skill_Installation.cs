@@ -49,7 +49,7 @@ namespace AstraTech
             Widgets.Label(labelRect, "Available skill cards");
 
             Rect scrollView = new Rect(body.x, labelRect.yMax, body.width, body.height - labelRect.yMax);
-            DrawCards(scrollView, skillCards.OrderBy(c => c == activeSkillCard).Select(c => c.parent));
+            DrawCards(scrollView, skillCards.OrderByDescending(c => c == activeSkillCard).Select(c => c.parent));
         }
 
         private void DrawCards(Rect body, IEnumerable<Thing> items)

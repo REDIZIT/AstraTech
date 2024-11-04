@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\2009463077\1.4\Assemblies\0Harmony.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
@@ -67,7 +68,8 @@
     <Compile Include="Scripts\Building_AstraBlueprintHolder.cs" />
     <Compile Include="Scripts\Building_AstraCardsBank.cs" />
     <Compile Include="Scripts\Building_AstraPawnMachine.cs" />
-    <Compile Include="Scripts\FloatMenuOptionInjector.cs" />
+    <Compile Include="Scripts\Patches\FloatMenuOptionInjector.cs" />
+    <Compile Include="Scripts\GenJob.cs" />
     <Compile Include="Scripts\Hediff_AstraBrainSocket.cs" />
     <Compile Include="Scripts\IngredientValueGetter_ForMatterCombined.cs" />
     <Compile Include="Scripts\Command_ExtendedAction.cs" />
@@ -76,14 +78,17 @@
     <Compile Include="Scripts\ITab_Brain_Character.cs" />
     <Compile Include="Scripts\ITab_Brain_Needs.cs" />
     <Compile Include="Scripts\ITab_Brain_Skill_Installation.cs" />
-    <Compile Include="Scripts\JobDriver_ApproachAndWait.cs" />
+    <Compile Include="Scripts\JobDriver_ExtractReplicantBrain.cs" />
     <Compile Include="Scripts\JobDriver_CarryCardToBank.cs" />
+    <Compile Include="Scripts\JobDriver_HaulAndDo.cs" />
+    <Compile Include="Scripts\JobDriver_InsertBrain.cs" />
     <Compile Include="Scripts\JobDriver_SlimeBeginTransform.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintEncode.cs" />
     <Compile Include="Scripts\JobDriver_BlueprintCarryToHolder.cs" />
     <Compile Include="Scripts\JobDriver_StartPrinting.cs" />
     <Compile Include="Scripts\JobDriver_ExtractBlueprint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripts\Patches\Patches.cs" />
     <Compile Include="Scripts\Precept_Slimes.cs" />
     <Compile Include="Scripts\StockGenerator_AstraBlueprints.cs" />
     <Compile Include="Scripts\ThingComp_AstraBlueprint.cs" />

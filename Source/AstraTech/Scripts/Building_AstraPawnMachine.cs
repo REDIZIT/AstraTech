@@ -9,7 +9,7 @@ namespace AstraTech
     public class Building_AstraPawnMachine : Building, IPawnContainer
     {
         public Pawn pawnInside;
-        public AstraBrain brainInside;
+        public AstraBrain brainInside;/*, secondBrainInside;*/
         public Thing activeSkillCard;
         public SkillDef skillToExtract;
 
@@ -22,14 +22,21 @@ namespace AstraTech
             CreateBlank,
             SkillTraining,
             SkillExtracting,
+            BrainToBrainCopy
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
+
             Scribe_Deep.Look(ref pawnInside, nameof(pawnInside));
             Scribe_Deep.Look(ref brainInside, nameof(brainInside));
+            //Scribe_Deep.Look(ref secondBrainInside, nameof(secondBrainInside));
             Scribe_References.Look(ref activeSkillCard, nameof(activeSkillCard));
+            Scribe_Defs.Look(ref skillToExtract, nameof(skillToExtract));
+
+            Scribe_Values.Look(ref task, nameof(task));
+            Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft));
         }
 
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
@@ -67,6 +74,7 @@ namespace AstraTech
                         canTargetPawns = false,
                         mapObjectTargetsMustBeAutoAttackable = false,
                         canTargetItems = true,
+                        canTargetBuildings = false,
                         validator = (i) => i.Thing is ThingWithComps_AstraBrain
                     }, (i) =>
                     {
@@ -82,11 +90,41 @@ namespace AstraTech
                         canTargetPawns = true,
                         mapObjectTargetsMustBeAutoAttackable = false,
                         canTargetItems = false,
-                        onlyTargetControlledPawns = true,
+                        onlyTargetColonistsOrPrisonersOrSlaves = true,
+                        canTargetBuildings = false,
                     }, (i) =>
                     {
-                        FloatMenuUtility.MakeMenu(EnumerateSkillsForExtraction((Pawn)i), (f) => f.Label, (f) => f.action);
+                        if (((Pawn)i.Thing).health.hediffSet.hediffs.Any(h => h.Bleeding))
+                        {
+                            Messages.Message("Target pawn is bleeding", MessageTypeDefOf.RejectInput);
+                        }
+                        else
+                        {
+                            FloatMenuUtility.MakeMenu(EnumerateSkillsForExtraction((Pawn)i), (f) => f.Label, (f) => f.action);
+                        }
                         
+                    });
+                });
+
+                yield return new FloatMenuOption("Start task: Brain to Brain copy", () =>
+                {
+                    TargetingParameters parameters = new TargetingParameters()
+                    {
+                        canTargetPawns = false,
+                        mapObjectTargetsMustBeAutoAttackable = false,
+                        canTargetItems = true,
+                        validator = (i) => i.Thing is ThingWithComps_AstraBrain
+                    };
+
+                    Find.Targeter.BeginTargeting(parameters, (i1) =>
+                    {
+                        Find.Targeter.BeginTargeting(parameters, (i2) =>
+                        {
+                            AstraBrain origin = ((ThingWithComps_AstraBrain)i1.Thing).brain;
+                            AstraBrain target = ((ThingWithComps_AstraBrain)i2.Thing).brain;
+
+                            origin.CopyInnerPawnToBlank(target.innerPawn);
+                        });
                     });
                 });
             }
@@ -133,7 +171,7 @@ namespace AstraTech
                 b.Append("nothing");
             }
 
-            b.Append(GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.Count.ToString());
+            //b.Append(GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.Count.ToString());
 
             return b.ToString();
         }
@@ -172,6 +210,8 @@ namespace AstraTech
                 {
                     Pawn p = CreateBlankWithSocket();
                     GenSpawn.Spawn(p, Position, Map, WipeMode.Vanish);
+
+                    Messages.Message("Blank creation is completed", MessageTypeDefOf.TaskCompletion);
                 }
                 else if (task == Task.SkillTraining)
                 {
@@ -182,6 +222,8 @@ namespace AstraTech
                     record.passion = skillCard.passion;
 
                     activeSkillCard = null;
+
+                    Messages.Message("Skill training is completed", MessageTypeDefOf.TaskCompletion);
                 }
                 else if (task == Task.SkillExtracting)
                 {
@@ -196,10 +238,13 @@ namespace AstraTech
                     GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
 
                     GenPlace.TryPlaceThing(pawnInside, Position, Map, ThingPlaceMode.Near);
+                    pawnInside.Position = Position;
                     BodyPartRecord brain = pawnInside.health.hediffSet.GetBrain();
                     pawnInside.health.AddHediff(HediffDefOf.MissingBodyPart, brain);
                     pawnInside = null;
                     skillToExtract = null;
+
+                    Messages.Message("Skill extraction is completed", MessageTypeDefOf.TaskCompletion);
                 }
 
                 task = Task.None;
@@ -210,7 +255,7 @@ namespace AstraTech
         {
             foreach (SkillRecord skill in pawn.skills.skills)
             {
-                yield return new FloatMenuOption(skill.def.LabelCap + " - " + skill.levelInt, () =>
+                yield return new FloatMenuOption(skill.def.LabelCap + ", " + skill.levelInt + ", " + skill.passion.GetLabel(), () =>
                 {
                     StartTask_SkillExtraction(pawn, skill.def);
                 });

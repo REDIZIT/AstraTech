@@ -32,14 +32,20 @@
 
 	<JobDef>
 		<defName>job_astra_brain_extract</defName>
-		<driverClass>AstraTech.JobDriver_ApproachAndWait</driverClass>
-		<reportString>подходит к цели...</reportString>
+		<driverClass>AstraTech.JobDriver_ExtractReplicantBrain</driverClass>
+		<reportString>extracting brain...</reportString>
 	</JobDef>
 
 	<JobDef>
 		<defName>job_astra_carry_card_to_bank</defName>
 		<driverClass>AstraTech.JobDriver_CarryCardToBank</driverClass>
-		<reportString>подходит к цели...</reportString>
+		<reportString>carrying card...</reportString>
+	</JobDef>
+
+	<JobDef>
+		<defName>job_astra_haul_and_do</defName>
+		<driverClass>AstraTech.JobDriver_HaulAndDo</driverClass>
+		<reportString>Hauling and doing...</reportString>
 	</JobDef>
 
 </Defs>

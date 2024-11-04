@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using RimWorld;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using Verse;
 using Verse.AI;
 
@@ -51,40 +48,6 @@ namespace AstraTech
             });
 
             return customOption;
-        }
-    }
-
-    [StaticConstructorOnStartup]
-    public static class ModPatcher
-    {
-        static ModPatcher()
-        {
-            var harmony = new Harmony("redizit.astratech");
-            harmony.PatchAll();
-        }
-    }
-
-    [HarmonyPatch(typeof(Pawn), "GetFloatMenuOptions")]
-    public static class Pawn_GetFloatMenuOptions_Patch
-    {
-        public static void Postfix(Pawn __instance, Pawn selPawn, ref IEnumerable<FloatMenuOption> __result)
-        {
-            __result = FloatMenuOptionInjector.AddImplantOptions(__instance, selPawn, __result);
-        }
-    }
-
-    [HarmonyPatch(typeof(FloatMenuMakerMap), "ChoicesAtFor")]
-    public static class Corpse_ChoicesAtFor_Patch
-    {
-        public static void Postfix(Vector3 clickPos, Pawn pawn, ref List<FloatMenuOption> __result)
-        {
-            IntVec3 c = IntVec3.FromVector3(clickPos);
-            Corpse corpse = c.GetFirstThing<Corpse>(pawn.Map);
-
-            if (corpse != null && corpse.InnerPawn.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain != null)
-            {
-                __result.Add(FloatMenuOptionInjector.ExtractImplant(corpse, pawn));
-            }
         }
     }
 }

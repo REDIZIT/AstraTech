@@ -7,16 +7,29 @@ namespace AstraTech
     public class ThingWithComps_AstraBrain : ThingWithComps, IPawnContainer
     {
         public AstraBrain brain;
+        public override string Label => "Astra Brain (" + brain.GetPawn().NameFullColored + ")";
 
         public Pawn GetPawn()
         {
             return brain.GetPawn();
         }
 
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Deep.Look(ref brain, nameof(brain));
+        }
+
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             base.SpawnSetup(map, respawningAfterLoad);
-            if (brain == null) brain = new AstraBrain(Building_AstraPawnMachine.CreateBlank());
+
+            // If just crafter or spawned via DevTools
+            if (brain == null)
+            {
+                brain = new AstraBrain(Building_AstraPawnMachine.CreateBlank());
+                brain.GetPawn().Name = new NameSingle("Unnamed");
+            }
         }
 
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
@@ -26,7 +39,7 @@ namespace AstraTech
                 yield return o;
             }
 
-            yield return new FloatMenuOption("Insert into ...", () =>
+            yield return new FloatMenuOption("Insert into blank ..", () =>
             {
                 Find.Targeter.BeginTargeting(new TargetingParameters()
                 {
@@ -34,12 +47,11 @@ namespace AstraTech
                     onlyTargetControlledPawns = true,
                     mapObjectTargetsMustBeAutoAttackable = false,
                     canTargetItems = false,
-                    validator = (i) => i.Thing is Pawn pawn && pawn.health.hediffSet.HasHediff<Hediff_AstraBrainSocket>()
+                    validator = (i) => i.Thing is Pawn pawn && pawn.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain == null
                 }, (i) =>
                 {
                     Pawn pawn = (Pawn)i.Thing;
-                    pawn.health.hediffSet.GetFirstHediff<Hediff_AstraBrainSocket>().InsertBrain(brain);
-                    Destroy();
+                    GenJob.TryGiveJob<JobDriver_InsertBrain>(selPawn, this, pawn);
                 });
             });
         }

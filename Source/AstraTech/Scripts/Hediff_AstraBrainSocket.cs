@@ -1,12 +1,18 @@
-﻿using HarmonyLib;
-using Verse;
+﻿using Verse;
 
 namespace AstraTech
 {
     public class Hediff_AstraBrainSocket : Hediff_Implant
     {
         public AstraBrain brain;
+        public override string LabelInBrackets => brain == null ? "empty" : brain.innerPawn.Name + "'s persona installed";
 
+        public override void PostAdd(DamageInfo? dinfo)
+        {
+            base.PostAdd(dinfo);
+
+            AstraBrain.ClearPawn(pawn);
+        }
         public override void Tick()
         {
             base.Tick();
@@ -30,7 +36,7 @@ namespace AstraTech
 
             ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(DefDatabase<ThingDef>.GetNamed("astra_brain"));
             item.brain = brain;
-            GenPlace.TryPlaceThing(item, pawn.Position - new IntVec3(1, 0, 0), pawn.MapHeld, ThingPlaceMode.Near);
+            GenPlace.TryPlaceThing(item, pawn.Position - new IntVec3(0, 0, 1), pawn.MapHeld, ThingPlaceMode.Near);
 
             this.brain = null;
             AstraBrain.ClearPawn(pawn);

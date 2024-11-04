@@ -24,12 +24,35 @@
 			<Mass>1.51</Mass>
 			<Flammability>1</Flammability>
 			<Beauty>0</Beauty>
+			<WorkToMake>26000</WorkToMake>
 		</statBases>
 
 		<inspectorTabs>
 			<li>AstraTech.ITab_Brain_Character</li>
 			<li>AstraTech.ITab_Brain_Needs</li>
 		</inspectorTabs>
+
+		<costList>
+			<Plasteel>30</Plasteel>
+			<ComponentSpacer>5</ComponentSpacer>
+			<Gold>40</Gold>
+		</costList>
+
+		<recipeMaker>
+			<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+			<workSkill>Crafting</workSkill>
+			<effectWorking>Smith</effectWorking>
+			<soundWorking>Recipe_Smith</soundWorking>
+			<unfinishedThingDef>UnfinishedHealthItemBionic</unfinishedThingDef>
+			<skillRequirements>
+				<Crafting>8</Crafting>
+			</skillRequirements>
+			<researchPrerequisite>Bionics</researchPrerequisite>
+			<recipeUsers>
+				<li>FabricationBench</li>
+			</recipeUsers>
+			<displayPriority>300</displayPriority>
+		</recipeMaker>
 
 	</ThingDef>
 
@@ -64,5 +87,52 @@
 		</comps>
 
 	</ThingDef>
+
+
+	<ThingDef ParentName="BodyPartBionicBase">
+		<defName>astra_brain_socket</defName>
+		<label>Astra Brain Socket</label>
+		<description>Desc</description>
+		<descriptionHyperlinks><RecipeDef>install_astra_brain_socket</RecipeDef></descriptionHyperlinks>
+		<costList>
+			<Plasteel>10</Plasteel>
+			<ComponentSpacer>4</ComponentSpacer>
+			<Gold>10</Gold>
+		</costList>
+		<statBases>
+			<Mass>2</Mass>
+		</statBases>
+	</ThingDef>
+
+
+	<RecipeDef ParentName="SurgeryInstallBodyPartArtificialBase">
+		<defName>install_astra_brain_socket</defName>
+		<label>install Astra Brain Socket</label>
+		<description>Install Astra Brain Socket.</description>
+			<descriptionHyperlinks>
+				<ThingDef>astra_brain_socket</ThingDef>
+				<HediffDef>astra_brain_socket</HediffDef>
+			</descriptionHyperlinks>
+		<jobString>Installing Astra Brain Socket.</jobString>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>astra_brain_socket</li>
+					</thingDefs>
+				</filter>
+				<count>1</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>astra_brain_socket</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+		<appliedOnFixedBodyParts>
+			<li>Brain</li>
+		</appliedOnFixedBodyParts>
+		<addsHediff>astra_brain_socket</addsHediff>
+	</RecipeDef>
 
 </Defs>
