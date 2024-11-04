@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+
+	<!--- ==================== Schematics ===================== -->
+
+	<ThingDef Name="astra_schematics" ParentName="ResourceBase" Abstract="true">
+		<category>Item</category>
+		<thingCategories>
+			<li>Artifacts</li>
+		</thingCategories>
+		<stackLimit>1</stackLimit>
+		<statBases>
+			<MarketValue>1000</MarketValue>
+			<Mass>1.51</Mass>
+			<Flammability>1</Flammability>
+			<Beauty>1</Beauty>
+		</statBases>
+
+		<!---<drawerType>RealtimeOnly</drawerType>-->
+
+	</ThingDef>
+
+	<ThingDef ParentName="astra_schematics">
+		<defName>astra_schematics_skill</defName>
+		<label>Astra Skill Schematics</label>
+		<description>Desc</description>
+		<thingClass>AstraTech.AstraSchematics_Skill</thingClass>
+
+		<graphicData>
+			<texPath>schematics_skill_encoded</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+	</ThingDef>
+
+	<ThingDef ParentName="astra_schematics">
+		<defName>astra_schematics_item</defName>
+		<label>Astra Item Schematics</label>
+		<description>Data source for Astra core</description>
+		<thingClass>AstraTech.AstraSchematics_Item</thingClass>
+
+		<graphicData>
+			<texPath>blueprint_encoded</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+
+		<statBases>
+			<MarketValue>3900</MarketValue>
+			<Mass>1.51</Mass>
+			<Flammability>1</Flammability>
+			<Beauty>1</Beauty>
+		</statBases>
+
+		<comps>
+			<li Class="AstraTech.CompProperties_AstraBlueprint">
+			</li>
+		</comps>
+	</ThingDef>
+
+	<ThingDef ParentName="ResourceBase">
+		<defName>astra_schematics_item_empty</defName>
+		<label>Astra Item Schematics (empty)</label>
+		<description>Data source for Astra core</description>
+		<thingClass>AstraTech.AstraSchematics_Item</thingClass>
+
+		<graphicData>
+			<texPath>blueprint</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+
+		<statBases>
+			<MarketValue>8000</MarketValue>
+			<Mass>1.51</Mass>
+			<Flammability>1</Flammability>
+			<Beauty>1</Beauty>
+		</statBases>
+
+		<comps>
+			<li Class="AstraTech.CompProperties_AstraBlueprintEmpty">
+			</li>
+		</comps>
+	</ThingDef>
+
+</Defs>

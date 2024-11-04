@@ -14,6 +14,11 @@ namespace AstraTech
             compClass = typeof(ThingComp_AstraBlueprint);
         }
     }
+
+    public class AstraSchematics_Item : AstraSchematics
+    {
+    }
+
     public class ThingComp_AstraBlueprint : ThingComp
     {
         public ThingDef prefab;
@@ -21,6 +26,7 @@ namespace AstraTech
         public Color prefabColor;
 
         public CompProperties_AstraBlueprint Props => (CompProperties_AstraBlueprint)props;
+
 
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
@@ -132,8 +138,7 @@ namespace AstraTech
             {
                 if (targetInfo.Thing is Building_AstraBlueprintHolder b)
                 {
-                    Job job = new Job(AstraDefOf.job_astra_blueprint_assign, parent, b);
-                    pawn.jobs.TryTakeOrderedJob(job);
+                    GenJob.TryGiveJob<JobDriver_BlueprintCarryToHolder>(pawn, parent, b);
                 }
             }, null, null);
         }

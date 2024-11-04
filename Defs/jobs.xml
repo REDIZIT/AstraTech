@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 	<JobDef>
-		<defName>job_astra_blueprint_assign</defName>
-		<driverClass>AstraTech.JobDriver_BlueprintCarryToHolder</driverClass>
-		<reportString>carrying blueprint to the holder</reportString>
-	</JobDef>
-
-	<JobDef>
 		<defName>job_astra_blueprint_encode</defName>
 		<driverClass>AstraTech.JobDriver_BlueprintEncode</driverClass>
 		<reportString>encoding item into the blueprint</reportString>

@@ -19,7 +19,7 @@ namespace AstraTech
 
         public override bool HandlesThingDef(ThingDef thingDef)
         {
-            return thingDef == AstraDefOf.astra_blueprint;
+            return thingDef == AstraDefOf.astra_schematics_item;
         }
     }
 }

@@ -6,16 +6,16 @@ using Verse.AI;
 
 namespace AstraTech
 {
-    public class Building_AstraCardsBank : Building, IThingHolder
+    public class Building_AstraSchematicsBank : Building, IThingHolder
     {
         public bool HasFreeSpace => itemsInside.Count + ReservedSpace < 4;
         public float ReservedSpace => Map.reservationManager.ReservationsReadOnly.Where(r => r.Target == this).Sum(r => r.StackCount);
 
-        public ThingOwner<Thing> itemsInside;
+        public ThingOwner<AstraSchematics> itemsInside;
 
-        public Building_AstraCardsBank()
+        public Building_AstraSchematicsBank()
         {
-            itemsInside = new ThingOwner<Thing>(this, false);
+            itemsInside = new ThingOwner<AstraSchematics>(this, false);
         }
 
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
@@ -35,15 +35,14 @@ namespace AstraTech
             Scribe_Deep.Look(ref itemsInside, nameof(itemsInside), this);
         }
 
-        public void InsertItem(Thing card)
+        public void InsertItem(AstraSchematics card)
         {
-            Log.Message("Owner: " + card.holdingOwner.ToStringSafe());
-            Log.Message("CanAcceptAnyOf: " + itemsInside.CanAcceptAnyOf(card));
-            Log.Message("GetCountCanAccept: " + itemsInside.GetCountCanAccept(card));
-            Log.Message("TotalStackCount: " + itemsInside.TotalStackCount);
+            //Log.Message("Owner: " + card.holdingOwner.ToStringSafe());
+            //Log.Message("CanAcceptAnyOf: " + itemsInside.CanAcceptAnyOf(card));
+            //Log.Message("GetCountCanAccept: " + itemsInside.GetCountCanAccept(card));
+            //Log.Message("TotalStackCount: " + itemsInside.TotalStackCount);
             bool success = itemsInside.TryAddOrTransfer(card);
-            Log.Message("Success: " + success);
-            //card.DeSpawn();
+            //Log.Message("Success: " + success);
         }
 
         public void GetChildHolders(List<IThingHolder> outChildren)

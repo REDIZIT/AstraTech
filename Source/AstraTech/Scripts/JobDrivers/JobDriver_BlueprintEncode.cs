@@ -38,7 +38,7 @@ namespace AstraTech
 
         private void EncodeAction()
         {
-            Thing blueprintItem = ThingMaker.MakeThing(AstraDefOf.astra_blueprint);
+            Thing blueprintItem = ThingMaker.MakeThing(AstraDefOf.astra_schematics_item);
 
             var i = blueprintItem.TryGetComp<ThingComp_AstraBlueprint>();
             i.prefab = targetItem.def;

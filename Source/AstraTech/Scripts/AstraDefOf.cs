@@ -6,17 +6,16 @@ namespace AstraTech
     [DefOf]
     public static class AstraDefOf
     {
-        public static JobDef job_astra_blueprint_assign, job_astra_blueprint_encode, job_astra_blueprint_extract, job_astra_start_printing;
+        public static JobDef job_astra_blueprint_encode, job_astra_blueprint_extract, job_astra_start_printing;
         public static JobDef job_astra_slime_begin_transform;
-        public static ThingDef astra_blueprint, astra_blueprint_empty, astra_slime;
+        public static ThingDef astra_schematics_item, astra_schematics_item_empty, astra_slime;
         public static ThingDef astra_matter_organic, astra_matter_non_organic, astra_matter_merged;
         public static ThoughtDef astra_held_slime_disgust, astra_held_slime_adore;
-        //public static PreceptDef astra_precept;
         public static HistoryEventDef astra_touched_slime;
 
 
         public static JobDef job_astra_brain_extract, job_astra_haul_and_do;
-        public static ThingDef astra_brain, astra_cards_bank, astra_skill_card;
+        public static ThingDef astra_brain, astra_cards_bank, astra_schematics_skill;
         public static HediffDef astra_brain_socket;
 
 

@@ -1,8 +1,6 @@
-﻿using Verse;
-
-namespace AstraTech
+﻿namespace AstraTech
 {
-    public class JobDriver_CarryCardToBank : JobDriver_HaulAndDo
+    public class JobDriver_CarrySchematicsToBank : JobDriver_HaulAndDo
     {
         protected override bool DropBeforeFinishAction => false;
 
@@ -13,8 +11,8 @@ namespace AstraTech
 
         protected override void FinishAction()
         {
-            var item = CastA<Thing>();
-            var bank = CastB<Building_AstraCardsBank>();
+            var item = CastA<AstraSchematics>();
+            var bank = CastB<Building_AstraSchematicsBank>();
 
             bank.InsertItem(item);
         }

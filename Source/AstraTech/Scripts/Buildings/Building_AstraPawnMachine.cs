@@ -225,7 +225,7 @@ namespace AstraTech
                 }
                 else if (task == Task.SkillTraining)
                 {
-                    ThingComp_AstraSkillCard skillCard = activeSkillCard.TryGetComp<ThingComp_AstraSkillCard>();
+                    AstraSchematics_Skill skillCard = (AstraSchematics_Skill)activeSkillCard;
 
                     SkillRecord record = brainInside.innerPawn.skills.GetSkill(skillCard.skillDef);
                     record.Level = skillCard.level;
@@ -239,8 +239,8 @@ namespace AstraTech
                 {
                     SkillRecord record = pawnInside.skills.GetSkill(skillToExtract);
                     
-                    Thing item = ThingMaker.MakeThing(AstraDefOf.astra_skill_card);
-                    var comp = item.TryGetComp<ThingComp_AstraSkillCard>();
+                    Thing item = ThingMaker.MakeThing(AstraDefOf.astra_schematics_skill);
+                    var comp = (AstraSchematics_Skill)item;
                     comp.skillDef = record.def;
                     comp.level = record.levelInt;
                     comp.passion = record.passion;
@@ -293,7 +293,7 @@ namespace AstraTech
         public void StartTask_SkillTraining(Thing card)
         {
             task = Task.SkillTraining;
-            ticksLeft = GenDate.TicksPerHour * card.TryGetComp<ThingComp_AstraSkillCard>().level;
+            ticksLeft = GenDate.TicksPerHour * ((AstraSchematics_Skill)card).level;
             activeSkillCard = card;
         }
         public void StopTask_SkillTraining()

@@ -24,7 +24,7 @@
 			<li>
 				<filter>
 					<thingDefs>
-						<li>astra_blueprint</li>
+						<li>astra_schematics_item</li>
 					</thingDefs>
 				</filter>
 				<count>1</count>
@@ -55,7 +55,7 @@
 			</li>
 		</ingredients>
 		<products>
-			<astra_blueprint_empty>1</astra_blueprint_empty>
+			<astra_schematics_item_empty>1</astra_schematics_item_empty>
 		</products>
 
 	</RecipeDef>

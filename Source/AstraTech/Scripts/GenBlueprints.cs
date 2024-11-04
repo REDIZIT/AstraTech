@@ -33,7 +33,7 @@ namespace AstraTech
 
         private static HashSet<ThingDef> bannedDefs = new HashSet<ThingDef>()
         {
-            AstraDefOf.astra_blueprint,
+            AstraDefOf.astra_schematics_item,
             AstraDefOf.astra_matter_merged,
             AstraDefOf.astra_matter_non_organic,
             AstraDefOf.astra_matter_organic,
@@ -41,7 +41,7 @@ namespace AstraTech
 
         public static Thing TryGenerate(FloatRange? prefabMarketValueRange)
         {
-            float blueprintPrice = AstraDefOf.astra_blueprint.BaseMarketValue;
+            float blueprintPrice = AstraDefOf.astra_schematics_item.BaseMarketValue;
 
             dynamicAvailableDefs.Clear();
             foreach (ThingDef def in StaticAvailableDefs)
@@ -56,7 +56,7 @@ namespace AstraTech
 
             if (dynamicAvailableDefs.Count > 0)
             {
-                Thing item = ThingMaker.MakeThing(AstraDefOf.astra_blueprint);
+                Thing item = ThingMaker.MakeThing(AstraDefOf.astra_schematics_item);
 
                 var comp = item.TryGetComp<ThingComp_AstraBlueprint>();
                 comp.prefab = dynamicAvailableDefs.RandomElement();

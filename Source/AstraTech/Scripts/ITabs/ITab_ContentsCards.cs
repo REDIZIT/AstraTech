@@ -7,7 +7,7 @@ namespace AstraTech
 {
     public class ITab_ContentsCards : ITab_ContentsBase
     {
-        public override IList<Thing> container => ((Building_AstraCardsBank)SelThing).GetDirectlyHeldThings().ToList();
+        public override IList<Thing> container => ((Building_AstraSchematicsBank)SelThing).GetDirectlyHeldThings().ToList();
         public override bool UseDiscardMessage => false;
 
 

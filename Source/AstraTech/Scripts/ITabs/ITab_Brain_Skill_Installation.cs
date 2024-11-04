@@ -13,22 +13,25 @@ namespace AstraTech
         public override bool IsVisible => Building.brainInside != null;
 
         private Vector2 scrollPos;
-        private ThingComp_AstraSkillCard activeSkillCard => Building.activeSkillCard.TryGetComp<ThingComp_AstraSkillCard>();
-        private ThingComp_AstraSkillCard[] skillCards;
+        private AstraSchematics_Skill activeSkillCard => (AstraSchematics_Skill)Building.activeSkillCard;
+        private AstraSchematics_Skill[] skillCards;
 
         private static Texture2D PassionMinorIcon, PassionMajorIcon, rightArrow;
+
+        public ITab_Brain_Skill_Installation()
+        {
+            labelKey = "Train";
+        }
 
         public override void OnOpen()
         {
             base.OnOpen();
 
-            labelKey = "Train";
-
             PassionMinorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMinor");
             PassionMajorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMajor");
             rightArrow = ContentFinder<Texture2D>.Get("arrow_right");
 
-            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraCardsBank)t).GetDirectlyHeldThings()).Select(t => t.TryGetComp<ThingComp_AstraSkillCard>()).ToArray();
+            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraSchematicsBank)t).GetDirectlyHeldThings()).Where(t => t is AstraSchematics_Skill).Cast<AstraSchematics_Skill>().ToArray();
         }
 
         protected override void UpdateSize()
@@ -48,7 +51,7 @@ namespace AstraTech
             Widgets.Label(labelRect, "Available skill cards");
 
             Rect scrollView = new Rect(body.x, labelRect.yMax, body.width, body.height - labelRect.yMax);
-            DrawCards(scrollView, skillCards.OrderByDescending(c => c == activeSkillCard).Select(c => c.parent));
+            DrawCards(scrollView, skillCards.OrderByDescending(c => c == activeSkillCard));
         }
 
         private void DrawCards(Rect body, IEnumerable<Thing> items)
@@ -60,7 +63,7 @@ namespace AstraTech
             float offset = 0;
             foreach (Thing item in items)
             {
-                ThingComp_AstraSkillCard card = item.TryGetComp<ThingComp_AstraSkillCard>();
+                AstraSchematics_Skill card = (AstraSchematics_Skill)item;
 
                 SkillRecord brainSkill = null;
                 if (Building.brainInside != null)

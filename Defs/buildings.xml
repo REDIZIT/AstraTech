@@ -57,7 +57,7 @@
         <label>Astra cards bank</label>
         <description>Desc</description>
         <category>Building</category>
-        <thingClass>AstraTech.Building_AstraCardsBank</thingClass>
+        <thingClass>AstraTech.Building_AstraSchematicsBank</thingClass>
 
         <graphicData>
             <texPath>genebank</texPath>
