@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RimWorld;
+using System.Collections.Generic;
 using Verse;
 using Verse.AI;
 
@@ -7,7 +8,7 @@ namespace AstraTech
     public abstract class JobDriver_Base : JobDriver
     {
         protected virtual float FinishActionDurationInSeconds => 3;
-        protected abstract void FinishAction();
+        protected virtual void FinishAction() { }
         protected virtual bool DropBeforeFinishAction => true;
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
@@ -36,7 +37,7 @@ namespace AstraTech
             return (T)targetThing;
         }
 
-        protected Toil GetFinishToil()
+        protected virtual Toil GetFinishToil()
         {
             Toil finishToil = new Toil()
             {
@@ -46,7 +47,7 @@ namespace AstraTech
             };
             finishToil.WithProgressBarToilDelay(TargetIndex.B);
 
-            if (DropBeforeFinishAction)
+            if (DropBeforeFinishAction && pawn.IsCarrying())
             {
                 finishToil.AddFinishAction(() =>
                 {

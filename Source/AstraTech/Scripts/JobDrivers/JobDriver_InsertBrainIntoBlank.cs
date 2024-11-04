@@ -2,11 +2,11 @@
 
 namespace AstraTech
 {
-    public class JobDriver_InsertBrain : JobDriver_HaulAndDo
+    public class JobDriver_InsertBrainIntoBlank : JobDriver_HaulAndDo
     {
         public override string GetReport()
         {
-            return "Inserting brain...";
+            return "Inserting brain";
         }
 
         protected override void FinishAction()

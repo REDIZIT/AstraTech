@@ -14,7 +14,7 @@ namespace AstraTech
         public static HistoryEventDef astra_touched_slime;
 
 
-        public static JobDef job_astra_brain_extract, job_astra_haul_and_do;
+        public static JobDef job_astra_haul_and_do;
         public static ThingDef astra_brain, astra_cards_bank, astra_schematics_skill;
         public static HediffDef astra_brain_socket;
 

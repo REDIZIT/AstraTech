@@ -25,12 +25,6 @@
 	</JobDef>
 
 	<JobDef>
-		<defName>job_astra_brain_extract</defName>
-		<driverClass>AstraTech.JobDriver_ExtractReplicantBrain</driverClass>
-		<reportString>extracting brain...</reportString>
-	</JobDef>
-
-	<JobDef>
 		<defName>job_astra_haul_and_do</defName>
 		<driverClass>AstraTech.JobDriver_HaulAndDo</driverClass>
 		<reportString>Hauling and doing...</reportString>

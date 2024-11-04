@@ -1,5 +1,4 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using Verse;
@@ -50,13 +49,7 @@ namespace AstraTech
             {
                 yield return new FloatMenuOption("Extract brain", () =>
                 {
-                    task = Task.None;
-                    ticksLeft = 0;
-
-                    ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(AstraDefOf.astra_brain);
-                    item.brain = brainInside;
-                    GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
-                    brainInside = null;
+                    GenJob.TryGiveJob<JobDriver_ExtractBrain>(selPawn, this);
                 });
             }
 
@@ -72,7 +65,7 @@ namespace AstraTech
                 {
                     yield return new FloatMenuOption("Start task: Blank creation", () =>
                     {
-                        StartTask_CreateBlank();
+                        GenJob.TryGiveJob<JobDriver_StartBlankCreation>(selPawn, this);
                     });
 
                     yield return new FloatMenuOption("Start task: Brain development", () =>
@@ -86,8 +79,7 @@ namespace AstraTech
                             validator = (i) => i.Thing is ThingWithComps_AstraBrain
                         }, (i) =>
                         {
-                            brainInside = ((ThingWithComps_AstraBrain)i.Thing).brain;
-                            i.Thing.Destroy();
+                            GenJob.TryGiveJob<JobDriver_InsertBrainIntoMachine>(selPawn, i.Thing, this);
                         });
                     });
 
@@ -321,6 +313,23 @@ namespace AstraTech
             skillToExtract = null;
         }
 
+        public void InsertBrain(ThingWithComps_AstraBrain item)
+        {
+            brainInside = item.brain;
+            item.Destroy();
+        }
+        public Thing ExtractBrain()
+        {
+            task = Task.None;
+            ticksLeft = 0;
+
+            ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(AstraDefOf.astra_brain);
+            item.brain = brainInside;
+            GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
+            brainInside = null;
+
+            return item;
+        }
 
 
         public static Pawn CreateBlankWithSocket()

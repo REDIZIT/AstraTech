@@ -4,7 +4,7 @@ using Verse.AI;
 
 namespace AstraTech
 {
-    public class JobDriver_ExtractReplicantBrain : JobDriver
+    public class JobDriver_ExtractBrainFromReplicant : JobDriver
     {
         private bool IsTargetAlivePawn => TargetA.Thing is Pawn;
         private Pawn TargetPawn => (Pawn)TargetA.Thing;

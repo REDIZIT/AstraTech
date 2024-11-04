@@ -51,7 +51,7 @@ namespace AstraTech
                 }, (i) =>
                 {
                     Pawn pawn = (Pawn)i.Thing;
-                    GenJob.TryGiveJob<JobDriver_InsertBrain>(selPawn, this, pawn);
+                    GenJob.TryGiveJob<JobDriver_InsertBrainIntoBlank>(selPawn, this, pawn);
                 });
             });
         }

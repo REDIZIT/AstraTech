@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Verse;
-using Verse.AI;
 
 namespace AstraTech
 {
@@ -23,9 +22,7 @@ namespace AstraTech
         {
             FloatMenuOption customOption = new FloatMenuOption("Extract Astra Brain", () =>
             {
-                Job job = new Job(AstraDefOf.job_astra_brain_extract);
-                job.targetA = targetPawn;
-                selPawn.jobs.TryTakeOrderedJob(job);
+                GenJob.TryGiveJob<JobDriver_ExtractBrainFromReplicant>(selPawn, targetPawn);
             });
 
             if (selPawn == targetPawn)
@@ -42,9 +39,7 @@ namespace AstraTech
         {
             FloatMenuOption customOption = new FloatMenuOption("Extract Astra Brain", () =>
             {
-                Job job = new Job(AstraDefOf.job_astra_brain_extract);
-                job.targetA = targetPawnCorpse;
-                selPawn.jobs.TryTakeOrderedJob(job);
+                GenJob.TryGiveJob<JobDriver_ExtractBrainFromReplicant>(selPawn, targetPawnCorpse);
             });
 
             return customOption;
