@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
+
+
+	<!--- ==================== Brain and Brain socket ===================== -->
+
+
 	<ThingDef ParentName="ResourceBase">
 		<defName>astra_brain</defName>
 		<label>Astra Brain</label>
@@ -56,39 +61,6 @@
 
 	</ThingDef>
 
-	<ThingDef ParentName="ResourceBase">
-		<defName>astra_skill_card</defName>
-		<label>Astra Skill Card</label>
-		<description>Desc</description>
-		<category>Item</category>
-		<thingCategories>
-			<li>Artifacts</li>
-		</thingCategories>
-		<tickerType>Normal</tickerType>
-
-		<drawerType>RealtimeOnly</drawerType>
-		<graphicData>
-			<texPath>astra_slime_bw</texPath>
-			<graphicClass>Graphic_Single</graphicClass>
-			<drawSize>(0.65,0.65)</drawSize>
-		</graphicData>
-
-		<stackLimit>1</stackLimit>
-		<statBases>
-			<MarketValue>1000</MarketValue>
-			<Mass>1.51</Mass>
-			<Flammability>1</Flammability>
-			<Beauty>0</Beauty>
-		</statBases>
-
-		<comps>
-			<li Class="AstraTech.CompProperties_AstraSkillCard">
-			</li>
-		</comps>
-
-	</ThingDef>
-
-
 	<ThingDef ParentName="BodyPartBionicBase">
 		<defName>astra_brain_socket</defName>
 		<label>Astra Brain Socket</label>
@@ -134,5 +106,46 @@
 		</appliedOnFixedBodyParts>
 		<addsHediff>astra_brain_socket</addsHediff>
 	</RecipeDef>
+
+
+
+
+
+
+
+	<!--- ==================== Schematics ===================== -->
+
+	<ThingDef ParentName="ResourceBase">
+		<defName>astra_skill_card</defName>
+		<label>Astra Schematics (Skill)</label>
+		<description>Desc</description>
+		<category>Item</category>
+		<thingCategories>
+			<li>Artifacts</li>
+		</thingCategories>
+		<tickerType>Normal</tickerType>
+
+		<drawerType>RealtimeOnly</drawerType>
+		<graphicData>
+			<texPath>schematics_skill_encoded</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+
+		<stackLimit>1</stackLimit>
+		<statBases>
+			<MarketValue>1000</MarketValue>
+			<Mass>1.51</Mass>
+			<Flammability>1</Flammability>
+			<Beauty>0</Beauty>
+		</statBases>
+
+		<comps>
+			<li Class="AstraTech.CompProperties_AstraSkillCard">
+			</li>
+		</comps>
+
+	</ThingDef>
+
 
 </Defs>

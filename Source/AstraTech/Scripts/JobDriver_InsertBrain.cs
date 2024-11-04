@@ -11,8 +11,8 @@ namespace AstraTech
 
         protected override void FinishAction()
         {
-            var brainItem = (ThingWithComps_AstraBrain)TargetA.Thing;
-            var blank = (Pawn)TargetB.Thing;
+            var brainItem = CastA<ThingWithComps_AstraBrain>();
+            var blank = CastB<Pawn>();
 
             blank.health.hediffSet.GetFirstHediff<Hediff_AstraBrainSocket>().InsertBrain(brainItem.brain);
             brainItem.Destroy();

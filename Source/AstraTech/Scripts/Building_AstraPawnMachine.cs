@@ -62,71 +62,81 @@ namespace AstraTech
 
             if (task == Task.None)
             {
-                yield return new FloatMenuOption("Start task: Blank creation", () =>
+                if (Map.reservationManager.IsReserved(this))
                 {
-                    StartTask_CreateBlank();
-                });
-
-                yield return new FloatMenuOption("Start task: Brain development", () =>
+                    var o = new FloatMenuOption("Not available: Someone is already using this machine", null);
+                    o.Disabled = true;
+                    yield return o;
+                }
+                else
                 {
-                    Find.Targeter.BeginTargeting(new TargetingParameters()
+                    yield return new FloatMenuOption("Start task: Blank creation", () =>
                     {
-                        canTargetPawns = false,
-                        mapObjectTargetsMustBeAutoAttackable = false,
-                        canTargetItems = true,
-                        canTargetBuildings = false,
-                        validator = (i) => i.Thing is ThingWithComps_AstraBrain
-                    }, (i) =>
-                    {
-                        brainInside = ((ThingWithComps_AstraBrain)i.Thing).brain;
-                        i.Thing.Destroy();
+                        StartTask_CreateBlank();
                     });
-                });
 
-                yield return new FloatMenuOption("Start task: Skill extraction", () =>
-                {
-                    Find.Targeter.BeginTargeting(new TargetingParameters()
+                    yield return new FloatMenuOption("Start task: Brain development", () =>
                     {
-                        canTargetPawns = true,
-                        mapObjectTargetsMustBeAutoAttackable = false,
-                        canTargetItems = false,
-                        onlyTargetColonistsOrPrisonersOrSlaves = true,
-                        canTargetBuildings = false,
-                    }, (i) =>
-                    {
-                        if (((Pawn)i.Thing).health.hediffSet.hediffs.Any(h => h.Bleeding))
+                        Find.Targeter.BeginTargeting(new TargetingParameters()
                         {
-                            Messages.Message("Target pawn is bleeding", MessageTypeDefOf.RejectInput);
-                        }
-                        else
+                            canTargetPawns = false,
+                            mapObjectTargetsMustBeAutoAttackable = false,
+                            canTargetItems = true,
+                            canTargetBuildings = false,
+                            validator = (i) => i.Thing is ThingWithComps_AstraBrain
+                        }, (i) =>
                         {
-                            FloatMenuUtility.MakeMenu(EnumerateSkillsForExtraction((Pawn)i), (f) => f.Label, (f) => f.action);
-                        }
-                        
-                    });
-                });
-
-                yield return new FloatMenuOption("Start task: Brain to Brain copy", () =>
-                {
-                    TargetingParameters parameters = new TargetingParameters()
-                    {
-                        canTargetPawns = false,
-                        mapObjectTargetsMustBeAutoAttackable = false,
-                        canTargetItems = true,
-                        validator = (i) => i.Thing is ThingWithComps_AstraBrain
-                    };
-
-                    Find.Targeter.BeginTargeting(parameters, (i1) =>
-                    {
-                        Find.Targeter.BeginTargeting(parameters, (i2) =>
-                        {
-                            AstraBrain origin = ((ThingWithComps_AstraBrain)i1.Thing).brain;
-                            AstraBrain target = ((ThingWithComps_AstraBrain)i2.Thing).brain;
-
-                            origin.CopyInnerPawnToBlank(target.innerPawn);
+                            brainInside = ((ThingWithComps_AstraBrain)i.Thing).brain;
+                            i.Thing.Destroy();
                         });
                     });
-                });
+
+                    yield return new FloatMenuOption("Start task: Skill extraction", () =>
+                    {
+                        Find.Targeter.BeginTargeting(new TargetingParameters()
+                        {
+                            canTargetPawns = true,
+                            mapObjectTargetsMustBeAutoAttackable = false,
+                            canTargetItems = false,
+                            onlyTargetColonistsOrPrisonersOrSlaves = true,
+                            canTargetBuildings = false,
+                        }, (i) =>
+                        {
+                            Pawn victim = (Pawn)i;
+                            if (victim.health.hediffSet.hediffs.Any(h => h.Bleeding))
+                            {
+                                Messages.Message("Target pawn is bleeding", MessageTypeDefOf.RejectInput);
+                            }
+                            else
+                            {
+                                FloatMenuUtility.MakeMenu(EnumerateSkillsForExtraction(selPawn, victim), (f) => f.Label, (f) => f.action);
+                            }
+
+                        });
+                    });
+
+                    yield return new FloatMenuOption("Start task: Brain to Brain copy", () =>
+                    {
+                        TargetingParameters parameters = new TargetingParameters()
+                        {
+                            canTargetPawns = false,
+                            mapObjectTargetsMustBeAutoAttackable = false,
+                            canTargetItems = true,
+                            validator = (i) => i.Thing is ThingWithComps_AstraBrain
+                        };
+
+                        Find.Targeter.BeginTargeting(parameters, (i1) =>
+                        {
+                            Find.Targeter.BeginTargeting(parameters, (i2) =>
+                            {
+                                AstraBrain origin = ((ThingWithComps_AstraBrain)i1.Thing).brain;
+                                AstraBrain target = ((ThingWithComps_AstraBrain)i2.Thing).brain;
+
+                                origin.CopyInnerPawnToBlank(target.innerPawn);
+                            });
+                        });
+                    });
+                }
             }
             else if (task == Task.SkillTraining)
             {
@@ -136,7 +146,7 @@ namespace AstraTech
             {
                 yield return new FloatMenuOption("Stop skill extraction", () =>
                 {
-                    StopTask_SkillExtraction();
+                    GenJob.TryGiveJob<JobDriver_StopSkillExtraction>(selPawn, this);
                 });
             }
         }
@@ -251,13 +261,25 @@ namespace AstraTech
             }
         }
 
-        private IEnumerable<FloatMenuOption> EnumerateSkillsForExtraction(Pawn pawn)
+        private IEnumerable<FloatMenuOption> EnumerateSkillsForExtraction(Pawn selPawn, Pawn pawn)
         {
             foreach (SkillRecord skill in pawn.skills.skills)
             {
                 yield return new FloatMenuOption(skill.def.LabelCap + ", " + skill.levelInt + ", " + skill.passion.GetLabel(), () =>
                 {
-                    StartTask_SkillExtraction(pawn, skill.def);
+                    skillToExtract = skill.def;
+
+                    MessageHelper.ShowCustomMessage(pawn, () =>
+                    {
+                        if (selPawn == pawn)
+                        {
+                            GenJob.TryGiveJob<JobDriver_EnterToSkillExtraction>(selPawn, pawn, this);
+                        }
+                        else
+                        {
+                            GenJob.TryGiveJob<JobDriver_CarryPawnToSkillExtraction>(selPawn, pawn, this);
+                        }
+                    });         
                 });
             }
         }
@@ -281,15 +303,13 @@ namespace AstraTech
             activeSkillCard = null;
         }
 
-        public void StartTask_SkillExtraction(Pawn victim, SkillDef skillToExtract)
+        public void StartTask_SkillExtraction(Pawn victim)
         {
             task = Task.SkillExtracting;
-            ticksLeft = GenDate.TicksPerHour * 1;
+            ticksLeft = GenDate.TicksPerHour * 6;
 
-            this.pawnInside = victim;
+            pawnInside = victim;
             victim.DeSpawn();
-
-            this.skillToExtract = skillToExtract;
         }
         public void StopTask_SkillExtraction()
         {

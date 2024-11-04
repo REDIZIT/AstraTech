@@ -33,7 +33,7 @@ namespace AstraTech
         private static FieldInfo lastJobDriverMadeField = typeof(Job).GetField("lastJobDriverMade", BindingFlags.Instance | BindingFlags.NonPublic);
         private static FieldInfo cachedDriverField = typeof(Job).GetField("cachedDriver", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public static bool TryGiveJob<TJobDriver>(Pawn pawn, Thing targetA, Thing targetB) where TJobDriver : JobDriver
+        public static bool TryGiveJob<TJobDriver>(Pawn actor, Thing targetA, Thing targetB = null) where TJobDriver : JobDriver
         {
             // Create a job
             Job job = new Job(AstraDefOf.job_astra_haul_and_do);
@@ -42,7 +42,7 @@ namespace AstraTech
 
             // Copy Job.MakeDriver logic
             TJobDriver driver = Activator.CreateInstance<TJobDriver>();
-            driver.pawn = pawn;
+            driver.pawn = actor;
             driver.job = job;
             lastJobDriverMadeField.SetValue(job, driver);
 
@@ -50,7 +50,7 @@ namespace AstraTech
             cachedDriverField.SetValue(job, driver);
 
             // Give a job
-            return pawn.jobs.TryTakeOrderedJob(job);
+            return actor.jobs.TryTakeOrderedJob(job);
         }
     }
 }

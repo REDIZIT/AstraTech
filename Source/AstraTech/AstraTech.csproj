@@ -68,6 +68,10 @@
     <Compile Include="Scripts\Building_AstraBlueprintHolder.cs" />
     <Compile Include="Scripts\Building_AstraCardsBank.cs" />
     <Compile Include="Scripts\Building_AstraPawnMachine.cs" />
+    <Compile Include="Scripts\JobDriver_CarryPawnToSkillExtraction.cs" />
+    <Compile Include="Scripts\MessageHelper.cs" />
+    <Compile Include="Scripts\Mod\Mod.cs" />
+    <Compile Include="Scripts\Mod\ModSettings.cs" />
     <Compile Include="Scripts\Patches\FloatMenuOptionInjector.cs" />
     <Compile Include="Scripts\GenJob.cs" />
     <Compile Include="Scripts\Hediff_AstraBrainSocket.cs" />
