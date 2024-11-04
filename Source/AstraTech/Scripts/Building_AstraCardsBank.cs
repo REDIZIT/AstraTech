@@ -15,7 +15,7 @@ namespace AstraTech
 
         public Building_AstraCardsBank()
         {
-            itemsInside = new ThingOwner<Thing>(this, true);
+            itemsInside = new ThingOwner<Thing>(this, false);
         }
 
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
