@@ -7,7 +7,7 @@
 		<description>Desc</description>
 
 		<hediffClass>AstraTech.Hediff_AstraBrainSocket</hediffClass>
-		<initialSeverity>0</initialSeverity>
+		<initialSeverity>0.5</initialSeverity>
 
 		<stages>
 			<li>

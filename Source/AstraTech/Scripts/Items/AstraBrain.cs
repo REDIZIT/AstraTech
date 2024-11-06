@@ -47,6 +47,12 @@ namespace AstraTech
             }
         }
 
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Deep.Look(ref innerPawn, nameof(innerPawn));
+        }
+
         public override string GetInspectString()
         {
             if (IsUnstable)
@@ -277,11 +283,6 @@ namespace AstraTech
             ThoughtHandler blankThoughts = p.needs.mood.thoughts;
             blankThoughts.memories.Memories.Clear();
             blankThoughts.memories.Memories.AddRange(brainThoughts.memories.Memories);
-        }
-
-        public void ExposeData()
-        {
-            Scribe_Deep.Look(ref innerPawn, nameof(innerPawn));
         }
 
         public Pawn GetPawn()

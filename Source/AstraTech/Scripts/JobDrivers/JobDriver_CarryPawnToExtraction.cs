@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RimWorld;
+using System.Collections.Generic;
 using Verse;
 using Verse.AI;
 
@@ -18,7 +19,6 @@ namespace AstraTech
             var victim = CastA<Pawn>();
             var machine = CastB<Building_AstraPawnMachine>();
 
-            pawn.carryTracker.TryDropCarriedThing(pawn.Position, ThingPlaceMode.Near, out _);
             machine.StartTask_Extraction(victim);
         }
     }

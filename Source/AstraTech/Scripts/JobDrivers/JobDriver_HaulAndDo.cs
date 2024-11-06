@@ -51,9 +51,12 @@ namespace AstraTech
             {
                 finishToil.AddFinishAction(() =>
                 {
-                    var dropToil = Toils_Haul.DropCarriedThing();
-                    dropToil.actor = pawn;
-                    dropToil.initAction();
+                    if (pawn.IsCarrying())
+                    {
+                        var dropToil = Toils_Haul.DropCarriedThing();
+                        dropToil.actor = pawn;
+                        dropToil.initAction();
+                    }
                 });
             }
 
