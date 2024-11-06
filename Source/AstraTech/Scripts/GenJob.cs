@@ -35,6 +35,13 @@ namespace AstraTech
 
         public static bool TryGiveJob<TJobDriver>(Pawn actor, Thing targetA, Thing targetB = null) where TJobDriver : JobDriver
         {
+            Job job = CreateJob<TJobDriver>(actor, targetA, targetB);
+
+            // Give a job
+            return actor.jobs.TryTakeOrderedJob(job);
+        }
+        public static Job CreateJob<TJobDriver>(Pawn actor, Thing targetA, Thing targetB = null) where TJobDriver : JobDriver
+        {
             // Create a job
             Job job = new Job(AstraDefOf.job_astra_haul_and_do);
             job.targetA = targetA;
@@ -49,8 +56,7 @@ namespace AstraTech
             // Place custom driver into cache (Harmony patch will block Job.MakeDriver and force it to use cachedDriver only)
             cachedDriverField.SetValue(job, driver);
 
-            // Give a job
-            return actor.jobs.TryTakeOrderedJob(job);
+            return job;
         }
     }
 }

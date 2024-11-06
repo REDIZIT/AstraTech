@@ -2,3 +2,5 @@
 *.cache
 Source/AstraTech/.vs
 *.dds
+Source/AstraTech/obj
+Source/AstraTech/bin

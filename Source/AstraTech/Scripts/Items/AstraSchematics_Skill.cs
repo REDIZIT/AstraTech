@@ -4,7 +4,7 @@ using Verse;
 
 namespace AstraTech
 {
-    public class AstraSchematics_Skill : AstraSchematics
+    public class AstraSchematics_Skill : AstraSchematics, IExposable
     {
         public SkillDef skillDef;
         public int level;
@@ -20,6 +20,14 @@ namespace AstraTech
                 level = Rand.RangeInclusive(0, 20);
                 passion = (Passion)Rand.RangeInclusive(0, 2);
             }
+        }
+
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Defs.Look(ref skillDef, nameof(skillDef));
+            Scribe_Values.Look(ref level, nameof(level));
+            Scribe_Values.Look(ref passion, nameof(passion));
         }
 
         public override string GetInspectString()

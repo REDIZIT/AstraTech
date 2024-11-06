@@ -23,4 +23,13 @@
 		<verb>create cube</verb>
 		<gerund>creating cube</gerund>
 	</WorkGiverDef>
+
+	<WorkGiverDef>
+		<defName>workgiver_astra_carry_schematics_to_bank</defName>
+		<giverClass>AstraTech.WorkGiver_CarrySchematicsToBank</giverClass>
+		<workType>Hauling</workType>
+		<priorityInType>50</priorityInType>
+		<verb>carry schematics to bank</verb>
+		<gerund>carrying schematics to bank</gerund>
+	</WorkGiverDef>
 </Defs>
