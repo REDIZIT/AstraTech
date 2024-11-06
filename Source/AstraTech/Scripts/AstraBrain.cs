@@ -9,7 +9,7 @@ namespace AstraTech
     {
         public Pawn innerPawn;
 
-        private static HashSet<NeedDef> brainRelatedNeeds = new HashSet<NeedDef>()
+        public static HashSet<NeedDef> brainRelatedNeeds = new HashSet<NeedDef>()
         {
             AstraDefOf.Mood,
             //AstraDefOf.Rest,
@@ -21,6 +21,15 @@ namespace AstraTech
             AstraDefOf.Indoors,
             //AstraDefOf.DrugDesire,
             AstraDefOf.RoomSize,
+        };
+
+        public static HashSet<TraitDef> bodyRelatedTraits = new HashSet<TraitDef>()
+        {
+            TraitDefOf.AnnoyingVoice,
+            TraitDefOf.CreepyBreathing,
+            DefDatabase<TraitDef>.GetNamed("Beauty"),
+            DefDatabase<TraitDef>.GetNamed("Immunity"),
+            DefDatabase<TraitDef>.GetNamed("Tough"),
         };
 
         //private static FieldInfo cachedThoughtsField = typeof(SituationalThoughtHandler).GetField("cachedThoughts", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -44,9 +53,17 @@ namespace AstraTech
                 pawnSkill.passion = Passion.None;
             }
 
-            p.story.traits.allTraits.Clear();
-            p.story.AllBackstories.Clear();
 
+            // Remove only brain related traits
+            p.story.traits.allTraits.RemoveAll(t => bodyRelatedTraits.Contains(t.def) == false);
+
+
+            // Clear story
+            p.story.AllBackstories.Clear();
+            p.story.Childhood = AstraDefOf.astra_blank;
+            p.story.Adulthood = AstraDefOf.astra_blank_adult;
+
+            // Clear relationships
             p.relations.ClearAllRelations();
 
 
@@ -100,7 +117,6 @@ namespace AstraTech
             p.Name = innerPawn.Name;
             p.ageTracker.AgeChronologicalTicks = innerPawn.ageTracker.AgeChronologicalTicks;
 
-
             // Copy story
             Pawn_StoryTracker newStory = new Pawn_StoryTracker(p);
             Pawn_StoryTracker oldStory = p.story;
@@ -111,11 +127,13 @@ namespace AstraTech
             newStory.hairDef = oldStory.hairDef;
             newStory.SkinColorBase = oldStory.SkinColorBase;
 
+            // Add only brain related traits
             newStory.traits.allTraits.Clear();
             newStory.traits.allTraits.AddRange(brainStory.traits.allTraits);
 
             newStory.AllBackstories.Clear();
-            newStory.AllBackstories.AddRange(brainStory.AllBackstories);
+            newStory.Childhood = brainStory.Childhood;
+            newStory.Adulthood = brainStory.Adulthood;
 
             p.story = newStory;
 

@@ -14,9 +14,10 @@ namespace AstraTech
 
         private Vector2 scrollPos;
         private AstraSchematics activeSkillCard => Building.schematicsInsideBank;
-        private AstraSchematics[] skillCards;
+        private AstraSchematics[] availableSchematics;
 
         private Texture2D PassionMinorIcon, PassionMajorIcon, rightArrow;
+        private float tipY;
 
         public ITab_Brain_Skill_Installation()
         {
@@ -51,19 +52,22 @@ namespace AstraTech
             Widgets.Label(labelRect, "Available skill cards");
 
             Rect scrollView = new Rect(body.x, labelRect.yMax, body.width, body.height - labelRect.yMax);
-            DrawCards(scrollView, skillCards.OrderByDescending(c => c == activeSkillCard));
+            DrawCards(scrollView, availableSchematics.OrderByDescending(c => c == activeSkillCard));
         }
 
         private void OnSchematicsContentChanged()
         {
-            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraSchematicsBank)t).GetDirectlyHeldThings()).Where(t => t is AstraSchematics_Skill || t is AstraSchematics_Trait).Cast<AstraSchematics>().ToArray();
+            availableSchematics = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading
+                .SelectMany(t => ((Building_AstraSchematicsBank)t).GetDirectlyHeldThings())
+                .Where(t => t is AstraSchematics_Skill || t is AstraSchematics_Trait)
+                .Cast<AstraSchematics>().ToArray();
         }
 
         private void DrawCards(Rect body, IEnumerable<Thing> items)
         {
             Rect scrollView = new Rect(body.x, body.y, body.width, body.height);
 
-            Widgets.BeginScrollView(scrollView, ref scrollPos, new Rect(0, 0, scrollView.width, skillCards.Length * (25 + 1)));
+            Widgets.BeginScrollView(scrollView, ref scrollPos, new Rect(0, 0, scrollView.width, availableSchematics.Length * (25 + 1)));
 
             float offset = 0;
             foreach (Thing item in items)
@@ -138,7 +142,7 @@ namespace AstraTech
                             }
                         }
                     }
-                    else
+                    else if (brainSkill.levelInt < card.level)
                     {
                         if (Widgets.ButtonText(actionRect, "Start training"))
                         {
@@ -178,12 +182,13 @@ namespace AstraTech
                         Widgets.DrawHighlightIfMouseover(lotRect);
                     }
 
-                    Rect labelRect = new Rect(12, y, 120, lotRect.height);
+                    float actionXOffset = 67;
+                    Rect labelRect = new Rect(12, y, 120 + actionXOffset, lotRect.height);
                     Text.Anchor = TextAnchor.MiddleLeft;
                     Widgets.Label(labelRect, trait.TraitLabel);
+                    Text.Anchor = 0;
 
-                    Text.Anchor = TextAnchor.MiddleLeft;
-                    float x = 140;
+                    float x = 140 + actionXOffset;
 
 
                     Rect actionRect = new Rect(x + 6, y + 1, lotRect.width - x - 6 * 2, lotRect.height - 2);
@@ -197,11 +202,29 @@ namespace AstraTech
                             }
                         }
                     }
-                    else if (hasSameTrait == false)
+                    else 
                     {
-                        if (Widgets.ButtonText(actionRect, "Start training"))
+                        if (AstraBrain.bodyRelatedTraits.Contains(trait.traitDef))
                         {
-                            Building.StartTask_TraitTraining(trait);
+                            Text.Anchor = TextAnchor.MiddleLeft;
+                            Widgets.Label(actionRect, ref tipY, "Not applicable", "This is not character trait, but a feature of the body.");
+                            Text.Anchor = 0;
+                        }
+                        else
+                        {
+                            if (hasSameTrait == false)
+                            {
+                                if (Widgets.ButtonText(actionRect, "Start training"))
+                                {
+                                    Building.StartTask_TraitTraining(trait);
+                                }
+                            }
+                            else
+                            {
+                                Text.Anchor = TextAnchor.MiddleCenter;
+                                Widgets.Label(actionRect, "Already has");
+                                Text.Anchor = 0;
+                            }
                         }
                     }
 

@@ -18,6 +18,8 @@ namespace AstraTech
         public static ThingDef astra_brain, astra_cards_bank, astra_schematics_skill, astra_schematics_trait;
         public static HediffDef astra_brain_socket;
 
+        public static BackstoryDef astra_blank, astra_blank_adult;
+
 
         // Vanilla Rimworld needs (somewhy there is almost nothing inside NeedDefOf)
         public static NeedDef Mood, Food, Rest, Joy, Beauty, Comfort, Outdoors, Indoors, DrugDesire, RoomSize;

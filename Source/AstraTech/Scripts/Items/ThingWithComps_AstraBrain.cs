@@ -30,6 +30,12 @@ namespace AstraTech
                 brain = new AstraBrain(Building_AstraPawnMachine.CreateBlank());
                 brain.GetPawn().Name = new NameSingle("Unnamed");
             }
+
+            if (brain.innerPawn.story.Childhood == null)
+            {
+                brain.innerPawn.story.Childhood = AstraDefOf.astra_blank;
+                brain.innerPawn.story.Adulthood = AstraDefOf.astra_blank_adult;
+            }
         }
 
         public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)

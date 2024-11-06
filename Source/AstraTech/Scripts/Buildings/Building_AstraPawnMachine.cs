@@ -270,8 +270,6 @@ namespace AstraTech
             }
             else
             {
-                Log.Message("Task completed: " + task);
-
                 if (task == Task.CreateBlank)
                 {
                     Pawn p = CreateBlankWithSocket();
@@ -439,7 +437,7 @@ namespace AstraTech
         {
             foreach (Trait trait in pawn.story.traits.allTraits)
             {
-                yield return new FloatMenuOption(trait.LabelCap, () =>
+                FloatMenuOption option =  new FloatMenuOption(trait.LabelCap, () =>
                 {
                     traitToExtract = trait.def;
 
@@ -455,6 +453,14 @@ namespace AstraTech
                         }
                     });
                 });
+
+                if (AstraBrain.bodyRelatedTraits.Contains(trait.def))
+                {
+                    option.Disabled = true;
+                    option.Label = "Not extractable: " + option.Label;
+                }
+
+                yield return option;
             }
         }
 
