@@ -7,6 +7,7 @@
 		<description>Desc</description>
 
 		<hediffClass>AstraTech.Hediff_AstraBrainSocket</hediffClass>
+		<initialSeverity>0</initialSeverity>
 
 		<stages>
 			<li>
@@ -28,6 +29,69 @@
 				<statOffsets>
 					<GlobalLearningFactor>-1</GlobalLearningFactor>
 				</statOffsets>
+			</li>
+		</stages>
+
+	</HediffDef>
+
+	<HediffDef>
+		<defName>astra_brain_unstable_wear</defName>
+		<label>Brain wear</label>
+		<description>Desc</description>
+
+		<hediffClass>AstraTech.Hediff_AstraBrainUnstableWear</hediffClass>
+		<initialSeverity>0</initialSeverity>
+
+		<stages>
+			<li>
+				<label>No wear</label>
+				<minSeverity>0</minSeverity>
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>1</setMax>
+					</li>
+				</capMods>
+			</li>
+			<li>
+				<label>Light wear</label>
+				<minSeverity>0.25</minSeverity>
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.9</setMax>
+					</li>
+				</capMods>
+			</li>
+			<li>
+				<label>Medium wear</label>
+				<minSeverity>0.5</minSeverity>
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.7</setMax>
+					</li>
+				</capMods>
+			</li>
+			<li>
+				<label>Heavy wear</label>
+				<minSeverity>0.75</minSeverity>
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.30</setMax>
+					</li>
+				</capMods>
+			</li>
+			<li>
+				<label>Critical wear</label>
+				<minSeverity>1</minSeverity>
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.01</setMax>
+					</li>
+				</capMods>
 			</li>
 		</stages>
 

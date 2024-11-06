@@ -65,11 +65,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Scripts\AstraBrain.cs" />
+    <Compile Include="Scripts\AstraBrainDef.cs" />
     <Compile Include="Scripts\AstraDefOf.cs" />
     <Compile Include="Scripts\Buildings\Building_AstraBlueprintHolder.cs" />
     <Compile Include="Scripts\Buildings\Building_AstraSchematicsBank.cs" />
     <Compile Include="Scripts\Buildings\Building_AstraPawnMachine.cs" />
+    <Compile Include="Scripts\Hediff_AstraBrainUnstableWear.cs" />
+    <Compile Include="Scripts\IPawnContainer.cs" />
     <Compile Include="Scripts\ITabs\ITab_ContentsCards.cs" />
     <Compile Include="Scripts\Items\AstraSchematics_Trait.cs" />
     <Compile Include="Scripts\JobDrivers\JobDriver_CarryPawnToExtraction.cs" />
@@ -108,7 +110,7 @@
     <Compile Include="Scripts\Items\ThingComp_AstraSlime.cs" />
     <Compile Include="Scripts\Items\ThingComp_AstraSlimeInactive.cs" />
     <Compile Include="Scripts\ThingSetMaker_Astra.cs" />
-    <Compile Include="Scripts\Items\ThingWithComps_AstraBrain.cs" />
+    <Compile Include="Scripts\Items\AstraBrain.cs" />
     <Compile Include="Scripts\Items\AstraSchematics.cs" />
     <Compile Include="Scripts\ThoughtWorker_Slime.cs" />
     <Compile Include="Scripts\ToStringUtils.cs" />

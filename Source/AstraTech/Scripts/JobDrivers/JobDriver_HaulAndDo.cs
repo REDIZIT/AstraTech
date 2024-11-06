@@ -47,7 +47,7 @@ namespace AstraTech
             };
             finishToil.WithProgressBarToilDelay(TargetIndex.B);
 
-            if (DropBeforeFinishAction && pawn.IsCarrying())
+            if (DropBeforeFinishAction)
             {
                 finishToil.AddFinishAction(() =>
                 {

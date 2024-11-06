@@ -6,16 +6,16 @@ namespace AstraTech
     {
         public override string GetReport()
         {
-            return "Inserting brain";
+            return "Inserting brain into Blank";
         }
 
         protected override void FinishAction()
         {
-            var brainItem = CastA<ThingWithComps_AstraBrain>();
+            var brainItem = CastA<AstraBrain>();
             var blank = CastB<Pawn>();
 
-            blank.health.hediffSet.GetFirstHediff<Hediff_AstraBrainSocket>().InsertBrain(brainItem.brain);
-            brainItem.Destroy();
+            blank.health.hediffSet.GetFirstHediff<Hediff_AstraBrainSocket>().InsertBrain(brainItem);
+            brainItem.DeSpawn();
         }
     }
 }

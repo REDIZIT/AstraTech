@@ -1,10 +1,16 @@
-﻿namespace AstraTech
+﻿
+namespace AstraTech
 {
     public class JobDriver_InsertBrainIntoMachine : JobDriver_HaulAndDo
     {
-        protected override void FinishAction()
+        public override string GetReport()
         {
-            var brain = CastA<ThingWithComps_AstraBrain>();
+            return "Inserting brain into machine";
+        }
+
+        protected override void FinishAction()
+        {            
+            var brain = CastA<AstraBrain>();
             var machine = CastB<Building_AstraPawnMachine>();
 
             machine.InsertBrain(brain);

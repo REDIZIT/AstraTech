@@ -113,7 +113,7 @@ namespace AstraTech
                             mapObjectTargetsMustBeAutoAttackable = false,
                             canTargetItems = true,
                             canTargetBuildings = false,
-                            validator = (i) => i.Thing is ThingWithComps_AstraBrain
+                            validator = (i) => i.Thing is AstraBrain
                         }, (i) =>
                         {
                             GenJob.TryGiveJob<JobDriver_InsertBrainIntoMachine>(selPawn, i.Thing, this);
@@ -176,15 +176,15 @@ namespace AstraTech
                             canTargetPawns = false,
                             mapObjectTargetsMustBeAutoAttackable = false,
                             canTargetItems = true,
-                            validator = (i) => i.Thing is ThingWithComps_AstraBrain
+                            validator = (i) => i.Thing is AstraBrain
                         };
 
                         Find.Targeter.BeginTargeting(parameters, (i1) =>
                         {
                             Find.Targeter.BeginTargeting(parameters, (i2) =>
                             {
-                                AstraBrain origin = ((ThingWithComps_AstraBrain)i1.Thing).brain;
-                                AstraBrain target = ((ThingWithComps_AstraBrain)i2.Thing).brain;
+                                AstraBrain origin = ((AstraBrain)i1.Thing);
+                                AstraBrain target = ((AstraBrain)i2.Thing);
 
                                 origin.CopyInnerPawnToBlank(target.innerPawn);
                             });
@@ -392,22 +392,21 @@ namespace AstraTech
             skillToExtract = null;
         }
 
-        public void InsertBrain(ThingWithComps_AstraBrain item)
+        public void InsertBrain(AstraBrain item)
         {
-            brainInside = item.brain;
-            item.Destroy();
+            brainInside = item;
+            item.DeSpawn();
         }
         public Thing ExtractBrain()
         {
             task = Task.None;
             ticksLeft = 0;
 
-            ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(AstraDefOf.astra_brain);
-            item.brain = brainInside;
-            GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
+            AstraBrain temp = brainInside;
+            GenPlace.TryPlaceThing(brainInside, Position, Map, ThingPlaceMode.Near);
             brainInside = null;
 
-            return item;
+            return temp;
         }
 
 

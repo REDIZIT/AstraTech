@@ -15,8 +15,9 @@ namespace AstraTech
 
 
         public static JobDef job_astra_haul_and_do;
-        public static ThingDef astra_brain, astra_cards_bank, astra_schematics_skill, astra_schematics_trait;
-        public static HediffDef astra_brain_socket;
+        public static AstraBrainDef astra_brain;
+        public static ThingDef astra_cards_bank, astra_schematics_skill, astra_schematics_trait;
+        public static HediffDef astra_brain_socket, astra_brain_unstable_wear;
 
         public static BackstoryDef astra_blank, astra_blank_adult;
 

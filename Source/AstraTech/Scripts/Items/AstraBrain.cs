@@ -5,9 +5,100 @@ using Verse;
 
 namespace AstraTech
 {
-    public class AstraBrain : IExposable, IPawnContainer
+    public class AstraBrain : ThingWithComps, IPawnContainer
     {
+        public override string Label => "Astra Brain (" + GetPawn().NameFullColored + ")";
+        public bool IsUnstable => Def.unstableWorktimeInDays > 0;
+
+        public int unstableWorktimeInTicksLeft = -1;
+
         public Pawn innerPawn;
+        public AstraBrainDef Def
+        {
+            get
+            {
+                if (_def == null) _def = (AstraBrainDef)def;
+                return _def;
+            }
+        }
+
+        private AstraBrainDef _def;
+
+        public override void SpawnSetup(Map map, bool respawningAfterLoad)
+        {
+            base.SpawnSetup(map, respawningAfterLoad);
+
+            // If just crafter or spawned via DevTools
+            if (innerPawn == null)
+            {
+                innerPawn = Building_AstraPawnMachine.CreateBlank();
+                innerPawn.Name = new NameSingle("Unnamed");
+            }
+
+            if (innerPawn.story.Childhood == null)
+            {
+                innerPawn.story.Childhood = AstraDefOf.astra_blank;
+                innerPawn.story.Adulthood = AstraDefOf.astra_blank_adult;
+            }
+
+            if (IsUnstable && unstableWorktimeInTicksLeft == -1)
+            {
+                unstableWorktimeInTicksLeft = (int)(Def.unstableWorktimeInDays * GenDate.TicksPerDay);
+            }
+        }
+
+        public override string GetInspectString()
+        {
+            if (IsUnstable)
+            {
+                return "Wear: " + (100 * unstableWorktimeInTicksLeft / (Def.unstableWorktimeInDays * GenDate.TicksPerDay)) + "%";
+            }
+            else
+            {
+                return base.GetInspectString();
+            }
+        }
+
+        public override IEnumerable<FloatMenuOption> GetFloatMenuOptions(Pawn selPawn)
+        {
+            foreach (var o in base.GetFloatMenuOptions(selPawn))
+            {
+                yield return o;
+            }
+
+            yield return new FloatMenuOption("Insert into blank or machine", () =>
+            {
+                Find.Targeter.BeginTargeting(new TargetingParameters()
+                {
+                    canTargetPawns = true,
+                    onlyTargetControlledPawns = true,
+                    mapObjectTargetsMustBeAutoAttackable = false,
+                    canTargetItems = false,
+                    validator = (i) =>
+                    {
+                        bool reserved = Map.reservationManager.IsReserved(i.Thing);
+                        if (reserved) return false;
+
+                        if (i.Thing is Pawn pawn && pawn.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain == null) return true;
+                        if (i.Thing is Building_AstraPawnMachine machine && machine.brainInside == null) return true;
+
+                        return false;
+                    }
+                }, (i) =>
+                {
+                    if (i.Thing is Pawn blank)
+                    {
+                        GenJob.TryGiveJob<JobDriver_InsertBrainIntoBlank>(selPawn, this, blank);
+                    }
+                    else if (i.Thing is Building_AstraPawnMachine machine)
+                    {
+                        GenJob.TryGiveJob<JobDriver_InsertBrainIntoMachine>(selPawn, this, machine);
+                    }                   
+                });
+            });
+        }
+
+        
 
         public static HashSet<NeedDef> brainRelatedNeeds = new HashSet<NeedDef>()
         {
@@ -33,15 +124,6 @@ namespace AstraTech
         };
 
         //private static FieldInfo cachedThoughtsField = typeof(SituationalThoughtHandler).GetField("cachedThoughts", BindingFlags.Instance | BindingFlags.NonPublic);
-
-        public AstraBrain()
-        {
-        }
-
-        public AstraBrain(Pawn pawn)
-        {
-            this.innerPawn = pawn;
-        }
 
         public static void ClearPawn(Pawn p)
         {
@@ -169,7 +251,7 @@ namespace AstraTech
 
             // Create brain needs
             // Give a basic pawn Need set
-            p.needs.AddOrRemoveNeedsAsAppropriate(); 
+            p.needs.AddOrRemoveNeedsAsAppropriate();
             innerPawn.needs.AddOrRemoveNeedsAsAppropriate();
             foreach (NeedDef needDef in brainRelatedNeeds)
             {

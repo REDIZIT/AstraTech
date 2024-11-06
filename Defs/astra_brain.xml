@@ -4,24 +4,15 @@
 
 	<!--- ==================== Brain and Brain socket ===================== -->
 
-
-	<ThingDef ParentName="ResourceBase">
-		<defName>astra_brain</defName>
-		<label>Astra Brain</label>
-		<description>Desc</description>
+	<AstraTech.AstraBrainDef Name="astra_brain_base" ParentName="ResourceBase" Abstract="true">
 		<category>Item</category>
-		<thingClass>AstraTech.ThingWithComps_AstraBrain</thingClass>
+		<thingClass>AstraTech.AstraBrain</thingClass>
 		<thingCategories>
 			<li>Artifacts</li>
 		</thingCategories>
 		<tickerType>Normal</tickerType>
 
 		<drawerType>RealtimeOnly</drawerType>
-		<graphicData>
-			<texPath>astra_brain</texPath>
-			<graphicClass>Graphic_Single</graphicClass>
-			<drawSize>(0.7,0.7)</drawSize>
-		</graphicData>
 
 		<stackLimit>1</stackLimit>
 		<statBases>
@@ -37,10 +28,67 @@
 			<li>AstraTech.ITab_Brain_Needs</li>
 		</inspectorTabs>
 
+	</AstraTech.AstraBrainDef>
+
+	<AstraTech.AstraBrainDef ParentName="astra_brain_base">
+		<defName>astra_brain</defName>
+		<label>Astra Brain</label>
+		<description>Desc</description>
+
+		<graphicData>
+			<texPath>astra_brain</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.7,0.7)</drawSize>
+		</graphicData>
+
+		<statBases>
+			<MarketValue>1000</MarketValue>
+			<Mass>1.51</Mass>
+			<Flammability>1</Flammability>
+			<Beauty>0</Beauty>
+			<WorkToMake>26000</WorkToMake>
+		</statBases>
+
 		<costList>
 			<Plasteel>30</Plasteel>
 			<ComponentSpacer>5</ComponentSpacer>
 			<Gold>40</Gold>
+		</costList>
+
+		<recipeMaker>
+			<workSpeedStat>GeneralLaborSpeed</workSpeedStat>
+			<workSkill>Crafting</workSkill>
+			<effectWorking>Smith</effectWorking>
+			<soundWorking>Recipe_Smith</soundWorking>
+			<unfinishedThingDef>UnfinishedHealthItemBionic</unfinishedThingDef>
+			<skillRequirements>
+				<Crafting>12</Crafting>
+			</skillRequirements>
+			<researchPrerequisite>Bionics</researchPrerequisite>
+			<recipeUsers>
+				<li>FabricationBench</li>
+			</recipeUsers>
+		</recipeMaker>
+
+	</AstraTech.AstraBrainDef>
+
+	<AstraTech.AstraBrainDef ParentName="astra_brain_base">
+		<defName>astra_brain_unstable</defName>
+		<label>Astra Brain (Unstable)</label>
+		<description>Desc</description>
+
+		<unstableWorktimeInDays>30</unstableWorktimeInDays>
+
+		<graphicData>
+			<texPath>astra_brain_unstable</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.7,0.7)</drawSize>
+		</graphicData>
+
+		<costList>
+			<Plasteel>20</Plasteel>
+			<ComponentIndustrial>5</ComponentIndustrial>
+			<Gold>10</Gold>
 		</costList>
 
 		<recipeMaker>
@@ -55,11 +103,11 @@
 			<researchPrerequisite>Bionics</researchPrerequisite>
 			<recipeUsers>
 				<li>FabricationBench</li>
+				<li>TableMachining</li>
 			</recipeUsers>
-			<displayPriority>300</displayPriority>
 		</recipeMaker>
 
-	</ThingDef>
+	</AstraTech.AstraBrainDef>
 
 	<ThingDef ParentName="BodyPartBionicBase">
 		<defName>astra_brain_socket</defName>

@@ -29,23 +29,28 @@ namespace AstraTech
             this.brain = brain;
             brain.CopyInnerPawnToBlank(pawn);
             Severity = 1;
+
+            if (brain.IsUnstable)
+            {
+                pawn.health.AddHediff(AstraDefOf.astra_brain_unstable_wear, pawn.health.hediffSet.GetBrain());
+            }
         }
         public void ExtractBrain()
         {
             brain.CopyReplicantToInnerPawn(pawn);
 
-            ThingWithComps_AstraBrain item = (ThingWithComps_AstraBrain)ThingMaker.MakeThing(DefDatabase<ThingDef>.GetNamed("astra_brain"));
-            item.brain = brain;
-            GenPlace.TryPlaceThing(item, pawn.Position - new IntVec3(0, 0, 1), pawn.MapHeld, ThingPlaceMode.Near);
+            //AstraBrain item = (AstraBrain)ThingMaker.MakeThing(DefDatabase<ThingDef>.GetNamed("astra_brain"));
+            //item.brain = brain;
+            GenPlace.TryPlaceThing(brain, pawn.Position - new IntVec3(0, 0, 1), pawn.MapHeld, ThingPlaceMode.Near);
 
-            this.brain = null;
+            brain = null;
             AstraBrain.ClearPawn(pawn);
             Severity = 0.5f;
-        }
-    }
 
-    public interface IPawnContainer
-    {
-        Pawn GetPawn();
+            if (pawn.health.hediffSet.TryGetHediff(out Hediff_AstraBrainUnstableWear wear))
+            {
+                pawn.health.RemoveHediff(wear);
+            }
+        }
     }
 }
