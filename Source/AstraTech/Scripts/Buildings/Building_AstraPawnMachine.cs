@@ -434,32 +434,41 @@ namespace AstraTech
         }
         private IEnumerable<FloatMenuOption> EnumerateTraitsForExtraction(Pawn selPawn, Pawn pawn)
         {
-            foreach (Trait trait in pawn.story.traits.allTraits)
+            if (pawn.story.traits.allTraits.Count == 0)
             {
-                FloatMenuOption option =  new FloatMenuOption(trait.LabelCap, () =>
+                FloatMenuOption o = new FloatMenuOption("Pawn has no any traits", null);
+                o.Disabled = true;
+                yield return o;
+            }
+            else
+            {
+                foreach (Trait trait in pawn.story.traits.allTraits)
                 {
-                    traitToExtract = trait.def;
-
-                    MessageHelper.ShowCustomMessage(pawn, () =>
+                    FloatMenuOption option = new FloatMenuOption(trait.LabelCap, () =>
                     {
-                        if (selPawn == pawn)
+                        traitToExtract = trait.def;
+
+                        MessageHelper.ShowCustomMessage(pawn, () =>
                         {
-                            GenJob.TryGiveJob<JobDriver_EnterToExtraction>(selPawn, pawn, this);
-                        }
-                        else
-                        {
-                            GenJob.TryGiveJob<JobDriver_CarryPawnToExtraction>(selPawn, pawn, this);
-                        }
+                            if (selPawn == pawn)
+                            {
+                                GenJob.TryGiveJob<JobDriver_EnterToExtraction>(selPawn, pawn, this);
+                            }
+                            else
+                            {
+                                GenJob.TryGiveJob<JobDriver_CarryPawnToExtraction>(selPawn, pawn, this);
+                            }
+                        });
                     });
-                });
 
-                if (AstraBrain.bodyRelatedTraits.Contains(trait.def))
-                {
-                    option.Disabled = true;
-                    option.Label = "Not extractable: " + option.Label;
+                    if (AstraBrain.bodyRelatedTraits.Contains(trait.def))
+                    {
+                        option.Disabled = true;
+                        option.Label = "Not extractable: " + option.Label;
+                    }
+
+                    yield return option;
                 }
-
-                yield return option;
             }
         }
 
@@ -468,7 +477,12 @@ namespace AstraTech
             GenPlace.TryPlaceThing(pawnInside, Position, Map, ThingPlaceMode.Near);
             pawnInside.Position = Position;
             BodyPartRecord brain = pawnInside.health.hediffSet.GetBrain();
+
+            Faction temp = pawnInside.Faction;
+            pawnInside.SetFactionDirect(null);
             pawnInside.health.AddHediff(HediffDefOf.MissingBodyPart, brain);
+            pawnInside.SetFactionDirect(temp);
+
             pawnInside = null;
         }
 

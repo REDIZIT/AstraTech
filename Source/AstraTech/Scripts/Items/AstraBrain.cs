@@ -51,13 +51,14 @@ namespace AstraTech
         {
             base.ExposeData();
             Scribe_Deep.Look(ref innerPawn, nameof(innerPawn));
+            Scribe_Values.Look(ref unstableWorktimeInTicksLeft, nameof(unstableWorktimeInTicksLeft));
         }
 
         public override string GetInspectString()
         {
             if (IsUnstable)
             {
-                return "Wear: " + (100 * unstableWorktimeInTicksLeft / (Def.unstableWorktimeInDays * GenDate.TicksPerDay)) + "%";
+                return "Wear: " + (100 * (1 - unstableWorktimeInTicksLeft / (Def.unstableWorktimeInDays * GenDate.TicksPerDay))) + "%";
             }
             else
             {
