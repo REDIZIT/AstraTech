@@ -8,12 +8,31 @@ namespace AstraTech
     public class Building_AstraPawnMachine : Building, IPawnContainer
     {
         public Pawn pawnInside;
-        public AstraBrain brainInside;/*, secondBrainInside;*/
-        public Thing activeSkillCard;
+        public AstraBrain brainInside;
         public SkillDef skillToExtract;
+
+        public Building_AstraSchematicsBank Bank
+        {
+            get
+            {
+                return _bank;
+            }
+            set
+            {
+                if (_bank != null)
+                {
+                    _bank.onSchematicsDrop -= OnSchematicsBankDrop;
+                }
+                _bank = value;
+                _bank.onSchematicsDrop += OnSchematicsBankDrop;
+            }
+        }
+        public AstraSchematics_Skill schematicsInsideBank;
 
         public Task task;
         public int ticksLeft;
+
+        private Building_AstraSchematicsBank _bank;
 
         public enum Task
         {
@@ -24,14 +43,28 @@ namespace AstraTech
             BrainToBrainCopy
         }
 
+        public override void SpawnSetup(Map map, bool respawningAfterLoad)
+        {
+            base.SpawnSetup(map, respawningAfterLoad);
+
+            if (_bank == null && task == Task.SkillTraining)
+            {
+                _bank = (Building_AstraSchematicsBank)schematicsInsideBank.holdingOwner.Owner;
+            }
+
+            if (_bank != null)
+            {
+                _bank.onSchematicsDrop += OnSchematicsBankDrop;
+            }
+        }
+
         public override void ExposeData()
         {
             base.ExposeData();
 
             Scribe_Deep.Look(ref pawnInside, nameof(pawnInside));
             Scribe_Deep.Look(ref brainInside, nameof(brainInside));
-            //Scribe_Deep.Look(ref secondBrainInside, nameof(secondBrainInside));
-            Scribe_Deep.Look(ref activeSkillCard, nameof(activeSkillCard));
+            Scribe_References.Look(ref schematicsInsideBank, nameof(schematicsInsideBank));
             Scribe_Defs.Look(ref skillToExtract, nameof(skillToExtract));
 
             Scribe_Values.Look(ref task, nameof(task));
@@ -213,19 +246,17 @@ namespace AstraTech
                     Pawn p = CreateBlankWithSocket();
                     GenSpawn.Spawn(p, Position, Map, WipeMode.Vanish);
 
-                    Messages.Message("Blank creation is completed", MessageTypeDefOf.TaskCompletion);
+                    Messages.Message("Blank creation is completed", this, MessageTypeDefOf.TaskCompletion);
                 }
                 else if (task == Task.SkillTraining)
                 {
-                    AstraSchematics_Skill skillCard = (AstraSchematics_Skill)activeSkillCard;
+                    SkillRecord record = brainInside.innerPawn.skills.GetSkill(schematicsInsideBank.skillDef);
+                    record.Level = schematicsInsideBank.level;
+                    record.passion = schematicsInsideBank.passion;
 
-                    SkillRecord record = brainInside.innerPawn.skills.GetSkill(skillCard.skillDef);
-                    record.Level = skillCard.level;
-                    record.passion = skillCard.passion;
+                    schematicsInsideBank = null;
 
-                    activeSkillCard = null;
-
-                    Messages.Message("Skill training is completed", MessageTypeDefOf.TaskCompletion);
+                    Messages.Message("Skill training is completed", this, MessageTypeDefOf.TaskCompletion);
                 }
                 else if (task == Task.SkillExtracting)
                 {
@@ -246,35 +277,14 @@ namespace AstraTech
                     pawnInside = null;
                     skillToExtract = null;
 
-                    Messages.Message("Skill extraction is completed", MessageTypeDefOf.TaskCompletion);
+                    Messages.Message("Skill extraction is completed", this, MessageTypeDefOf.TaskCompletion);
                 }
 
                 task = Task.None;
             }
         }
 
-        private IEnumerable<FloatMenuOption> EnumerateSkillsForExtraction(Pawn selPawn, Pawn pawn)
-        {
-            foreach (SkillRecord skill in pawn.skills.skills)
-            {
-                yield return new FloatMenuOption(skill.def.LabelCap + ", " + skill.levelInt + ", " + skill.passion.GetLabel(), () =>
-                {
-                    skillToExtract = skill.def;
-
-                    MessageHelper.ShowCustomMessage(pawn, () =>
-                    {
-                        if (selPawn == pawn)
-                        {
-                            GenJob.TryGiveJob<JobDriver_EnterToSkillExtraction>(selPawn, pawn, this);
-                        }
-                        else
-                        {
-                            GenJob.TryGiveJob<JobDriver_CarryPawnToSkillExtraction>(selPawn, pawn, this);
-                        }
-                    });         
-                });
-            }
-        }
+        
 
         public void StartTask_CreateBlank()
         {
@@ -282,17 +292,18 @@ namespace AstraTech
             ticksLeft = GenDate.TicksPerHour * 3;
         }
 
-        public void StartTask_SkillTraining(Thing card)
+        public void StartTask_SkillTraining(AstraSchematics_Skill card)
         {
             task = Task.SkillTraining;
-            ticksLeft = GenDate.TicksPerHour * ((AstraSchematics_Skill)card).level;
-            activeSkillCard = card;
+            ticksLeft = GenDate.TicksPerHour * (card).level;
+            schematicsInsideBank = card;
+            Bank = (Building_AstraSchematicsBank)card.holdingOwner.Owner;
         }
         public void StopTask_SkillTraining()
         {
             task = Task.None;
             ticksLeft = 0;
-            activeSkillCard = null;
+            schematicsInsideBank = null;
         }
 
         public void StartTask_SkillExtraction(Pawn victim)
@@ -329,6 +340,39 @@ namespace AstraTech
             brainInside = null;
 
             return item;
+        }
+
+
+        private IEnumerable<FloatMenuOption> EnumerateSkillsForExtraction(Pawn selPawn, Pawn pawn)
+        {
+            foreach (SkillRecord skill in pawn.skills.skills)
+            {
+                yield return new FloatMenuOption(skill.def.LabelCap + ", " + skill.levelInt + ", " + skill.passion.GetLabel(), () =>
+                {
+                    skillToExtract = skill.def;
+
+                    MessageHelper.ShowCustomMessage(pawn, () =>
+                    {
+                        if (selPawn == pawn)
+                        {
+                            GenJob.TryGiveJob<JobDriver_EnterToSkillExtraction>(selPawn, pawn, this);
+                        }
+                        else
+                        {
+                            GenJob.TryGiveJob<JobDriver_CarryPawnToSkillExtraction>(selPawn, pawn, this);
+                        }
+                    });
+                });
+            }
+        }
+
+        private void OnSchematicsBankDrop(AstraSchematics item)
+        {
+            if (task == Task.SkillTraining && schematicsInsideBank == item)
+            {
+                Messages.Message("Failed to train skill: Skill Schematics not available now", this, MessageTypeDefOf.NegativeEvent);
+                StopTask_SkillTraining();
+            }
         }
 
 

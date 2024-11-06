@@ -14,7 +14,7 @@
             var item = CastA<AstraSchematics>();
             var bank = CastB<Building_AstraSchematicsBank>();
 
-            bank.InsertItem(item);
+            bank.TryInsertItem(item);
         }
     }
 }

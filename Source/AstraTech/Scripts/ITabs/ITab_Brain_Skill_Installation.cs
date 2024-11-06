@@ -13,10 +13,10 @@ namespace AstraTech
         public override bool IsVisible => Building.brainInside != null;
 
         private Vector2 scrollPos;
-        private AstraSchematics_Skill activeSkillCard => (AstraSchematics_Skill)Building.activeSkillCard;
+        private AstraSchematics_Skill activeSkillCard => Building.schematicsInsideBank;
         private AstraSchematics_Skill[] skillCards;
 
-        private static Texture2D PassionMinorIcon, PassionMajorIcon, rightArrow;
+        private Texture2D PassionMinorIcon, PassionMajorIcon, rightArrow;
 
         public ITab_Brain_Skill_Installation()
         {
@@ -31,7 +31,7 @@ namespace AstraTech
             PassionMajorIcon = ContentFinder<Texture2D>.Get("UI/Icons/PassionMajor");
             rightArrow = ContentFinder<Texture2D>.Get("arrow_right");
 
-            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraSchematicsBank)t).GetDirectlyHeldThings()).Where(t => t is AstraSchematics_Skill).Cast<AstraSchematics_Skill>().ToArray();
+            OnSchematicsContentChanged();
         }
 
         protected override void UpdateSize()
@@ -52,6 +52,11 @@ namespace AstraTech
 
             Rect scrollView = new Rect(body.x, labelRect.yMax, body.width, body.height - labelRect.yMax);
             DrawCards(scrollView, skillCards.OrderByDescending(c => c == activeSkillCard));
+        }
+
+        private void OnSchematicsContentChanged()
+        {
+            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraSchematicsBank)t).GetDirectlyHeldThings()).Where(t => t is AstraSchematics_Skill).Cast<AstraSchematics_Skill>().ToArray();
         }
 
         private void DrawCards(Rect body, IEnumerable<Thing> items)
@@ -137,7 +142,7 @@ namespace AstraTech
                 {
                     if (Widgets.ButtonText(actionRect, "Start training"))
                     {
-                        Building.StartTask_SkillTraining(item);
+                        Building.StartTask_SkillTraining(card);
                     }
                 }
 

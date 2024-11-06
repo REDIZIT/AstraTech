@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Verse;
 
 namespace AstraTech
 {
-    public class Building_AstraSchematicsBank : Building, IThingHolder
+    public class Building_AstraSchematicsBank : Building, IThingHolder, IThingHolderEvents<AstraSchematics>
     {
         public bool HasFreeSpace => itemsInside.Count + ReservedSpace < 4;
         public float ReservedSpace => Map.reservationManager.ReservationsReadOnly.Where(r => r.Target == this).Sum(r => r.StackCount);
 
         public ThingOwner<AstraSchematics> itemsInside;
+        public Action<AstraSchematics> onSchematicsAdd, onSchematicsDrop;
 
         public Building_AstraSchematicsBank()
         {
@@ -33,14 +35,9 @@ namespace AstraTech
             Scribe_Deep.Look(ref itemsInside, nameof(itemsInside), this);
         }
 
-        public void InsertItem(AstraSchematics card)
+        public bool TryInsertItem(AstraSchematics card)
         {
-            //Log.Message("Owner: " + card.holdingOwner.ToStringSafe());
-            //Log.Message("CanAcceptAnyOf: " + itemsInside.CanAcceptAnyOf(card));
-            //Log.Message("GetCountCanAccept: " + itemsInside.GetCountCanAccept(card));
-            //Log.Message("TotalStackCount: " + itemsInside.TotalStackCount);
-            bool success = itemsInside.TryAddOrTransfer(card);
-            //Log.Message("Success: " + success);
+            return itemsInside.TryAddOrTransfer(card);
         }
 
         public void GetChildHolders(List<IThingHolder> outChildren)
@@ -53,6 +50,14 @@ namespace AstraTech
             return itemsInside;
         }
 
-        
+        public void Notify_ItemAdded(AstraSchematics item)
+        {
+            onSchematicsAdd?.Invoke(item);
+        }
+
+        public void Notify_ItemRemoved(AstraSchematics item)
+        {
+            onSchematicsDrop?.Invoke(item);
+        }
     }
 }
