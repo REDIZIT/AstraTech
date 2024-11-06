@@ -35,6 +35,19 @@
 	</ThingDef>
 
 	<ThingDef ParentName="astra_schematics">
+		<defName>astra_schematics_trait</defName>
+		<label>Astra Trait Schematics</label>
+		<description>Desc</description>
+		<thingClass>AstraTech.AstraSchematics_Trait</thingClass>
+
+		<graphicData>
+			<texPath>schematics_trait_encoded</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+			<drawSize>(0.75,0.75)</drawSize>
+		</graphicData>
+	</ThingDef>
+
+	<ThingDef ParentName="astra_schematics">
 		<defName>astra_schematics_item</defName>
 		<label>Astra Item Schematics</label>
 		<description>Data source for Astra core</description>

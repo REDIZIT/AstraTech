@@ -10,6 +10,7 @@ namespace AstraTech
         public Pawn pawnInside;
         public AstraBrain brainInside;
         public SkillDef skillToExtract;
+        public TraitDef traitToExtract;
 
         public Building_AstraSchematicsBank Bank
         {
@@ -27,7 +28,7 @@ namespace AstraTech
                 _bank.onSchematicsDrop += OnSchematicsBankDrop;
             }
         }
-        public AstraSchematics_Skill schematicsInsideBank;
+        public AstraSchematics schematicsInsideBank;
 
         public Task task;
         public int ticksLeft;
@@ -40,6 +41,8 @@ namespace AstraTech
             CreateBlank,
             SkillTraining,
             SkillExtracting,
+            TraitTraining,
+            TraitExtracting,
             BrainToBrainCopy
         }
 
@@ -47,7 +50,7 @@ namespace AstraTech
         {
             base.SpawnSetup(map, respawningAfterLoad);
 
-            if (_bank == null && task == Task.SkillTraining)
+            if (_bank == null && (task == Task.SkillTraining || task == Task.TraitTraining))
             {
                 _bank = (Building_AstraSchematicsBank)schematicsInsideBank.holdingOwner.Owner;
             }
@@ -66,6 +69,7 @@ namespace AstraTech
             Scribe_Deep.Look(ref brainInside, nameof(brainInside));
             Scribe_References.Look(ref schematicsInsideBank, nameof(schematicsInsideBank));
             Scribe_Defs.Look(ref skillToExtract, nameof(skillToExtract));
+            Scribe_Defs.Look(ref traitToExtract, nameof(traitToExtract));
 
             Scribe_Values.Look(ref task, nameof(task));
             Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft));
@@ -116,16 +120,41 @@ namespace AstraTech
                         });
                     });
 
+                    TargetingParameters pawnTargets = new TargetingParameters()
+                    {
+                        canTargetPawns = true,
+                        mapObjectTargetsMustBeAutoAttackable = false,
+                        canTargetItems = false,
+                        onlyTargetColonistsOrPrisonersOrSlaves = true,
+                        canTargetBuildings = false,
+                    };
+
+                    yield return new FloatMenuOption("Start task: Trait extraction", () =>
+                    {
+                        traitToExtract = null;
+                        skillToExtract = null;
+
+                        Find.Targeter.BeginTargeting(pawnTargets, (i) =>
+                        {
+                            Pawn victim = (Pawn)i;
+                            if (victim.health.hediffSet.hediffs.Any(h => h.Bleeding))
+                            {
+                                Messages.Message("Target pawn is bleeding", MessageTypeDefOf.RejectInput);
+                            }
+                            else
+                            {
+                                FloatMenuUtility.MakeMenu(EnumerateTraitsForExtraction(selPawn, victim), (f) => f.Label, (f) => f.action);
+                            }
+
+                        });
+                    });
+
                     yield return new FloatMenuOption("Start task: Skill extraction", () =>
                     {
-                        Find.Targeter.BeginTargeting(new TargetingParameters()
-                        {
-                            canTargetPawns = true,
-                            mapObjectTargetsMustBeAutoAttackable = false,
-                            canTargetItems = false,
-                            onlyTargetColonistsOrPrisonersOrSlaves = true,
-                            canTargetBuildings = false,
-                        }, (i) =>
+                        traitToExtract = null;
+                        skillToExtract = null;
+
+                        Find.Targeter.BeginTargeting(pawnTargets, (i) =>
                         {
                             Pawn victim = (Pawn)i;
                             if (victim.health.hediffSet.hediffs.Any(h => h.Bleeding))
@@ -163,13 +192,9 @@ namespace AstraTech
                     });
                 }
             }
-            else if (task == Task.SkillTraining)
+            else if (task == Task.SkillExtracting || task == Task.TraitExtracting)
             {
-                
-            }
-            else if (task == Task.SkillExtracting)
-            {
-                yield return new FloatMenuOption("Stop skill extraction", () =>
+                yield return new FloatMenuOption("Stop extraction", () =>
                 {
                     GenJob.TryGiveJob<JobDriver_StopSkillExtraction>(selPawn, this);
                 });
@@ -225,7 +250,11 @@ namespace AstraTech
                     yield return new Command_Action()
                     {
                         defaultLabel = "Dev: Complete task",
-                        action = () => ticksLeft = 0
+                        action = () =>
+                        {
+                            ticksLeft = 0;
+                            Tick();
+                        }
                     };
                 }
             }
@@ -241,6 +270,8 @@ namespace AstraTech
             }
             else
             {
+                Log.Message("Task completed: " + task);
+
                 if (task == Task.CreateBlank)
                 {
                     Pawn p = CreateBlankWithSocket();
@@ -250,9 +281,11 @@ namespace AstraTech
                 }
                 else if (task == Task.SkillTraining)
                 {
-                    SkillRecord record = brainInside.innerPawn.skills.GetSkill(schematicsInsideBank.skillDef);
-                    record.Level = schematicsInsideBank.level;
-                    record.passion = schematicsInsideBank.passion;
+                    AstraSchematics_Skill skillSchematics = (AstraSchematics_Skill)schematicsInsideBank;
+
+                    SkillRecord record = brainInside.innerPawn.skills.GetSkill(skillSchematics.skillDef);
+                    record.Level = skillSchematics.level;
+                    record.passion = skillSchematics.passion;
 
                     schematicsInsideBank = null;
 
@@ -261,30 +294,52 @@ namespace AstraTech
                 else if (task == Task.SkillExtracting)
                 {
                     SkillRecord record = pawnInside.skills.GetSkill(skillToExtract);
-                    
-                    Thing item = ThingMaker.MakeThing(AstraDefOf.astra_schematics_skill);
-                    var comp = (AstraSchematics_Skill)item;
-                    comp.skillDef = record.def;
-                    comp.level = record.levelInt;
-                    comp.passion = record.passion;
 
-                    GenPlace.TryPlaceThing(item, Position, Map, ThingPlaceMode.Near);
+                    AstraSchematics_Skill schematic = (AstraSchematics_Skill)ThingMaker.MakeThing(AstraDefOf.astra_schematics_skill);
+                    schematic.skillDef = record.def;
+                    schematic.level = record.levelInt;
+                    schematic.passion = record.passion;
 
-                    GenPlace.TryPlaceThing(pawnInside, Position, Map, ThingPlaceMode.Near);
-                    pawnInside.Position = Position;
-                    BodyPartRecord brain = pawnInside.health.hediffSet.GetBrain();
-                    pawnInside.health.AddHediff(HediffDefOf.MissingBodyPart, brain);
-                    pawnInside = null;
+                    GenPlace.TryPlaceThing(schematic, Position, Map, ThingPlaceMode.Near);
                     skillToExtract = null;
 
+                    KillAndDropPawn();
+
                     Messages.Message("Skill extraction is completed", this, MessageTypeDefOf.TaskCompletion);
+                }
+                else if (task == Task.TraitTraining)
+                {
+                    Log.Message("TraitTraining completed");
+                    Log.Message("schematicsInsideBank = " + schematicsInsideBank);
+                    AstraSchematics_Trait traitSchematics = (AstraSchematics_Trait)schematicsInsideBank;
+                    Log.Message("traitSchematics = " + traitSchematics);
+
+                    brainInside.innerPawn.story.traits.GainTrait(new Trait(traitSchematics.traitDef, traitSchematics.degree));
+
+                    schematicsInsideBank = null;
+
+                    Messages.Message("Trait training is completed", this, MessageTypeDefOf.TaskCompletion);
+                }
+                else if (task == Task.TraitExtracting)
+                {
+                    Trait trait = pawnInside.story.traits.GetTrait(traitToExtract);
+
+                    AstraSchematics_Trait schematic = (AstraSchematics_Trait)ThingMaker.MakeThing(AstraDefOf.astra_schematics_trait);
+                    schematic.traitDef = trait.def;
+                    schematic.degree = trait.Degree;
+
+                    GenPlace.TryPlaceThing(schematic, Position, Map, ThingPlaceMode.Near);
+                    traitToExtract = null;
+
+                    KillAndDropPawn();
+
+                    Messages.Message("Trait extraction is completed", this, MessageTypeDefOf.TaskCompletion);
                 }
 
                 task = Task.None;
             }
         }
 
-        
 
         public void StartTask_CreateBlank()
         {
@@ -299,18 +354,33 @@ namespace AstraTech
             schematicsInsideBank = card;
             Bank = (Building_AstraSchematicsBank)card.holdingOwner.Owner;
         }
-        public void StopTask_SkillTraining()
+        public void StartTask_TraitTraining(AstraSchematics_Trait card)
+        {
+            task = Task.TraitTraining;
+            ticksLeft = GenDate.TicksPerHour * 12;
+            schematicsInsideBank = card;
+            Bank = (Building_AstraSchematicsBank)card.holdingOwner.Owner;
+        }
+        public void StopTask_Training()
         {
             task = Task.None;
             ticksLeft = 0;
             schematicsInsideBank = null;
         }
 
-        public void StartTask_SkillExtraction(Pawn victim)
+        public void StartTask_Extraction(Pawn victim)
         {
-            task = Task.SkillExtracting;
-            ticksLeft = GenDate.TicksPerHour * 6;
-
+            if (skillToExtract != null)
+            {
+                task = Task.SkillExtracting;
+                ticksLeft = GenDate.TicksPerHour * 6;
+            }
+            else if (traitToExtract != null)
+            {
+                task = Task.TraitExtracting;
+                ticksLeft = GenDate.TicksPerHour * 10;
+            }
+            
             pawnInside = victim;
             victim.DeSpawn();
         }
@@ -355,23 +425,62 @@ namespace AstraTech
                     {
                         if (selPawn == pawn)
                         {
-                            GenJob.TryGiveJob<JobDriver_EnterToSkillExtraction>(selPawn, pawn, this);
+                            GenJob.TryGiveJob<JobDriver_EnterToExtraction>(selPawn, pawn, this);
                         }
                         else
                         {
-                            GenJob.TryGiveJob<JobDriver_CarryPawnToSkillExtraction>(selPawn, pawn, this);
+                            GenJob.TryGiveJob<JobDriver_CarryPawnToExtraction>(selPawn, pawn, this);
+                        }
+                    });
+                });
+            }
+        }
+        private IEnumerable<FloatMenuOption> EnumerateTraitsForExtraction(Pawn selPawn, Pawn pawn)
+        {
+            foreach (Trait trait in pawn.story.traits.allTraits)
+            {
+                yield return new FloatMenuOption(trait.LabelCap, () =>
+                {
+                    traitToExtract = trait.def;
+
+                    MessageHelper.ShowCustomMessage(pawn, () =>
+                    {
+                        if (selPawn == pawn)
+                        {
+                            GenJob.TryGiveJob<JobDriver_EnterToExtraction>(selPawn, pawn, this);
+                        }
+                        else
+                        {
+                            GenJob.TryGiveJob<JobDriver_CarryPawnToExtraction>(selPawn, pawn, this);
                         }
                     });
                 });
             }
         }
 
+        private void KillAndDropPawn()
+        {
+            GenPlace.TryPlaceThing(pawnInside, Position, Map, ThingPlaceMode.Near);
+            pawnInside.Position = Position;
+            BodyPartRecord brain = pawnInside.health.hediffSet.GetBrain();
+            pawnInside.health.AddHediff(HediffDefOf.MissingBodyPart, brain);
+            pawnInside = null;
+        }
+
         private void OnSchematicsBankDrop(AstraSchematics item)
         {
-            if (task == Task.SkillTraining && schematicsInsideBank == item)
+            if (schematicsInsideBank == item)
             {
-                Messages.Message("Failed to train skill: Skill Schematics not available now", this, MessageTypeDefOf.NegativeEvent);
-                StopTask_SkillTraining();
+                if (task == Task.SkillTraining)
+                {
+                    Messages.Message("Failed to train skill: Skill Schematics not available now", this, MessageTypeDefOf.NegativeEvent);
+                    StopTask_Training();
+                }
+                else if (task == Task.TraitTraining)
+                {
+                    Messages.Message("Failed to train trait: Trait Schematics not available now", this, MessageTypeDefOf.NegativeEvent);
+                    StopTask_Training();
+                }                
             }
         }
 

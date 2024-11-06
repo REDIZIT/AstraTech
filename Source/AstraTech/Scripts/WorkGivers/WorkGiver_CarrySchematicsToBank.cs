@@ -13,8 +13,9 @@ namespace AstraTech
             var items = pawn.Map.listerThings.ThingsOfDef(AstraDefOf.astra_schematics_item);
             var items_empty = pawn.Map.listerThings.ThingsOfDef(AstraDefOf.astra_schematics_item_empty);
             var skills = pawn.Map.listerThings.ThingsOfDef(AstraDefOf.astra_schematics_skill);
+            var traits = pawn.Map.listerThings.ThingsOfDef(AstraDefOf.astra_schematics_trait);
 
-            return items.Union(items_empty).Union(skills);
+            return items.Union(items_empty).Union(skills).Union(traits);
         }
 
         public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)

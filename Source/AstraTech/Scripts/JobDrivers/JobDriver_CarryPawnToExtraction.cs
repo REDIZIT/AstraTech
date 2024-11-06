@@ -4,7 +4,7 @@ using Verse.AI;
 
 namespace AstraTech
 {
-    public class JobDriver_CarryPawnToSkillExtraction : JobDriver_HaulAndDo
+    public class JobDriver_CarryPawnToExtraction : JobDriver_HaulAndDo
     {
         protected override float FinishActionDurationInSeconds => 3;
 
@@ -19,15 +19,15 @@ namespace AstraTech
             var machine = CastB<Building_AstraPawnMachine>();
 
             pawn.carryTracker.TryDropCarriedThing(pawn.Position, ThingPlaceMode.Near, out _);
-            machine.StartTask_SkillExtraction(victim);
+            machine.StartTask_Extraction(victim);
         }
     }
 
-    public class JobDriver_EnterToSkillExtraction : JobDriver_Base
+    public class JobDriver_EnterToExtraction : JobDriver_Base
     {
         public override string GetReport()
         {
-            return $"Going for Skill Extraction";
+            return $"Going for Extraction";
         }
 
         protected override IEnumerable<Toil> MakeNewToils()
@@ -41,7 +41,7 @@ namespace AstraTech
             Toil enter = ToilMaker.MakeToil("MakeNewToils");
             enter.initAction = delegate
             {
-                machine.StartTask_SkillExtraction(pawn);
+                machine.StartTask_Extraction(pawn);
             };
             enter.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return enter;
@@ -56,7 +56,7 @@ namespace AstraTech
     {
         public override string GetReport()
         {
-            return "Stopping Skill Extraction...";
+            return "Stopping Extraction...";
         }
         protected override IEnumerable<Toil> MakeNewToils()
         {

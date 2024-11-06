@@ -13,8 +13,8 @@ namespace AstraTech
         public override bool IsVisible => Building.brainInside != null;
 
         private Vector2 scrollPos;
-        private AstraSchematics_Skill activeSkillCard => Building.schematicsInsideBank;
-        private AstraSchematics_Skill[] skillCards;
+        private AstraSchematics activeSkillCard => Building.schematicsInsideBank;
+        private AstraSchematics[] skillCards;
 
         private Texture2D PassionMinorIcon, PassionMajorIcon, rightArrow;
 
@@ -56,7 +56,7 @@ namespace AstraTech
 
         private void OnSchematicsContentChanged()
         {
-            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraSchematicsBank)t).GetDirectlyHeldThings()).Where(t => t is AstraSchematics_Skill).Cast<AstraSchematics_Skill>().ToArray();
+            skillCards = Building.GetComp<CompAffectedByFacilities>().LinkedFacilitiesListForReading.SelectMany(t => ((Building_AstraSchematicsBank)t).GetDirectlyHeldThings()).Where(t => t is AstraSchematics_Skill || t is AstraSchematics_Trait).Cast<AstraSchematics>().ToArray();
         }
 
         private void DrawCards(Rect body, IEnumerable<Thing> items)
@@ -68,85 +68,145 @@ namespace AstraTech
             float offset = 0;
             foreach (Thing item in items)
             {
-                AstraSchematics_Skill card = (AstraSchematics_Skill)item;
-
-                SkillRecord brainSkill = null;
-                if (Building.brainInside != null)
+                if (item is AstraSchematics_Skill card)
                 {
-                    brainSkill = BrainPawn.skills.GetSkill(card.skillDef);
-                }
+                    SkillRecord brainSkill = null;
+                    if (Building.brainInside != null)
+                    {
+                        brainSkill = BrainPawn.skills.GetSkill(card.skillDef);
+                    }
 
 
-                float y = offset;
-                Rect lotRect = new Rect(0, y, scrollView.width, 25);
-                
-                Rect lotExpandedRect = lotRect;
-                if (activeSkillCard == card)
-                {
-                    lotExpandedRect.height *= 2;
+                    float y = offset;
+                    Rect lotRect = new Rect(0, y, scrollView.width, 25);
 
-                    Widgets.DrawBoxSolid(lotExpandedRect, new ColorInt(32, 35, 38).ToColor);
-                    Widgets.DrawHighlightIfMouseover(lotExpandedRect);
-
-                    Rect timeRect = new Rect(0, lotRect.y + lotRect.height, lotRect.width - 6, lotRect.height);
-                    Text.Anchor = TextAnchor.MiddleRight;
-                    Widgets.Label(timeRect, "Time left: " + GenDate.ToStringTicksToPeriod(Building.ticksLeft));
-                }
-                else
-                {
-                    Widgets.DrawBoxSolid(lotRect, new ColorInt(32, 35, 38).ToColor);
-                    Widgets.DrawHighlightIfMouseover(lotRect);
-                }
-
-                Rect labelRect = new Rect(12, y, 120, lotRect.height);
-                Text.Anchor = TextAnchor.MiddleLeft;
-                Widgets.Label(labelRect, card.skillDef.LabelCap);
-
-                Text.Anchor = TextAnchor.MiddleLeft;
-                float x = 140;
-
-                Rect passionIconRect = new Rect(x, y + 4, 19, 19);
-                Rect passionLabelRect = new Rect(passionIconRect.xMax + 2, lotRect.y, 24, lotRect.height);
-                if (brainSkill != null)
-                {
-                    Widgets.DrawTextureFitted(passionIconRect, GetPassionIcon(brainSkill.passion), 1);
-                    Widgets.Label(passionLabelRect, brainSkill.levelInt.ToString());
-                }
-                x = passionLabelRect.xMax;
-
-
-                Rect arrowRect = new Rect(x, y + 3, 19, 19);
-                Widgets.DrawTextureFitted(arrowRect, rightArrow, 1);
-
-                x += arrowRect.width;
-
-                passionIconRect = new Rect(x, lotRect.y + 4, 19, 19);
-                Widgets.DrawTextureFitted(passionIconRect, GetPassionIcon(card.passion), 1);
-                passionLabelRect = new Rect(passionIconRect.xMax + 2, lotRect.y, 24, lotRect.height);
-                Widgets.Label(passionLabelRect, card.level.ToString());
-
-
-                x = passionLabelRect.xMax;
-                Rect actionRect = new Rect(x + 6, y + 1, lotRect.width - x - 6 * 2, lotRect.height - 2);
-                if (activeSkillCard != null)
-                {
+                    Rect lotExpandedRect = lotRect;
                     if (activeSkillCard == card)
                     {
-                        if (Widgets.ButtonText(actionRect, "Stop training"))
+                        lotExpandedRect.height *= 2;
+
+                        Widgets.DrawBoxSolid(lotExpandedRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawHighlightIfMouseover(lotExpandedRect);
+
+                        Rect timeRect = new Rect(0, lotRect.y + lotRect.height, lotRect.width - 6, lotRect.height);
+                        Text.Anchor = TextAnchor.MiddleRight;
+                        Widgets.Label(timeRect, "Time left: " + GenDate.ToStringTicksToPeriod(Building.ticksLeft));
+                    }
+                    else
+                    {
+                        Widgets.DrawBoxSolid(lotRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawHighlightIfMouseover(lotRect);
+                    }
+
+                    Rect labelRect = new Rect(12, y, 120, lotRect.height);
+                    Text.Anchor = TextAnchor.MiddleLeft;
+                    Widgets.Label(labelRect, card.skillDef.LabelCap);
+
+                    Text.Anchor = TextAnchor.MiddleLeft;
+                    float x = 140;
+
+                    Rect passionIconRect = new Rect(x, y + 4, 19, 19);
+                    Rect passionLabelRect = new Rect(passionIconRect.xMax + 2, lotRect.y, 24, lotRect.height);
+                    if (brainSkill != null)
+                    {
+                        Widgets.DrawTextureFitted(passionIconRect, GetPassionIcon(brainSkill.passion), 1);
+                        Widgets.Label(passionLabelRect, brainSkill.levelInt.ToString());
+                    }
+                    x = passionLabelRect.xMax;
+
+
+                    Rect arrowRect = new Rect(x, y + 3, 19, 19);
+                    Widgets.DrawTextureFitted(arrowRect, rightArrow, 1);
+
+                    x += arrowRect.width;
+
+                    passionIconRect = new Rect(x, lotRect.y + 4, 19, 19);
+                    Widgets.DrawTextureFitted(passionIconRect, GetPassionIcon(card.passion), 1);
+                    passionLabelRect = new Rect(passionIconRect.xMax + 2, lotRect.y, 24, lotRect.height);
+                    Widgets.Label(passionLabelRect, card.level.ToString());
+
+
+                    x = passionLabelRect.xMax;
+                    Rect actionRect = new Rect(x + 6, y + 1, lotRect.width - x - 6 * 2, lotRect.height - 2);
+                    if (activeSkillCard != null)
+                    {
+                        if (activeSkillCard == card)
                         {
-                            Building.StopTask_SkillTraining();
+                            if (Widgets.ButtonText(actionRect, "Stop training"))
+                            {
+                                Building.StopTask_Training();
+                            }
                         }
                     }
-                }
-                else
-                {
-                    if (Widgets.ButtonText(actionRect, "Start training"))
+                    else
                     {
-                        Building.StartTask_SkillTraining(card);
+                        if (Widgets.ButtonText(actionRect, "Start training"))
+                        {
+                            Building.StartTask_SkillTraining(card);
+                        }
                     }
-                }
 
-                offset += lotExpandedRect.height + 1;
+                    offset += lotExpandedRect.height + 1;
+                }
+                else if (item is AstraSchematics_Trait trait)
+                {
+                    bool hasSameTrait = true;
+                    if (Building.brainInside != null)
+                    {
+                        hasSameTrait = BrainPawn.story.traits.GetTrait(trait.traitDef) != null;
+                    }
+
+
+                    float y = offset;
+                    Rect lotRect = new Rect(0, y, scrollView.width, 25);
+
+                    Rect lotExpandedRect = lotRect;
+                    if (activeSkillCard == item)
+                    {
+                        lotExpandedRect.height *= 2;
+
+                        Widgets.DrawBoxSolid(lotExpandedRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawHighlightIfMouseover(lotExpandedRect);
+
+                        Rect timeRect = new Rect(0, lotRect.y + lotRect.height, lotRect.width - 6, lotRect.height);
+                        Text.Anchor = TextAnchor.MiddleRight;
+                        Widgets.Label(timeRect, "Time left: " + GenDate.ToStringTicksToPeriod(Building.ticksLeft));
+                    }
+                    else
+                    {
+                        Widgets.DrawBoxSolid(lotRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawHighlightIfMouseover(lotRect);
+                    }
+
+                    Rect labelRect = new Rect(12, y, 120, lotRect.height);
+                    Text.Anchor = TextAnchor.MiddleLeft;
+                    Widgets.Label(labelRect, trait.TraitLabel);
+
+                    Text.Anchor = TextAnchor.MiddleLeft;
+                    float x = 140;
+
+
+                    Rect actionRect = new Rect(x + 6, y + 1, lotRect.width - x - 6 * 2, lotRect.height - 2);
+                    if (activeSkillCard != null)
+                    {
+                        if (activeSkillCard == item)
+                        {
+                            if (Widgets.ButtonText(actionRect, "Stop training"))
+                            {
+                                Building.StopTask_Training();
+                            }
+                        }
+                    }
+                    else if (hasSameTrait == false)
+                    {
+                        if (Widgets.ButtonText(actionRect, "Start training"))
+                        {
+                            Building.StartTask_TraitTraining(trait);
+                        }
+                    }
+
+                    offset += lotExpandedRect.height + 1;
+                }                
             }
 
             Text.Anchor = TextAnchor.UpperLeft;

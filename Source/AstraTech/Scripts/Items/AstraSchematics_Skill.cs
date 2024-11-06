@@ -4,7 +4,7 @@ using Verse;
 
 namespace AstraTech
 {
-    public class AstraSchematics_Skill : AstraSchematics, IExposable
+    public class AstraSchematics_Skill : AstraSchematics
     {
         public SkillDef skillDef;
         public int level;
