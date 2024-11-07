@@ -16,6 +16,8 @@ namespace AstraTech
 
             blank.health.hediffSet.GetFirstHediff<Hediff_AstraBrainSocket>().InsertBrain(brainItem);
             brainItem.DeSpawn();
+
+            blank.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_astra_brain_insert);
         }
     }
 }

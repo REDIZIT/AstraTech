@@ -58,7 +58,7 @@ namespace AstraTech
         {
             if (IsUnstable)
             {
-                return "Wear: " + (100 * (1 - unstableWorktimeInTicksLeft / (Def.unstableWorktimeInDays * GenDate.TicksPerDay))) + "%";
+                return "Wear: " + (int)(100 * (1 - unstableWorktimeInTicksLeft / (Def.unstableWorktimeInDays * GenDate.TicksPerDay))) + "%";
             }
             else
             {
@@ -156,14 +156,15 @@ namespace AstraTech
             p.relations.ClearAllRelations();
 
 
-            // Remove thoughts
-            p.needs.mood.thoughts.memories.Memories.Clear();
+            
+            if (p.Dead == false)
+            {
+                // Remove thoughts
+                p.needs.mood.thoughts.memories.Memories.Clear();
 
-            //((List<Thought_Situational>)cachedThoughtsField.GetValue(p.needs.mood.thoughts.situational)).Clear();
-
-
-            // Remove needs
-            p.needs.AllNeeds.RemoveAll(n => brainRelatedNeeds.Contains(n.def));
+                // Remove needs
+                p.needs.AllNeeds.RemoveAll(n => brainRelatedNeeds.Contains(n.def));
+            }
         }
 
         public void CopyReplicantToInnerPawn(Pawn replicant)
@@ -172,33 +173,40 @@ namespace AstraTech
             //Log.Message(replicantSituationalThoughts.Count);
             //cachedThoughtsField.SetValue(brainThoughts.situational, replicantSituationalThoughts.ListFullCopy()); // Be aware to not copy Ref to list, but elements of list
 
+            Log.Message("replicant: " + replicant.ToStringSafe());
+            Log.Message("replicant.needs: " + replicant.needs.ToStringSafe());
+            Log.Message("replicant.needs.AllNeeds: " + replicant.needs.AllNeeds.ToStringSafe());
+            Log.Message("replicant.needs.mood: " + replicant.needs.mood.ToStringSafe());
+            Log.Message("replicant.needs.mood.thoughts: " + replicant.needs.mood.thoughts.ToStringSafe());
 
-            // Create brain needs
-            innerPawn.needs.AllNeeds.Clear();
-            foreach (NeedDef needDef in brainRelatedNeeds)
+            if (replicant.health.Dead == false)
             {
-                Need replicantNeed = replicant.needs.TryGetNeed(needDef);
-                if (replicantNeed != null)
+                // Create brain needs
+                innerPawn.needs.AllNeeds.Clear();
+                foreach (NeedDef needDef in brainRelatedNeeds)
                 {
-                    Need brainNeed = innerPawn.needs.TryGetNeed(needDef);
-                    if (brainNeed == null)
+                    Need replicantNeed = replicant.needs.TryGetNeed(needDef);
+                    if (replicantNeed != null)
                     {
-                        brainNeed = (Need)Activator.CreateInstance(needDef.needClass, innerPawn);
-                        brainNeed.def = needDef;
-                        innerPawn.needs.AllNeeds.Add(brainNeed);
+                        Need brainNeed = innerPawn.needs.TryGetNeed(needDef);
+                        if (brainNeed == null)
+                        {
+                            brainNeed = (Need)Activator.CreateInstance(needDef.needClass, innerPawn);
+                            brainNeed.def = needDef;
+                            innerPawn.needs.AllNeeds.Add(brainNeed);
+                        }
+
+                        brainNeed.CurLevel = replicantNeed.CurLevel;
                     }
-
-                    brainNeed.CurLevel = replicantNeed.CurLevel;
                 }
-            }
-            innerPawn.needs.BindDirectNeedFields();
+                innerPawn.needs.BindDirectNeedFields();
 
-
-            // Copy brain thoughts
-            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
-            ThoughtHandler replicantThoughts = replicant.needs.mood.thoughts;
-            brainThoughts.memories.Memories.Clear();
-            brainThoughts.memories.Memories.AddRange(replicantThoughts.memories.Memories);
+                // Copy brain thoughts
+                ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
+                ThoughtHandler replicantThoughts = replicant.needs.mood.thoughts;
+                brainThoughts.memories.Memories.Clear();
+                brainThoughts.memories.Memories.AddRange(replicantThoughts.memories.Memories);
+            }            
         }
 
         public void CopyInnerPawnToBlank(Pawn p)

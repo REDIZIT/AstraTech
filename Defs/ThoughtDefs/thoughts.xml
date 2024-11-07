@@ -31,4 +31,103 @@
 		</stages>
 	</ThoughtDef>
 
+
+
+	<!-- ====================== Brain ======================= -->
+
+	<ThoughtDef>
+		<defName>thought_astra_brain_insert</defName>
+		<durationDays>1</durationDays>
+		<stackLimit>10</stackLimit>
+		<label>Brain insert</label>
+		<description>Desc</description>
+		<stages>
+			<li>
+				<label>Body changed</label>
+				<description>I need to get used to the body again</description>
+				<baseMoodEffect>-1</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef>
+		<defName>thought_astra_brain_skill_trained</defName>
+		<durationDays>3</durationDays>
+		<stackLimit>3</stackLimit>
+		<label>Brain skill trained</label>
+		<description>Desc</description>
+		<stages>
+			<li>
+				<label>New skill learned</label>
+				<description>I love learning new things, especially when I don't have to cram</description>
+				<baseMoodEffect>5</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef>
+		<defName>thought_astra_brain_trait_trained</defName>
+		<durationDays>10</durationDays>
+		<stackLimit>1</stackLimit>
+		<label>Brain trait trained</label>
+		<description>Desc</description>
+		<stages>
+			<li>
+				<label>New trait gained</label>
+				<description>It's not me, I wasn't like that! My personality was ruined!</description>
+				<baseMoodEffect>-40</baseMoodEffect>
+			</li>
+			<li>
+				<label>New trait gained</label>
+				<description>I can't believe I'm like this now.</description>
+				<baseMoodEffect>-30</baseMoodEffect>
+			</li>
+			<li>
+				<label>New trait gained</label>
+				<description>Although it might be even better this way</description>
+				<baseMoodEffect>-20</baseMoodEffect>
+			</li>
+			<li>
+				<label>New trait gained</label>
+				<description>I just can't get used to this character of myself</description>
+				<baseMoodEffect>-10</baseMoodEffect>
+			</li>
+			<li>
+				<label>New trait gained</label>
+				<description>Well, what can you do, that's how I am now</description>
+				<baseMoodEffect>-5</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef>
+		<defName>thought_astra_brain_extracted_while_breakdown</defName>
+		<durationDays>3</durationDays>
+		<stackLimit>1</stackLimit>
+		<label>They just shut me up!</label>
+		<description>Desc</description>
+		<stages>
+			<li>
+				<label>They just shut me up!</label>
+				<description>They didn't even want to listen to me! They just turned it off and that's it!</description>
+				<baseMoodEffect>-10</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
+	<ThoughtDef>
+		<defName>thought_astra_brain_killed</defName>
+		<durationDays>1</durationDays>
+		<stackLimit>1</stackLimit>
+		<label>I were killed</label>
+		<description>Desc</description>
+		<stages>
+			<li>
+				<label>Cheated death</label>
+				<description>I were killed. Sadly yes... but I lived!</description>
+				<baseMoodEffect>10</baseMoodEffect>
+			</li>
+		</stages>
+	</ThoughtDef>
+
 </Defs>

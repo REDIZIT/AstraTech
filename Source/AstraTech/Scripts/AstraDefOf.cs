@@ -21,6 +21,8 @@ namespace AstraTech
 
         public static BackstoryDef astra_blank, astra_blank_adult;
 
+        public static ThoughtDef thought_astra_brain_insert, thought_stra_brain_skill_trained, thought_stra_brain_trait_trained, thought_stra_brain_extracted_while_breakdown, thought_stra_brain_killed;
+
 
         // Vanilla Rimworld needs (somewhy there is almost nothing inside NeedDefOf)
         public static NeedDef Mood, Food, Rest, Joy, Beauty, Comfort, Outdoors, Indoors, DrugDesire, RoomSize;

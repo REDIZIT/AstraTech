@@ -287,6 +287,8 @@ namespace AstraTech
 
                     schematicsInsideBank = null;
 
+                    brainInside.innerPawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_stra_brain_skill_trained);
+
                     Messages.Message("Skill training is completed", this, MessageTypeDefOf.TaskCompletion);
                 }
                 else if (task == Task.SkillExtracting)
@@ -313,6 +315,7 @@ namespace AstraTech
                     Log.Message("traitSchematics = " + traitSchematics);
 
                     brainInside.innerPawn.story.traits.GainTrait(new Trait(traitSchematics.traitDef, traitSchematics.degree));
+                    brainInside.innerPawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_stra_brain_trait_trained);
 
                     schematicsInsideBank = null;
 

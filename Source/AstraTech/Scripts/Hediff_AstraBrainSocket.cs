@@ -24,6 +24,16 @@ namespace AstraTech
             Scribe_Deep.Look(ref brain, nameof(brain));
         }
 
+        // Invoked before Notify_PawnDied (where needs = null)
+        public override void Notify_PawnKilled()
+        {
+            pawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_stra_brain_killed);
+            brain.CopyReplicantToInnerPawn(pawn);
+
+            base.Notify_PawnKilled();
+        }
+
+
         public void InsertBrain(AstraBrain brain)
         {
             this.brain = brain;
@@ -37,10 +47,18 @@ namespace AstraTech
         }
         public void ExtractBrain()
         {
-            brain.CopyReplicantToInnerPawn(pawn);
+            // Make sure needs are not null
+            if (pawn.Dead == false)
+            {
+                if (pawn.InMentalState)
+                {
+                    pawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_stra_brain_trait_trained);
+                }
 
-            //AstraBrain item = (AstraBrain)ThingMaker.MakeThing(DefDatabase<ThingDef>.GetNamed("astra_brain"));
-            //item.brain = brain;
+                brain.CopyReplicantToInnerPawn(pawn);
+            }
+
+
             GenPlace.TryPlaceThing(brain, pawn.Position - new IntVec3(0, 0, 1), pawn.MapHeld, ThingPlaceMode.Near);
 
             brain = null;
