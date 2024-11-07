@@ -35,6 +35,7 @@
         <inspectorTabs>
             <li>AstraTech.ITab_Brain_Character</li>
             <li>AstraTech.ITab_Brain_Skill_Installation</li>
+            <li>AstraTech.ITab_Brain_Copy</li>
         </inspectorTabs>
 
         <comps>

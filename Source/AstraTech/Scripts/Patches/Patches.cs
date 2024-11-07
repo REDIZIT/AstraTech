@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -54,6 +56,30 @@ namespace AstraTech
                 return false;
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn), "GetDisabledWorkTypes")]
+    public static class Patch_GetDisabledWorkTypes
+    {
+        static void Postfix(Pawn __instance, ref List<WorkTypeDef> __result, bool permanentOnly)
+        {
+            if (__instance.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain != null && socket.brain.IsUnstable)
+            {
+                if (socket.brain.availableSkills != null && socket.brain.availableSkills.Count > 0)
+                {
+                    foreach (WorkTypeDef workType in DefDatabase<WorkTypeDef>.AllDefsListForReading)
+                    {
+                        if (workType.relevantSkills.All(s => socket.brain.availableSkills.Contains(s)) == false)
+                        {
+                            if (__result.Contains(workType) == false)
+                            {
+                                __result.Add(workType);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

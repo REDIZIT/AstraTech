@@ -8,9 +8,11 @@ namespace AstraTech
     public class Building_AstraPawnMachine : Building, IPawnContainer
     {
         public Pawn pawnInside;
-        public AstraBrain brainInside;
+        public AstraBrain brainInside, secondBrainInside;
         public SkillDef skillToExtract;
         public TraitDef traitToExtract;
+
+        public HashSet<SkillDef> skillsToCopy = new HashSet<SkillDef>();
 
         public Building_AstraSchematicsBank Bank
         {
@@ -67,9 +69,11 @@ namespace AstraTech
 
             Scribe_Deep.Look(ref pawnInside, nameof(pawnInside));
             Scribe_Deep.Look(ref brainInside, nameof(brainInside));
+            Scribe_Deep.Look(ref secondBrainInside, nameof(secondBrainInside));
             Scribe_References.Look(ref schematicsInsideBank, nameof(schematicsInsideBank));
             Scribe_Defs.Look(ref skillToExtract, nameof(skillToExtract));
             Scribe_Defs.Look(ref traitToExtract, nameof(traitToExtract));
+            Scribe_Collections.Look(ref skillsToCopy, nameof(skillsToCopy));
 
             Scribe_Values.Look(ref task, nameof(task));
             Scribe_Values.Look(ref ticksLeft, nameof(ticksLeft));
@@ -84,9 +88,16 @@ namespace AstraTech
 
             if (brainInside != null)
             {
-                yield return new FloatMenuOption("Extract brain", () =>
+                yield return new FloatMenuOption("Extract Persona module", () =>
                 {
-                    GenJob.TryGiveJob<JobDriver_ExtractBrain>(selPawn, this);
+                    GenJob.TryGiveJob<JobDriver_ExtractBrain>(selPawn, this, brainInside);
+                });
+            }
+            if (secondBrainInside != null)
+            {
+                yield return new FloatMenuOption("Extract Automaton module", () =>
+                {
+                    GenJob.TryGiveJob<JobDriver_ExtractBrain>(selPawn, this, secondBrainInside);
                 });
             }
 
@@ -113,7 +124,7 @@ namespace AstraTech
                             mapObjectTargetsMustBeAutoAttackable = false,
                             canTargetItems = true,
                             canTargetBuildings = false,
-                            validator = (i) => i.Thing is AstraBrain
+                            validator = (i) => i.Thing is AstraBrain brain && ContainsBrainByStable(brain) == false
                         }, (i) =>
                         {
                             GenJob.TryGiveJob<JobDriver_InsertBrainIntoMachine>(selPawn, i.Thing, this);
@@ -166,28 +177,6 @@ namespace AstraTech
                                 FloatMenuUtility.MakeMenu(EnumerateSkillsForExtraction(selPawn, victim), (f) => f.Label, (f) => f.action);
                             }
 
-                        });
-                    });
-
-                    yield return new FloatMenuOption("Start task: Brain to Brain copy", () =>
-                    {
-                        TargetingParameters parameters = new TargetingParameters()
-                        {
-                            canTargetPawns = false,
-                            mapObjectTargetsMustBeAutoAttackable = false,
-                            canTargetItems = true,
-                            validator = (i) => i.Thing is AstraBrain
-                        };
-
-                        Find.Targeter.BeginTargeting(parameters, (i1) =>
-                        {
-                            Find.Targeter.BeginTargeting(parameters, (i2) =>
-                            {
-                                AstraBrain origin = ((AstraBrain)i1.Thing);
-                                AstraBrain target = ((AstraBrain)i2.Thing);
-
-                                origin.CopyInnerPawnToBlank(target.innerPawn);
-                            });
                         });
                     });
                 }
@@ -287,7 +276,7 @@ namespace AstraTech
 
                     schematicsInsideBank = null;
 
-                    brainInside.innerPawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_stra_brain_skill_trained);
+                    brainInside.innerPawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_astra_brain_skill_trained);
 
                     Messages.Message("Skill training is completed", this, MessageTypeDefOf.TaskCompletion);
                 }
@@ -315,7 +304,7 @@ namespace AstraTech
                     Log.Message("traitSchematics = " + traitSchematics);
 
                     brainInside.innerPawn.story.traits.GainTrait(new Trait(traitSchematics.traitDef, traitSchematics.degree));
-                    brainInside.innerPawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_stra_brain_trait_trained);
+                    brainInside.innerPawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_astra_brain_trait_trained);
 
                     schematicsInsideBank = null;
 
@@ -335,6 +324,14 @@ namespace AstraTech
                     KillAndDropPawn();
 
                     Messages.Message("Trait extraction is completed", this, MessageTypeDefOf.TaskCompletion);
+                }
+                else if (task == Task.BrainToBrainCopy)
+                {
+                    AstraBrain origin = brainInside;
+                    AstraBrain target = secondBrainInside;
+
+                    origin.CopyInnerPawnToAutomaton(target, skillsToCopy);
+                    skillsToCopy.Clear();
                 }
 
                 task = Task.None;
@@ -394,22 +391,40 @@ namespace AstraTech
 
             skillToExtract = null;
         }
+        public void StartTask_Copy()
+        {
+            task = Task.BrainToBrainCopy;
+            ticksLeft = GenDate.TicksPerHour * 12;
+        }
+
 
         public void InsertBrain(AstraBrain item)
         {
-            brainInside = item;
+            if (item.IsUnstable)
+            {
+                secondBrainInside = item;
+            }
+            else
+            {
+                brainInside = item;
+            }
             item.DeSpawn();
         }
-        public Thing ExtractBrain()
+        public void ExtractBrain(AstraBrain brainToExtract)
         {
             task = Task.None;
             ticksLeft = 0;
 
-            AstraBrain temp = brainInside;
-            GenPlace.TryPlaceThing(brainInside, Position, Map, ThingPlaceMode.Near);
-            brainInside = null;
-
-            return temp;
+            if (brainToExtract == brainInside)
+            {
+                GenPlace.TryPlaceThing(brainInside, Position, Map, ThingPlaceMode.Near);
+                brainInside = null;
+            }
+            else if (brainToExtract == secondBrainInside)
+            {
+                GenPlace.TryPlaceThing(secondBrainInside, Position, Map, ThingPlaceMode.Near);
+                secondBrainInside = null;
+            }
         }
 
 
@@ -585,6 +600,12 @@ namespace AstraTech
             if (pawnInside != null) return pawnInside;
             if (brainInside != null) return brainInside.GetPawn();
             return null;
+        }
+
+        public bool ContainsBrainByStable(AstraBrain askBrain)
+        {
+            if (askBrain.IsUnstable) return secondBrainInside != null;
+            return brainInside != null;
         }
     }
 }

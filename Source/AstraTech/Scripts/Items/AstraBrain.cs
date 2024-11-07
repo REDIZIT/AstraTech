@@ -1,6 +1,8 @@
-﻿using RimWorld;
+﻿using HarmonyLib;
+using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace AstraTech
@@ -9,10 +11,6 @@ namespace AstraTech
     {
         public override string Label => "Astra Brain (" + GetPawn().NameFullColored + ")";
         public bool IsUnstable => Def.unstableWorktimeInDays > 0;
-
-        public int unstableWorktimeInTicksLeft = -1;
-
-        public Pawn innerPawn;
         public AstraBrainDef Def
         {
             get
@@ -22,7 +20,13 @@ namespace AstraTech
             }
         }
 
+
+        public int unstableWorktimeInTicksLeft = -1;
+        public Pawn innerPawn;
+        public HashSet<SkillDef> availableSkills;
+
         private AstraBrainDef _def;
+
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
@@ -52,6 +56,7 @@ namespace AstraTech
             base.ExposeData();
             Scribe_Deep.Look(ref innerPawn, nameof(innerPawn));
             Scribe_Values.Look(ref unstableWorktimeInTicksLeft, nameof(unstableWorktimeInTicksLeft));
+            Scribe_Collections.Look(ref availableSkills, nameof(availableSkills));
         }
 
         public override string GetInspectString()
@@ -87,7 +92,7 @@ namespace AstraTech
                         if (reserved) return false;
 
                         if (i.Thing is Pawn pawn && pawn.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain == null) return true;
-                        if (i.Thing is Building_AstraPawnMachine machine && machine.brainInside == null) return true;
+                        if (i.Thing is Building_AstraPawnMachine machine && machine.ContainsBrainByStable(this) == false) return true;
 
                         return false;
                     }
@@ -164,6 +169,9 @@ namespace AstraTech
 
                 // Remove needs
                 p.needs.AllNeeds.RemoveAll(n => brainRelatedNeeds.Contains(n.def));
+
+                // Remove disabled work types
+                p.Notify_DisabledWorkTypesChanged();
             }
         }
 
@@ -172,12 +180,6 @@ namespace AstraTech
             //List<Thought_Situational> replicantSituationalThoughts = (List<Thought_Situational>)cachedThoughtsField.GetValue(replicantThoughts.situational);
             //Log.Message(replicantSituationalThoughts.Count);
             //cachedThoughtsField.SetValue(brainThoughts.situational, replicantSituationalThoughts.ListFullCopy()); // Be aware to not copy Ref to list, but elements of list
-
-            Log.Message("replicant: " + replicant.ToStringSafe());
-            Log.Message("replicant.needs: " + replicant.needs.ToStringSafe());
-            Log.Message("replicant.needs.AllNeeds: " + replicant.needs.AllNeeds.ToStringSafe());
-            Log.Message("replicant.needs.mood: " + replicant.needs.mood.ToStringSafe());
-            Log.Message("replicant.needs.mood.thoughts: " + replicant.needs.mood.thoughts.ToStringSafe());
 
             if (replicant.health.Dead == false)
             {
@@ -294,9 +296,125 @@ namespace AstraTech
             blankThoughts.memories.Memories.AddRange(brainThoughts.memories.Memories);
         }
 
+        public void CopyInnerPawnToAutomaton(AstraBrain automatonBrain, HashSet<SkillDef> skillsToCopy)
+        {
+            Pawn p = automatonBrain.GetPawn();
+
+            p.Name = new NameSingle(innerPawn.Name + "'s Automaton");
+            p.ageTracker.AgeChronologicalTicks = innerPawn.ageTracker.AgeChronologicalTicks;
+
+            // Copy story
+            Pawn_StoryTracker newStory = new Pawn_StoryTracker(p);
+            Pawn_StoryTracker oldStory = p.story;
+            Pawn_StoryTracker brainStory = innerPawn.story;
+
+            newStory.bodyType = oldStory.bodyType;
+            newStory.headType = oldStory.headType;
+            newStory.hairDef = oldStory.hairDef;
+            newStory.SkinColorBase = oldStory.SkinColorBase;
+
+            // Remove any traits
+            newStory.traits.allTraits.Clear();
+
+            newStory.AllBackstories.Clear();
+            newStory.Childhood = brainStory.Childhood;
+            newStory.Adulthood = brainStory.Adulthood;
+
+            p.story = newStory;
+
+
+            // Copy skills and disable works
+            if (automatonBrain.availableSkills == null) automatonBrain.availableSkills = new HashSet<SkillDef>();
+            automatonBrain.availableSkills.AddRange(skillsToCopy);
+
+            foreach (SkillRecord automatonSkill in p.skills.skills)
+            {
+                if (skillsToCopy.Contains(automatonSkill.def))
+                {
+                    SkillRecord brainSkill = innerPawn.skills.GetSkill(automatonSkill.def);
+                    automatonSkill.Level = brainSkill.levelInt;
+                    automatonSkill.passion = brainSkill.passion;
+                }
+                else
+                {
+                    automatonSkill.Level = 0;
+                    automatonSkill.passion = Passion.None;
+                }
+            }
+
+            p.workSettings.Notify_DisabledWorkTypesChanged();
+            p.workSettings.Notify_UseWorkPrioritiesChanged();
+
+            p.Notify_DisabledWorkTypesChanged();
+
+
+            // Clear relationships
+            p.relations.ClearAllRelations();
+
+
+            // Copy style
+            Pawn_StyleTracker newStyle = new Pawn_StyleTracker(p);
+            Pawn_StyleTracker oldStyle = p.style;
+            newStyle.beardDef = oldStyle.beardDef;
+            newStyle.BodyTattoo = oldStyle.BodyTattoo;
+            newStyle.FaceTattoo = oldStyle.FaceTattoo;
+
+            p.style = newStyle;
+
+
+            // Create brain needs
+            // Give a basic pawn Need set
+            p.needs.AddOrRemoveNeedsAsAppropriate();
+            innerPawn.needs.AddOrRemoveNeedsAsAppropriate();
+            foreach (NeedDef needDef in brainRelatedNeeds)
+            {
+                Need brainNeed = innerPawn.needs.TryGetNeed(needDef);
+                if (brainNeed != null)
+                {
+                    Need blankNeed = p.needs.TryGetNeed(needDef);
+                    if (blankNeed == null)
+                    {
+                        blankNeed = (Need)Activator.CreateInstance(needDef.needClass, p);
+                        blankNeed.def = needDef;
+                        p.needs.AllNeeds.Add(blankNeed);
+                    }
+
+                    blankNeed.CurLevel = brainNeed.CurLevel;
+                }
+            }
+            p.needs.BindDirectNeedFields();
+            innerPawn.needs.BindDirectNeedFields();
+
+            // Copy brain thoughts
+            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
+            ThoughtHandler blankThoughts = p.needs.mood.thoughts;
+            blankThoughts.memories.Memories.Clear();
+            blankThoughts.memories.Memories.AddRange(brainThoughts.memories.Memories);
+        }
+
         public Pawn GetPawn()
         {
             return innerPawn;
+        }
+
+        private WorkTags GetAvailableWorksForSkill(SkillDef s)
+        {
+            WorkTags t = WorkTags.None;
+
+            if (s == SkillDefOf.Melee) t |= WorkTags.Violent | WorkTags.Hunting;
+            if (s == SkillDefOf.Shooting) t |= WorkTags.Violent | WorkTags.Hunting | WorkTags.Shooting;
+            if (s == SkillDefOf.Construction) return WorkTags.Constructing;
+            if (s == SkillDefOf.Mining) return WorkTags.Mining;
+            if (s == SkillDefOf.Cooking) return WorkTags.Cooking;
+            if (s == SkillDefOf.Plants) return WorkTags.PlantWork;
+            if (s == SkillDefOf.Animals) return WorkTags.Animals;
+            if (s == SkillDefOf.Crafting) return WorkTags.Crafting;
+            if (s == SkillDefOf.Artistic) return WorkTags.Artistic;
+            //if (s == SkillDefOf.Medicine) return WorkTags.;
+            if (s == SkillDefOf.Social) return WorkTags.Social;
+            if (s == SkillDefOf.Intellectual) return WorkTags.Intellectual;
+
+            return t;
         }
     }
 }

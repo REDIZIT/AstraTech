@@ -17,13 +17,13 @@ namespace AstraTech
                 initAction = () =>
                 {
                     var machine = CastA<Building_AstraPawnMachine>();
-                    Thing brain = machine.ExtractBrain();
+                    machine.ExtractBrain(CastB<AstraBrain>());
 
-                    Job job = HaulAIUtility.HaulToStorageJob(pawn, brain);
-                    if (job != null)
-                    {
-                        pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
-                    }
+                    //Job job = HaulAIUtility.HaulToStorageJob(pawn, brain);
+                    //if (job != null)
+                    //{
+                    //    pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
+                    //}
                 },
                 defaultCompleteMode = ToilCompleteMode.Instant
             };

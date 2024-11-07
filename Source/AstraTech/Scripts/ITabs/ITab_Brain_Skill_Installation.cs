@@ -67,7 +67,7 @@ namespace AstraTech
         {
             Rect scrollView = new Rect(body.x, body.y, body.width, body.height);
 
-            Widgets.BeginScrollView(scrollView, ref scrollPos, new Rect(0, 0, scrollView.width, availableSchematics.Length * (25 + 1)));
+            Widgets.BeginScrollView(scrollView, ref scrollPos, new Rect(0, 0, scrollView.width - 20, availableSchematics.Length * (25 + 1)));
 
             float offset = 0;
             foreach (Thing item in items)
@@ -89,7 +89,7 @@ namespace AstraTech
                     {
                         lotExpandedRect.height *= 2;
 
-                        Widgets.DrawBoxSolid(lotExpandedRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawBoxSolid(lotExpandedRect, Colors.buttonDefault);
                         Widgets.DrawHighlightIfMouseover(lotExpandedRect);
 
                         Rect timeRect = new Rect(0, lotRect.y + lotRect.height, lotRect.width - 6, lotRect.height);
@@ -98,7 +98,7 @@ namespace AstraTech
                     }
                     else
                     {
-                        Widgets.DrawBoxSolid(lotRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawBoxSolid(lotRect, Colors.buttonDefault);
                         Widgets.DrawHighlightIfMouseover(lotRect);
                     }
 
@@ -169,7 +169,7 @@ namespace AstraTech
                     {
                         lotExpandedRect.height *= 2;
 
-                        Widgets.DrawBoxSolid(lotExpandedRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawBoxSolid(lotExpandedRect, Colors.buttonDefault);
                         Widgets.DrawHighlightIfMouseover(lotExpandedRect);
 
                         Rect timeRect = new Rect(0, lotRect.y + lotRect.height, lotRect.width - 6, lotRect.height);
@@ -178,7 +178,7 @@ namespace AstraTech
                     }
                     else
                     {
-                        Widgets.DrawBoxSolid(lotRect, new ColorInt(32, 35, 38).ToColor);
+                        Widgets.DrawBoxSolid(lotRect, Colors.buttonDefault);
                         Widgets.DrawHighlightIfMouseover(lotRect);
                     }
 

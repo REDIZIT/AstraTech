@@ -70,8 +70,10 @@
     <Compile Include="Scripts\Buildings\Building_AstraBlueprintHolder.cs" />
     <Compile Include="Scripts\Buildings\Building_AstraSchematicsBank.cs" />
     <Compile Include="Scripts\Buildings\Building_AstraPawnMachine.cs" />
+    <Compile Include="Scripts\Colors.cs" />
     <Compile Include="Scripts\Hediff_AstraBrainUnstableWear.cs" />
     <Compile Include="Scripts\IPawnContainer.cs" />
+    <Compile Include="Scripts\ITabs\ITab_Brain_Copy.cs" />
     <Compile Include="Scripts\ITabs\ITab_ContentsCards.cs" />
     <Compile Include="Scripts\Items\AstraSchematics_Trait.cs" />
     <Compile Include="Scripts\JobDrivers\JobDriver_CarryPawnToExtraction.cs" />
