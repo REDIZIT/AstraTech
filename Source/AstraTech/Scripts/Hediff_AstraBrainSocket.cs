@@ -1,4 +1,7 @@
-﻿using Verse;
+﻿using RimWorld;
+using System.Collections.Generic;
+using System.Reflection;
+using Verse;
 
 namespace AstraTech
 {
@@ -6,6 +9,8 @@ namespace AstraTech
     {
         public AstraBrain brain;
         public override string LabelInBrackets => brain == null ? "empty" : brain.innerPawn.Name + "'s persona installed";
+
+        //private static FieldInfo cachedThoughtsField = typeof(SituationalThoughtHandler).GetField("cachedThoughts", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public override void PostAdd(DamageInfo? dinfo)
         {
@@ -16,6 +21,20 @@ namespace AstraTech
         public override void Tick()
         {
             base.Tick();
+
+            //if (brain != null && brain.IsAutomaton)
+            //{
+            //    var thoughts = pawn.needs.mood.thoughts;
+
+            //    // Clear memories (saw a corpse, ate good meal)
+            //    thoughts.memories.Memories.Clear();
+
+            //    //// Clear situational thoughts (dark, cold, wet)
+            //    //List<Thought_Situational> replicantSituationalThoughts = (List<Thought_Situational>)cachedThoughtsField.GetValue(thoughts.situational);
+            //    //replicantSituationalThoughts.Clear();
+            //    ////Log.Message(replicantSituationalThoughts.Count);
+            //    //cachedThoughtsField.SetValue(thoughts.situational, replicantSituationalThoughts);/* // Be aware to not copy Ref to list, but elements of list*/
+            //}
         }
 
         public override void ExposeData()
@@ -40,7 +59,7 @@ namespace AstraTech
             brain.CopyInnerPawnToBlank(pawn);
             Severity = 1;
 
-            if (brain.IsUnstable)
+            if (brain.IsAutomaton)
             {
                 pawn.health.AddHediff(AstraDefOf.astra_brain_unstable_wear, pawn.health.hediffSet.GetBrain());
             }
@@ -52,7 +71,7 @@ namespace AstraTech
             {
                 if (pawn.InMentalState)
                 {
-                    pawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_astra_brain_trait_trained);
+                    pawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_astra_brain_extracted_while_breakdown);
                 }
 
                 brain.CopyReplicantToInnerPawn(pawn);

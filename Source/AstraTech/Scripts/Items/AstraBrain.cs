@@ -3,6 +3,8 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnityEngine.Assertions.Must;
 using Verse;
 
 namespace AstraTech
@@ -10,7 +12,7 @@ namespace AstraTech
     public class AstraBrain : ThingWithComps, IPawnContainer
     {
         public override string Label => "Astra Brain (" + GetPawn().NameFullColored + ")";
-        public bool IsUnstable => Def.unstableWorktimeInDays > 0;
+        public bool IsAutomaton => Def.unstableWorktimeInDays > 0;
         public AstraBrainDef Def
         {
             get
@@ -45,7 +47,7 @@ namespace AstraTech
                 innerPawn.story.Adulthood = AstraDefOf.astra_blank_adult;
             }
 
-            if (IsUnstable && unstableWorktimeInTicksLeft == -1)
+            if (IsAutomaton && unstableWorktimeInTicksLeft == -1)
             {
                 unstableWorktimeInTicksLeft = (int)(Def.unstableWorktimeInDays * GenDate.TicksPerDay);
             }
@@ -61,7 +63,7 @@ namespace AstraTech
 
         public override string GetInspectString()
         {
-            if (IsUnstable)
+            if (IsAutomaton)
             {
                 return "Wear: " + (int)(100 * (1 - unstableWorktimeInTicksLeft / (Def.unstableWorktimeInDays * GenDate.TicksPerDay))) + "%";
             }
@@ -83,7 +85,6 @@ namespace AstraTech
                 Find.Targeter.BeginTargeting(new TargetingParameters()
                 {
                     canTargetPawns = true,
-                    onlyTargetControlledPawns = true,
                     mapObjectTargetsMustBeAutoAttackable = false,
                     canTargetItems = false,
                     validator = (i) =>
@@ -135,7 +136,7 @@ namespace AstraTech
             DefDatabase<TraitDef>.GetNamed("Tough"),
         };
 
-        //private static FieldInfo cachedThoughtsField = typeof(SituationalThoughtHandler).GetField("cachedThoughts", BindingFlags.Instance | BindingFlags.NonPublic);
+        
 
         public static void ClearPawn(Pawn p)
         {
@@ -172,15 +173,17 @@ namespace AstraTech
 
                 // Remove disabled work types
                 p.Notify_DisabledWorkTypesChanged();
+
+                // Remove Ideo
+                if (ModsConfig.IdeologyActive)
+                {
+                    p.ideo.SetIdeo(null);
+                }
             }
         }
 
         public void CopyReplicantToInnerPawn(Pawn replicant)
         {
-            //List<Thought_Situational> replicantSituationalThoughts = (List<Thought_Situational>)cachedThoughtsField.GetValue(replicantThoughts.situational);
-            //Log.Message(replicantSituationalThoughts.Count);
-            //cachedThoughtsField.SetValue(brainThoughts.situational, replicantSituationalThoughts.ListFullCopy()); // Be aware to not copy Ref to list, but elements of list
-
             if (replicant.health.Dead == false)
             {
                 // Create brain needs
@@ -204,10 +207,13 @@ namespace AstraTech
                 innerPawn.needs.BindDirectNeedFields();
 
                 // Copy brain thoughts
-                ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
-                ThoughtHandler replicantThoughts = replicant.needs.mood.thoughts;
-                brainThoughts.memories.Memories.Clear();
-                brainThoughts.memories.Memories.AddRange(replicantThoughts.memories.Memories);
+                CopyThoughts_InnerToBlank(replicant, innerPawn, IsAutomaton);
+
+                // Copy Ideology
+                if (ModsConfig.IdeologyActive)
+                {
+                    innerPawn.ideo.SetIdeo(replicant.Ideo);
+                }
             }            
         }
 
@@ -216,25 +222,13 @@ namespace AstraTech
             p.Name = innerPawn.Name;
             p.ageTracker.AgeChronologicalTicks = innerPawn.ageTracker.AgeChronologicalTicks;
 
-            // Copy story
-            Pawn_StoryTracker newStory = new Pawn_StoryTracker(p);
-            Pawn_StoryTracker oldStory = p.story;
-            Pawn_StoryTracker brainStory = innerPawn.story;
+            ConvertToColonistIfNot(p);
 
-            newStory.bodyType = oldStory.bodyType;
-            newStory.headType = oldStory.headType;
-            newStory.hairDef = oldStory.hairDef;
-            newStory.SkinColorBase = oldStory.SkinColorBase;
+            // Copy story
+            CopyStory(p);
 
             // Add only brain related traits
-            newStory.traits.allTraits.Clear();
-            newStory.traits.allTraits.AddRange(brainStory.traits.allTraits);
-
-            newStory.AllBackstories.Clear();
-            newStory.Childhood = brainStory.Childhood;
-            newStory.Adulthood = brainStory.Adulthood;
-
-            p.story = newStory;
+            CopyTraits(p, true);
 
             // Copy skills
             foreach (SkillRecord s in p.skills.skills)
@@ -255,15 +249,8 @@ namespace AstraTech
             p.relations.DirectRelations.AddRange(innerPawn.relations.DirectRelations);
             p.relations.VirtualRelations.AddRange(innerPawn.relations.VirtualRelations);
 
-
-            // Copy style
-            Pawn_StyleTracker newStyle = new Pawn_StyleTracker(p);
-            Pawn_StyleTracker oldStyle = p.style;
-            newStyle.beardDef = oldStyle.beardDef;
-            newStyle.BodyTattoo = oldStyle.BodyTattoo;
-            newStyle.FaceTattoo = oldStyle.FaceTattoo;
-
-            p.style = newStyle;
+            //// Copy style (is it really brain stuff??)
+            //CopyStyle(p);
 
 
             // Create brain needs
@@ -290,10 +277,13 @@ namespace AstraTech
             innerPawn.needs.BindDirectNeedFields();
 
             // Copy brain thoughts
-            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
-            ThoughtHandler blankThoughts = p.needs.mood.thoughts;
-            blankThoughts.memories.Memories.Clear();
-            blankThoughts.memories.Memories.AddRange(brainThoughts.memories.Memories);
+            CopyThoughts_InnerToBlank(innerPawn, p, IsAutomaton);
+
+            // Copy Ideology
+            if (ModsConfig.IdeologyActive)
+            {
+                p.ideo.SetIdeo(innerPawn.Ideo);
+            }
         }
 
         public void CopyInnerPawnToAutomaton(AstraBrain automatonBrain, HashSet<SkillDef> skillsToCopy)
@@ -304,25 +294,11 @@ namespace AstraTech
             p.ageTracker.AgeChronologicalTicks = innerPawn.ageTracker.AgeChronologicalTicks;
 
             // Copy story
-            Pawn_StoryTracker newStory = new Pawn_StoryTracker(p);
-            Pawn_StoryTracker oldStory = p.story;
-            Pawn_StoryTracker brainStory = innerPawn.story;
-
-            newStory.bodyType = oldStory.bodyType;
-            newStory.headType = oldStory.headType;
-            newStory.hairDef = oldStory.hairDef;
-            newStory.SkinColorBase = oldStory.SkinColorBase;
+            CopyStory(p);
 
             // Remove any traits
-            newStory.traits.allTraits.Clear();
-
-            newStory.AllBackstories.Clear();
-            newStory.Childhood = brainStory.Childhood;
-            newStory.Adulthood = brainStory.Adulthood;
-
-            p.story = newStory;
-
-
+            CopyTraits(p, false);
+            
             // Copy skills and disable works
             if (automatonBrain.availableSkills == null) automatonBrain.availableSkills = new HashSet<SkillDef>();
             automatonBrain.availableSkills.AddRange(skillsToCopy);
@@ -352,15 +328,9 @@ namespace AstraTech
             p.relations.ClearAllRelations();
 
 
-            // Copy style
-            Pawn_StyleTracker newStyle = new Pawn_StyleTracker(p);
-            Pawn_StyleTracker oldStyle = p.style;
-            newStyle.beardDef = oldStyle.beardDef;
-            newStyle.BodyTattoo = oldStyle.BodyTattoo;
-            newStyle.FaceTattoo = oldStyle.FaceTattoo;
-
-            p.style = newStyle;
-
+            //// Copy style (is it really brain stuff??)
+            //CopyStyle(p);
+            
 
             // Create brain needs
             // Give a basic pawn Need set
@@ -386,15 +356,67 @@ namespace AstraTech
             innerPawn.needs.BindDirectNeedFields();
 
             // Copy brain thoughts
-            ThoughtHandler brainThoughts = innerPawn.needs.mood.thoughts;
-            ThoughtHandler blankThoughts = p.needs.mood.thoughts;
-            blankThoughts.memories.Memories.Clear();
-            blankThoughts.memories.Memories.AddRange(brainThoughts.memories.Memories);
+            CopyThoughts_InnerToBlank(innerPawn, p, IsAutomaton);
         }
 
         public Pawn GetPawn()
         {
             return innerPawn;
+        }
+
+        private void CopyStory(Pawn p)
+        {
+            Pawn_StoryTracker newStory = new Pawn_StoryTracker(p);
+            Pawn_StoryTracker oldStory = p.story;
+            
+            newStory.bodyType = oldStory.bodyType;
+            newStory.headType = oldStory.headType;
+            newStory.hairDef = oldStory.hairDef;
+            newStory.furDef = oldStory.furDef;
+            newStory.SkinColorBase = oldStory.SkinColorBase;
+            newStory.HairColor = oldStory.HairColor;
+
+            p.story = newStory;
+        }
+        private void CopyTraits(Pawn p, bool addBrainTraits)
+        {
+            Pawn_StoryTracker newStory = p.story;
+            Pawn_StoryTracker brainStory = innerPawn.story;
+
+            newStory.traits.allTraits.Clear();
+            if (addBrainTraits) newStory.traits.allTraits.AddRange(brainStory.traits.allTraits);
+
+            newStory.AllBackstories.Clear();
+            newStory.Childhood = brainStory.Childhood;
+            newStory.Adulthood = brainStory.Adulthood;
+        }
+        //private void CopyStyle(Pawn p)
+        //{
+        //    Pawn_StyleTracker newStyle = new Pawn_StyleTracker(p);
+        //    Pawn_StyleTracker oldStyle = p.style;
+        //    newStyle.beardDef = oldStyle.beardDef;
+        //    newStyle.BodyTattoo = oldStyle.BodyTattoo;
+        //    newStyle.FaceTattoo = oldStyle.FaceTattoo;
+
+            //Pawn_StyleTracker newStyle = new Pawn_StyleTracker(p);
+            //Pawn_StyleTracker oldStyle = p.style;
+            //newStyle.beardDef = oldStyle.beardDef;
+            //newStyle.BodyTattoo = oldStyle.BodyTattoo;
+            //newStyle.FaceTattoo = oldStyle.FaceTattoo;
+            //newStyle.nextBodyTatooDef = oldStyle.nextBodyTatooDef;
+            //newStyle.nextFaceTattooDef = oldStyle.nextFaceTattooDef;
+            //newStyle.nextHairDef = oldStyle.nextHairDef;
+            //newStyle.nextHairColor = oldStyle.nextHairColor;
+            //newStyle.nextStyleChangeAttemptTick = oldStyle.nextStyleChangeAttemptTick;
+
+        //    p.style = newStyle;
+        //}
+        private void CopyThoughts_InnerToBlank(Pawn source, Pawn target, bool justClear)
+        {
+            ThoughtHandler sourceThoughts = source.needs.mood.thoughts;
+            ThoughtHandler targetThoughts = target.needs.mood.thoughts;
+            targetThoughts.memories.Memories.Clear();
+            if (justClear == false) targetThoughts.memories.Memories.AddRange(sourceThoughts.memories.Memories);
         }
 
         private WorkTags GetAvailableWorksForSkill(SkillDef s)
@@ -415,6 +437,12 @@ namespace AstraTech
             if (s == SkillDefOf.Intellectual) return WorkTags.Intellectual;
 
             return t;
+        }
+
+        private void ConvertToColonistIfNot(Pawn enemy)
+        {
+            if (enemy.Faction == Faction.OfPlayer) return;
+            RecruitUtility.Recruit(enemy, Faction.OfPlayer);
         }
     }
 }

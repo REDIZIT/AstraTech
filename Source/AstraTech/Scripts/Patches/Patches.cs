@@ -64,7 +64,7 @@ namespace AstraTech
     {
         static void Postfix(Pawn __instance, ref List<WorkTypeDef> __result, bool permanentOnly)
         {
-            if (__instance.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain != null && socket.brain.IsUnstable)
+            if (__instance.health.hediffSet.TryGetHediff(out Hediff_AstraBrainSocket socket) && socket.brain != null && socket.brain.IsAutomaton)
             {
                 if (socket.brain.availableSkills != null && socket.brain.availableSkills.Count > 0)
                 {

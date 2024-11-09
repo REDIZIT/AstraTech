@@ -92,7 +92,6 @@
     <Compile Include="Scripts\GenBlueprints.cs" />
     <Compile Include="Scripts\ITabs\ITab_Brain_Character.cs" />
     <Compile Include="Scripts\ITabs\ITab_Brain_Needs.cs" />
-    <Compile Include="Scripts\ITabs\ITab_Brain_Skill_Installation.cs" />
     <Compile Include="Scripts\JobDrivers\JobDriver_ExtractBrainFromReplicant.cs" />
     <Compile Include="Scripts\JobDrivers\JobDriver_CarrySchematicsToBank.cs" />
     <Compile Include="Scripts\JobDrivers\JobDriver_HaulAndDo.cs" />

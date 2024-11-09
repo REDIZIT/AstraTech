@@ -400,7 +400,7 @@ namespace AstraTech
 
         public void InsertBrain(AstraBrain item)
         {
-            if (item.IsUnstable)
+            if (item.IsAutomaton)
             {
                 secondBrainInside = item;
             }
@@ -604,7 +604,7 @@ namespace AstraTech
 
         public bool ContainsBrainByStable(AstraBrain askBrain)
         {
-            if (askBrain.IsUnstable) return secondBrainInside != null;
+            if (askBrain.IsAutomaton) return secondBrainInside != null;
             return brainInside != null;
         }
     }
