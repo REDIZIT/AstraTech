@@ -47,7 +47,12 @@ namespace AstraTech
         public override void Notify_PawnKilled()
         {
             pawn.needs.mood.thoughts.memories.TryGainMemory(AstraDefOf.thought_astra_brain_killed);
-            brain.CopyReplicantToInnerPawn(pawn);
+
+            // Brain can be null if Blank died
+            if (brain != null)
+            {
+                brain.CopyReplicantToInnerPawn(pawn);
+            }
 
             base.Notify_PawnKilled();
         }

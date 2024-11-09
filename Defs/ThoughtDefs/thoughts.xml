@@ -125,7 +125,7 @@
 			<li>
 				<label>Cheated death</label>
 				<description>I were killed. Sadly yes... but I lived!</description>
-				<baseMoodEffect>10</baseMoodEffect>
+				<baseMoodEffect>100</baseMoodEffect>
 			</li>
 		</stages>
 	</ThoughtDef>

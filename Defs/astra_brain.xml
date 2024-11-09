@@ -77,7 +77,7 @@
 		<label>Astra Brain (Unstable)</label>
 		<description>Desc</description>
 
-		<unstableWorktimeInDays>30</unstableWorktimeInDays>
+		<unstableWorktimeInDays>60</unstableWorktimeInDays>
 
 		<graphicData>
 			<texPath>astra_brain_unstable</texPath>

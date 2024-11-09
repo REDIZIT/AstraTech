@@ -136,8 +136,13 @@ namespace AstraTech
             DefDatabase<TraitDef>.GetNamed("Tough"),
         };
 
-        
 
+        /// <summary>
+        /// Resets pawn or dead pawn to a Blank (skills, traits, story, relates, thoughts, needs, Ideo) <br/>
+        /// Use this if you want:<br/>
+        /// 1. Extract Brain from pawn (but after <see cref="CopyReplicantToInnerPawn"/>)<br/>
+        /// 2. Reset pawn without Brain extraction, just make it Blank<br/>
+        /// </summary>
         public static void ClearPawn(Pawn p)
         {
             p.Name = new NameSingle("Blank");
@@ -182,6 +187,11 @@ namespace AstraTech
             }
         }
 
+        /// <summary>
+        /// Copy brain needs, thoughts and Ideo from Replicant to Brain's inner pawn.<br/>
+        /// Use this if you want:<br/>
+        /// 1. Extract Brain from pawn (but before <see cref="ClearPawn"/>)<br/>
+        /// </summary>
         public void CopyReplicantToInnerPawn(Pawn replicant)
         {
             if (replicant.health.Dead == false)
@@ -217,6 +227,11 @@ namespace AstraTech
             }            
         }
 
+        /// <summary>
+        /// Copy story, traits, skills, relates, needs, thoughts and Ideo from Brain's inner pawn to <paramref name="p"/><br/>
+        /// Use this if you want:<br/>
+        /// 1. Insert Brain into pawn (note: this method only copy - Socket insertion, Item despawning and etc are up to you)
+        /// </summary>
         public void CopyInnerPawnToBlank(Pawn p)
         {
             p.Name = innerPawn.Name;
@@ -286,6 +301,12 @@ namespace AstraTech
             }
         }
 
+
+        /// <summary>
+        /// Copy Brain's inner pawn into another Brain's inner pawn but asuming that it is Automaton (Automatons have some limitaions)
+        /// Use this if you want:<br/>
+        /// 1. Brain-to-Brain copy from full-filled Brain into limited Automaton Brain
+        /// </summary>
         public void CopyInnerPawnToAutomaton(AstraBrain automatonBrain, HashSet<SkillDef> skillsToCopy)
         {
             Pawn p = automatonBrain.GetPawn();
@@ -357,6 +378,11 @@ namespace AstraTech
 
             // Copy brain thoughts
             CopyThoughts_InnerToBlank(innerPawn, p, IsAutomaton);
+
+            if (ModsConfig.IdeologyActive)
+            {
+                p.ideo.SetIdeo(innerPawn.Ideo);
+            }
         }
 
         public Pawn GetPawn()

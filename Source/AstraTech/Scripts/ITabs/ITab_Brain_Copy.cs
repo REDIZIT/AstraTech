@@ -140,22 +140,27 @@ namespace AstraTech
             //
             Rect scrollOut = new Rect(body.x, y, body.width, body.height - y + body.y);
 
-            if(Building.brainInside == null)
+            if (IsCopyTab)
             {
-                Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(scrollOut, "No Persona module");
-            }
-            else if (Building.secondBrainInside == null && IsCopyTab)
-            {
-                Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(scrollOut, "No Automaton module");
+                if (Building.brainInside == null)
+                {
+                    Text.Anchor = TextAnchor.MiddleCenter;
+                    Widgets.Label(scrollOut, "No Persona module");
+                }
+                else if (Building.secondBrainInside == null)
+                {
+                    Text.Anchor = TextAnchor.MiddleCenter;
+                    Widgets.Label(scrollOut, "No Automaton module");
+                }
+                else
+                {
+                    DrawCopyTabScrollView(scrollOut);
+                }
             }
             else
             {
-                if (IsCopyTab) DrawCopyTabScrollView(scrollOut);
+                DrawTrainTabScrollView(scrollOut);
             }
-
-            if (IsCopyTab == false) DrawTrainTabScrollView(scrollOut);
 
 
             Text.Anchor = 0;

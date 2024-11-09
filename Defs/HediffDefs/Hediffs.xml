@@ -19,16 +19,16 @@
 						<setMax>0.01</setMax>
 					</li>
 				</capMods>
-				<statOffsets>
-					<GlobalLearningFactor>-1</GlobalLearningFactor>
-				</statOffsets>
+				<statFactors>
+					<GlobalLearningFactor>0</GlobalLearningFactor>
+				</statFactors>
 			</li>
 			<li>
 				<label>brain installed</label>
 				<minSeverity>1</minSeverity>
-				<statOffsets>
-					<GlobalLearningFactor>-1</GlobalLearningFactor>
-				</statOffsets>
+				<statFactors>
+					<GlobalLearningFactor>0</GlobalLearningFactor>
+				</statFactors>
 			</li>
 		</stages>
 
@@ -79,7 +79,7 @@
 				<capMods>
 					<li>
 						<capacity>Consciousness</capacity>
-						<setMax>0.30</setMax>
+						<setMax>0.5</setMax>
 					</li>
 				</capMods>
 			</li>
