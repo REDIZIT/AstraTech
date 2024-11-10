@@ -1,10 +1,6 @@
-﻿using HarmonyLib;
-using RimWorld;
+﻿using RimWorld;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using UnityEngine.Assertions.Must;
 using Verse;
 
 namespace AstraTech
@@ -180,10 +176,7 @@ namespace AstraTech
                 p.Notify_DisabledWorkTypesChanged();
 
                 // Remove Ideo
-                if (ModsConfig.IdeologyActive)
-                {
-                    p.ideo.SetIdeo(null);
-                }
+                RemoveIdeoAndPsy(p);
             }
         }
 
@@ -220,10 +213,7 @@ namespace AstraTech
                 CopyThoughts_InnerToBlank(replicant, innerPawn, IsAutomaton);
 
                 // Copy Ideology
-                if (ModsConfig.IdeologyActive)
-                {
-                    innerPawn.ideo.SetIdeo(replicant.Ideo);
-                }
+                CopyIdeoAndPsy(replicant, innerPawn);
             }            
         }
 
@@ -295,10 +285,7 @@ namespace AstraTech
             CopyThoughts_InnerToBlank(innerPawn, p, IsAutomaton);
 
             // Copy Ideology
-            if (ModsConfig.IdeologyActive)
-            {
-                p.ideo.SetIdeo(innerPawn.Ideo);
-            }
+            CopyIdeoAndPsy(innerPawn, p);
         }
 
 
@@ -348,7 +335,6 @@ namespace AstraTech
             // Clear relationships
             p.relations.ClearAllRelations();
 
-
             //// Copy style (is it really brain stuff??)
             //CopyStyle(p);
             
@@ -379,10 +365,7 @@ namespace AstraTech
             // Copy brain thoughts
             CopyThoughts_InnerToBlank(innerPawn, p, IsAutomaton);
 
-            if (ModsConfig.IdeologyActive)
-            {
-                p.ideo.SetIdeo(innerPawn.Ideo);
-            }
+            CopyIdeoAndPsy(innerPawn, p);
         }
 
         public Pawn GetPawn()
@@ -444,7 +427,67 @@ namespace AstraTech
             targetThoughts.memories.Memories.Clear();
             if (justClear == false) targetThoughts.memories.Memories.AddRange(sourceThoughts.memories.Memories);
         }
+        private void CopyIdeoAndPsy(Pawn source, Pawn target)
+        {
+            if (ModsConfig.IdeologyActive)
+            {
+                target.ideo.SetIdeo(source.Ideo);
+            }
+            if (ModsConfig.RoyaltyActive)
+            {
+                if (source.HasPsylink)
+                {
+                    BodyPartRecord brain = target.health.hediffSet.GetBrain();
 
+                    // Vanilla Psylink
+                    Hediff_Psylink targetPsylink;
+                    if (target.HasPsylink == false)
+                    {
+                        targetPsylink = (Hediff_Psylink)target.health.AddHediff(DefDatabase<HediffDef>.GetNamed("PsychicAmplifier"), brain);
+                    }
+                    else
+                    {
+                        targetPsylink = target.psychicEntropy.Psylink;
+                    }
+                    targetPsylink.CopyFrom(source.psychicEntropy.Psylink);
+                    target.abilities.abilities.Clear();
+                    foreach (Ability ability in source.abilities.abilities)
+                    {
+                        target.abilities.GainAbility(ability.def);
+                    }
+
+
+                    // Vanilla Psycasts Expanded Psylink
+                    if (ModCompatibility.VPEIsActive)
+                    {
+                        ModCompatibility.CopyVPE(source, target);
+                    }
+                }
+                
+            }
+        }
+        private static void RemoveIdeoAndPsy(Pawn target)
+        {
+            if (ModsConfig.IdeologyActive)
+            {
+                target.ideo.SetIdeo(null);
+            }
+            if (ModsConfig.RoyaltyActive)
+            {
+                if (target.HasPsylink)
+                {
+                    // Vanilla Psycasts Expanded Psylink
+                    if (ModCompatibility.VPEIsActive)
+                    {
+                        ModCompatibility.RemoveVPE(target);
+                    }
+
+                    // Vanilla Psylink
+                    Hediff_Psylink hediff = target.psychicEntropy.Psylink;
+                    target.health.RemoveHediff(hediff);
+                }
+            }
+        }
         private WorkTags GetAvailableWorksForSkill(SkillDef s)
         {
             WorkTags t = WorkTags.None;
