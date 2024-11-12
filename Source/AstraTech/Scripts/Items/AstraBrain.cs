@@ -435,8 +435,28 @@ namespace AstraTech
             }
             if (ModsConfig.RoyaltyActive)
             {
-                if (source.HasPsylink)
+                if (IsAutomaton)
                 {
+                    //
+                    // Remove target Psylinks coz Automaton can not use Psycasts
+                    //
+                    if (target.HasPsylink)
+                    {
+                        // Vanilla Psylink
+                        target.health.RemoveHediff(target.psychicEntropy.Psylink);
+
+                        // Vanilla Psycasts Expanded Psylink
+                        if (ModCompatibility.VPEIsActive)
+                        {
+                            ModCompatibility.RemoveVPE(target);
+                        }
+                    }
+                }
+                else if (source.HasPsylink)
+                {
+                    //
+                    // Copy Psylinks (Persona module insertion)
+                    //
                     BodyPartRecord brain = target.health.hediffSet.GetBrain();
 
                     // Vanilla Psylink

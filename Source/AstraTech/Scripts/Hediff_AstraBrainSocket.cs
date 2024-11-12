@@ -64,10 +64,10 @@ namespace AstraTech
             brain.CopyInnerPawnToBlank(pawn);
             Severity = 1;
 
-            if (brain.IsAutomaton)
-            {
-                pawn.health.AddHediff(AstraDefOf.astra_brain_unstable_wear, pawn.health.hediffSet.GetBrain());
-            }
+            //if (brain.IsAutomaton)
+            //{
+            //    pawn.health.AddHediff(AstraDefOf.astra_brain_unstable_wear, pawn.health.hediffSet.GetBrain());
+            //}
         }
         public void ExtractBrain()
         {
